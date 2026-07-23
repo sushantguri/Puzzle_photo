@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnapPuzzle — Photo Camera Jigsaw & Sliding Puzzle</title>
+    <meta name="description" content="Capture photos with your camera and solve custom interactive jigsaw and sliding puzzles instantly in your browser.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background Ambient Glow -->
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+
+    <div class="app-container">
+        <!-- Navigation Header -->
+        <header class="app-header">
+            <div class="logo">
+                <span class="logo-icon">🧩</span>
+                <span class="logo-text">Snap<span class="highlight">Puzzle</span></span>
+            </div>
+            <div class="header-stats" id="headerStats" style="display: none;">
+                <div class="stat-badge">
+                    <span class="stat-icon">⏱️</span>
+                    <span id="timerDisplay">00:00</span>
+                </div>
+                <div class="stat-badge">
+                    <span class="stat-icon">🎯</span>
+                    <span id="moveDisplay">0 Moves</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button id="soundToggleBtn" class="btn btn-icon" title="Toggle Sound">🔊</button>
+                <button id="resetAppBtn" class="btn btn-secondary" style="display: none;">📷 New Snap</button>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <!-- STEP 1: CAPTURE / UPLOAD SECTION -->
+            <section id="captureSection" class="card capture-card">
+                <div class="section-title-group">
+                    <h2>Step 1: Capture or Choose Your Photo</h2>
+                    <p>Take a selfie with your camera or upload an image to shatter into a puzzle.</p>
+                </div>
+
+                <div class="tab-switcher">
+                    <button class="tab-btn active" data-tab="camera">📸 Camera</button>
+                    <button class="tab-btn" data-tab="upload">📁 Upload Image</button>
+                    <button class="tab-btn" data-tab="sample">🖼️ Sample Photos</button>
+                </div>
+
+                <!-- Camera Tab Content -->
+                <div id="cameraTab" class="tab-content active">
+                    <div class="camera-viewport-wrapper">
+                        <video id="webcamVideo" autoplay playsinline muted></video>
+                        <canvas id="snapshotCanvas" style="display: none;"></canvas>
+                        <div id="cameraCountdown" class="countdown-overlay" style="display: none;">3</div>
+                        <div class="camera-grid-overlay"></div>
+                    </div>
+                    <div class="camera-controls">
+                        <div class="filter-select-group">
+                            <label for="filterSelect">Filter:</label>
+                            <select id="filterSelect" class="form-select">
+                                <option value="none">Normal</option>
+                                <option value="cyberpunk">Cyberpunk</option>
+                                <option value="vintage">Vintage Sepia</option>
+                                <option value="vivid">Vivid Pop</option>
+                                <option value="grayscale">Noir Grayscale</option>
+                                <option value="neon">Neon Glow</option>
+                            </select>
+                        </div>
+                        <button id="snapPhotoBtn" class="btn btn-primary btn-lg">
+                            <span class="btn-icon">📸</span> Snap Photo
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Upload Tab Content -->
+                <div id="uploadTab" class="tab-content">
+                    <div id="dropZone" class="drop-zone">
+                        <div class="drop-zone-icon">📁</div>
+                        <h3>Drag & Drop your photo here</h3>
+                        <p>Supports PNG, JPG, WEBP formats</p>
+                        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                        <button id="browseFileBtn" class="btn btn-secondary">Browse File</button>
+                    </div>
+                </div>
+
+                <!-- Sample Photos Tab Content -->
+                <div id="sampleTab" class="tab-content">
+                    <div class="sample-grid">
+                        <div class="sample-card" data-sample="cyberpunk">
+                            <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80" alt="Cyberpunk City">
+                            <span>Neon City</span>
+                        </div>
+                        <div class="sample-card" data-sample="nature">
+                            <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80" alt="Majestic Landscape">
+                            <span>Nature Vista</span>
+                        </div>
+                        <div class="sample-card" data-sample="abstract">
+                            <img src="https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=600&q=80" alt="Vivid Abstract">
+                            <span>Vivid Liquid</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- STEP 2: PUZZLE CONFIGURATION SECTION -->
+            <section id="configSection" class="card config-card" style="display: none;">
+                <div class="preview-container">
+                    <h3>Photo Ready!</h3>
+                    <div class="photo-preview-box">
+                        <img id="photoPreviewImg" src="" alt="Captured Snapshot">
+                    </div>
+                </div>
+
+                <div class="config-controls">
+                    <h3>Step 2: Choose Game Mode & Difficulty</h3>
+                    
+                    <div class="setting-group">
+                        <label>Puzzle Mode:</label>
+                        <div class="mode-toggle">
+                            <button class="mode-btn active" data-mode="sliding">
+                                <span class="mode-icon">🧱</span> Sliding Block
+                            </button>
+                            <button class="mode-btn" data-mode="jigsaw">
+                                <span class="mode-icon">🧩</span> Classic Jigsaw
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <label>Grid Difficulty:</label>
+                        <div class="grid-selector">
+                            <button class="grid-btn active" data-grid="3">3 × 3 <span>(9 Pcs - Easy)</span></button>
+                            <button class="grid-btn" data-grid="4">4 × 4 <span>(16 Pcs - Medium)</span></button>
+                            <button class="grid-btn" data-grid="5">5 × 5 <span>(25 Pcs - Hard)</span></button>
+                        </div>
+                    </div>
+
+                    <div class="action-bar">
+                        <button id="reTakeBtn" class="btn btn-secondary">Retake Photo</button>
+                        <button id="startPuzzleBtn" class="btn btn-primary btn-lg">
+                            🚀 Create & Play Puzzle
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- STEP 3: GAMEPLAY BOARD SECTION -->
+            <section id="gameSection" class="card game-card" style="display: none;">
+                <!-- Secondary Game Controls -->
+                <div class="game-toolbar">
+                    <button id="toggleGhostBtn" class="btn btn-secondary btn-sm">👁️ Toggle Guide</button>
+                    <button id="hintBtn" class="btn btn-secondary btn-sm">💡 Quick Hint</button>
+                    <button id="shuffleBtn" class="btn btn-secondary btn-sm">🔀 Reshuffle</button>
+                </div>
+
+                <!-- Puzzle Board Container -->
+                <div class="puzzle-wrapper">
+                    <div id="puzzleBoard" class="puzzle-board"></div>
+                    <!-- Translucent Reference Image Overlay -->
+                    <div id="ghostOverlay" class="ghost-overlay" style="display: none;">
+                        <img id="ghostImg" src="" alt="Reference Guide">
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- VICTORY MODAL -->
+        <div id="victoryModal" class="modal-backdrop" style="display: none;">
+            <div class="modal-card">
+                <canvas id="confettiCanvas"></canvas>
+                <div class="victory-header">
+                    <span class="victory-icon">🎉</span>
+                    <h2>Puzzle Solved!</h2>
+                    <p>Awesome job! You completed the photo puzzle.</p>
+                </div>
+                <div class="victory-stats">
+                    <div class="victory-stat-item">
+                        <span class="v-label">Time Taken</span>
+                        <span class="v-val" id="finalTime">00:45</span>
+                    </div>
+                    <div class="victory-stat-item">
+                        <span class="v-label">Total Moves</span>
+                        <span class="v-val" id="finalMoves">24</span>
+                    </div>
+                    <div class="victory-stat-item">
+                        <span class="v-label">Rating</span>
+                        <span class="v-val stars" id="finalStars">⭐⭐⭐</span>
+                    </div>
+                </div>
+                <div class="victory-actions">
+                    <button id="playAgainBtn" class="btn btn-secondary">Re-shuffle Same Photo</button>
+                    <button id="newPhotoBtn" class="btn btn-primary">Take New Snap</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>

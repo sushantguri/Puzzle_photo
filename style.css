@@ -1,0 +1,570 @@
+/* ==========================================================================
+   SnapPuzzle CSS — Modern Dark Glassmorphism Design System
+   ========================================================================== */
+
+:root {
+    --bg-dark: #090d16;
+    --card-bg: rgba(23, 32, 54, 0.65);
+    --card-border: rgba(255, 255, 255, 0.12);
+    --primary-glow: #6366f1;
+    --primary-accent: #4f46e5;
+    --secondary-accent: #ec4899;
+    --cyan-accent: #06b6d4;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --radius-lg: 20px;
+    --radius-md: 12px;
+    --radius-sm: 8px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Ambient Background Glows */
+.ambient-glow {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    z-index: 0;
+    pointer-events: none;
+}
+.glow-1 {
+    width: 450px;
+    height: 450px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.25), transparent);
+    top: -100px;
+    left: -100px;
+}
+.glow-2 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(236, 72, 153, 0.2), transparent);
+    bottom: -100px;
+    right: -100px;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 960px;
+    padding: 24px 16px;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Header */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(16px);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+}
+.logo-icon {
+    font-size: 1.8rem;
+}
+.logo-text .highlight {
+    background: linear-gradient(135deg, #6366f1, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.header-stats {
+    display: flex;
+    gap: 16px;
+}
+
+.stat-badge {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+/* Cards & Glassmorphism */
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(20px);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.section-title-group h2 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+.section-title-group p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+/* Tab Switcher */
+.tab-switcher {
+    display: flex;
+    gap: 8px;
+    background: rgba(15, 23, 42, 0.6);
+    padding: 6px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.tab-btn {
+    flex: 1;
+    padding: 10px 16px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.tab-btn.active {
+    background: var(--primary-accent);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+}
+
+/* Tab Contents */
+.tab-content {
+    display: none;
+    flex-direction: column;
+    gap: 20px;
+}
+.tab-content.active {
+    display: flex;
+}
+
+/* Camera Viewport */
+.camera-viewport-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+    aspect-ratio: 4 / 3;
+    margin: 0 auto;
+    background: #000;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+}
+#webcamVideo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1);
+    transition: filter 0.3s ease;
+}
+
+.countdown-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Outfit', sans-serif;
+    font-size: 6rem;
+    font-weight: 800;
+    color: #fff;
+    animation: pulse 1s infinite;
+}
+
+.camera-grid-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    background-size: 33.33% 33.33%;
+}
+
+.camera-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.filter-select-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-select {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid var(--card-border);
+    color: var(--text-main);
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    cursor: pointer;
+    outline: none;
+}
+
+/* Upload Drop Zone */
+.drop-zone {
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-md);
+    padding: 40px 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    background: rgba(15, 23, 42, 0.4);
+    transition: var(--transition);
+}
+.drop-zone:hover {
+    border-color: var(--primary-glow);
+    background: rgba(99, 102, 241, 0.08);
+}
+.drop-zone-icon {
+    font-size: 3rem;
+}
+
+/* Sample Photos Grid */
+.sample-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+}
+.sample-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    cursor: pointer;
+    transition: var(--transition);
+    text-align: center;
+    padding-bottom: 8px;
+}
+.sample-card img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+}
+.sample-card span {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-top: 6px;
+    display: block;
+}
+.sample-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--cyan-accent);
+    box-shadow: 0 8px 20px rgba(6, 182, 212, 0.3);
+}
+
+/* Step 2 Config */
+.config-card {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 32px;
+}
+
+.photo-preview-box {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background: #000;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 2px solid var(--card-border);
+}
+.photo-preview-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.config-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.setting-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.setting-group label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+
+.mode-toggle, .grid-selector {
+    display: flex;
+    gap: 10px;
+}
+
+.mode-btn, .grid-btn {
+    flex: 1;
+    padding: 12px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid var(--card-border);
+    color: var(--text-main);
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+.grid-btn span {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+.mode-btn.active, .grid-btn.active {
+    background: var(--primary-accent);
+    border-color: var(--primary-glow);
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+}
+
+.action-bar {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+/* Buttons */
+.btn {
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    border: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-glow), var(--secondary-accent));
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+}
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 22px rgba(99, 102, 241, 0.6);
+}
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--card-border);
+    color: var(--text-main);
+}
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+.btn-lg {
+    padding: 14px 28px;
+    font-size: 1.05rem;
+    border-radius: var(--radius-md);
+}
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+}
+.btn-icon {
+    padding: 8px 12px;
+    font-size: 1.2rem;
+}
+
+/* Game Board Section */
+.game-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.puzzle-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+    background: #000;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 3px solid var(--card-border);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+}
+
+.puzzle-board {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    gap: 2px;
+    background: rgba(0, 0, 0, 0.8);
+    position: relative;
+}
+
+.puzzle-tile {
+    position: relative;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 4px;
+    transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+.puzzle-tile:hover {
+    transform: scale(0.98);
+    box-shadow: inset 0 0 0 2px var(--cyan-accent);
+}
+.puzzle-tile.empty-tile {
+    background: rgba(15, 23, 42, 0.9) !important;
+    cursor: default;
+    box-shadow: none;
+}
+
+.ghost-overlay {
+    position: absolute;
+    inset: 0;
+    opacity: 0.35;
+    pointer-events: none;
+}
+.ghost-overlay img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Victory Modal */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-card {
+    position: relative;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    width: 90%;
+    max-width: 420px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+}
+
+#confettiCanvas {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+}
+
+.victory-icon {
+    font-size: 3.5rem;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.victory-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    background: rgba(15, 23, 42, 0.6);
+    padding: 16px;
+    border-radius: var(--radius-md);
+}
+
+.victory-stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.v-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+.v-val {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+.victory-actions {
+    display: flex;
+    gap: 12px;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+@media (max-width: 640px) {
+    .config-card {
+        grid-template-columns: 1fr;
+    }
+    .camera-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
