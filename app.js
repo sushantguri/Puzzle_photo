@@ -6,9 +6,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- STATE VARIABLES ---
     let cameraStream = null;
     let currentPhotoDataUrl = null;
+    let rawPhotoDataUrl = null;
     let selectedGridSize = 3; // 3x3 default
     let puzzleMode = 'sliding'; // 'sliding' or 'jigsaw'
     let soundEnabled = true;
+    let isMirrored = true;
     
     // Game state
     let tiles = []; // Array of tile objects { id, currentPos, correctPos, empty }
@@ -22,7 +24,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvasEl = document.getElementById('snapshotCanvas');
     const countdownEl = document.getElementById('cameraCountdown');
     const filterSelect = document.getElementById('filterSelect');
+    const mirrorToggleBtn = document.getElementById('mirrorToggleBtn');
     const snapPhotoBtn = document.getElementById('snapPhotoBtn');
+    
+    const brightnessSlider = document.getElementById('brightnessSlider');
+    const contrastSlider = document.getElementById('contrastSlider');
+    const saturationSlider = document.getElementById('saturationSlider');
     
     const fileInput = document.getElementById('fileInput');
     const dropZone = document.getElementById('dropZone');
@@ -146,6 +153,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Mirror flip toggle
+    if (mirrorToggleBtn) {
+        mirrorToggleBtn.addEventListener('click', () => {
+            isMirrored = !isMirrored;
+            videoEl.style.transform = isMirrored ? 'scaleX(-1)' : 'scaleX(1)';
+            mirrorToggleBtn.style.background = isMirrored ? 'rgba(99, 102, 241, 0.3)' : 'rgba(255, 255, 255, 0.08)';
+            playSound('click');
+        });
+    }
+
     // Filter change
     filterSelect.addEventListener('change', (e) => {
         const val = e.target.value;
@@ -186,12 +203,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // Apply chosen filter onto canvas context
         ctx.filter = getComputedStyle(videoEl).filter;
 
-        // Draw video frame horizontally mirrored
-        ctx.translate(canvasEl.width, 0);
-        ctx.scale(-1, 1);
+        if (isMirrored) {
+            ctx.translate(canvasEl.width, 0);
+            ctx.scale(-1, 1);
+        }
         ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
 
-        currentPhotoDataUrl = canvasEl.toDataURL('image/jpeg', 0.95);
+        rawPhotoDataUrl = canvasEl.toDataURL('image/jpeg', 0.95);
+        currentPhotoDataUrl = rawPhotoDataUrl;
         showConfigSection();
     }
 
@@ -201,7 +220,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target.files && e.target.files[0]) {
             const reader = new FileReader();
             reader.onload = (evt) => {
-                currentPhotoDataUrl = evt.target.result;
+                rawPhotoDataUrl = evt.target.result;
+                currentPhotoDataUrl = rawPhotoDataUrl;
                 showConfigSection();
             };
             reader.readAsDataURL(e.target.files[0]);
@@ -212,15 +232,45 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.sample-card').forEach(card => {
         card.addEventListener('click', () => {
             const img = card.querySelector('img');
-            currentPhotoDataUrl = img.src;
+            rawPhotoDataUrl = img.src;
+            currentPhotoDataUrl = rawPhotoDataUrl;
             showConfigSection();
         });
     });
+
+    // Slider photo enhancement listeners
+    function applyPhotoAdjustments() {
+        if (!rawPhotoDataUrl) return;
+        const b = brightnessSlider ? brightnessSlider.value : 100;
+        const c = contrastSlider ? contrastSlider.value : 100;
+        const s = saturationSlider ? saturationSlider.value : 100;
+
+        const img = new Image();
+        img.crossOrigin = "Anonymous";
+        img.onload = () => {
+            const ctx = canvasEl.getContext('2d');
+            canvasEl.width = img.width;
+            canvasEl.height = img.height;
+            ctx.filter = `brightness(${b}%) contrast(${c}%) saturate(${s}%)`;
+            ctx.drawImage(img, 0, 0);
+            currentPhotoDataUrl = canvasEl.toDataURL('image/jpeg', 0.95);
+            photoPreviewImg.src = currentPhotoDataUrl;
+            ghostImg.src = currentPhotoDataUrl;
+        };
+        img.src = rawPhotoDataUrl;
+    }
+
+    if (brightnessSlider) brightnessSlider.addEventListener('input', applyPhotoAdjustments);
+    if (contrastSlider) contrastSlider.addEventListener('input', applyPhotoAdjustments);
+    if (saturationSlider) saturationSlider.addEventListener('input', applyPhotoAdjustments);
 
     function showConfigSection() {
         stopWebcam();
         captureSection.style.display = 'none';
         configSection.style.display = 'grid';
+        if (brightnessSlider) brightnessSlider.value = 100;
+        if (contrastSlider) contrastSlider.value = 100;
+        if (saturationSlider) saturationSlider.value = 100;
         photoPreviewImg.src = currentPhotoDataUrl;
         ghostImg.src = currentPhotoDataUrl;
     }

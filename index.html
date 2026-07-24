@@ -76,6 +76,7 @@
                                 <option value="neon">Neon Glow</option>
                             </select>
                         </div>
+                        <button id="mirrorToggleBtn" class="btn btn-secondary" title="Mirror Flip Stream">🪞 Flip Camera</button>
                         <button id="snapPhotoBtn" class="btn btn-primary btn-lg">
                             <span class="btn-icon">📸</span> Snap Photo
                         </button>
@@ -142,6 +143,24 @@
                             <button class="grid-btn active" data-grid="3">3 × 3 <span>(9 Pcs - Easy)</span></button>
                             <button class="grid-btn" data-grid="4">4 × 4 <span>(16 Pcs - Medium)</span></button>
                             <button class="grid-btn" data-grid="5">5 × 5 <span>(25 Pcs - Hard)</span></button>
+                        </div>
+                    </div>
+
+                    <div class="setting-group photo-adjustments">
+                        <label>Photo Enhancements:</label>
+                        <div class="sliders-grid">
+                            <div class="slider-item">
+                                <span>☀️ Brightness</span>
+                                <input type="range" id="brightnessSlider" min="50" max="150" value="100">
+                            </div>
+                            <div class="slider-item">
+                                <span>🌓 Contrast</span>
+                                <input type="range" id="contrastSlider" min="50" max="150" value="100">
+                            </div>
+                            <div class="slider-item">
+                                <span>🎨 Saturation</span>
+                                <input type="range" id="saturationSlider" min="0" max="200" value="100">
+                            </div>
                         </div>
                     </div>
 
