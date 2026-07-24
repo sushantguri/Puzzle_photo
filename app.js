@@ -396,6 +396,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return arr.every((val, idx) => val === idx);
     }
 
+    let selectedTile = null;
+
     function renderTiles() {
         puzzleBoard.innerHTML = '';
         const size = selectedGridSize;
@@ -407,6 +409,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const tileDiv = document.createElement('div');
             tileDiv.classList.add('puzzle-tile');
             tileDiv.dataset.id = tile.id;
+            tileDiv.setAttribute('draggable', puzzleMode === 'jigsaw' ? 'true' : 'false');
+
+            if (puzzleMode === 'jigsaw') {
+                tileDiv.classList.add('jigsaw-tile');
+                if (tile.currentPos === tile.correctPos) {
+                    tileDiv.classList.add('correctly-placed');
+                }
+            }
+
+            if (selectedTile && selectedTile.id === tile.id) {
+                tileDiv.classList.add('selected-tile');
+            }
 
             if (tile.isEmpty) {
                 tileDiv.classList.add('empty-tile');
@@ -421,9 +435,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 tileDiv.style.backgroundPosition = `${percentX}% ${percentY}%`;
             }
 
+            // Click handling
             tileDiv.addEventListener('click', () => handleTileClick(tile));
+
+            // Drag and drop events for Jigsaw mode
+            if (puzzleMode === 'jigsaw') {
+                tileDiv.addEventListener('dragstart', (e) => {
+                    selectedTile = tile;
+                    e.dataTransfer.setData('text/plain', tile.id);
+                    tileDiv.classList.add('selected-tile');
+                });
+                tileDiv.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                });
+                tileDiv.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    if (selectedTile && selectedTile.id !== tile.id) {
+                        swapTiles(selectedTile, tile);
+                        selectedTile = null;
+                    }
+                });
+            }
+
             puzzleBoard.appendChild(tileDiv);
         });
+    }
+
+    function swapTiles(tileA, tileB) {
+        [tileA.currentPos, tileB.currentPos] = [tileB.currentPos, tileA.currentPos];
+        movesCount++;
+        moveDisplay.textContent = `${movesCount} Moves`;
+        playSound('snap');
+        renderTiles();
+        checkWinCondition();
     }
 
     function handleTileClick(clickedTile) {
@@ -445,13 +489,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const isAdjacent = (Math.abs(clickRow - emptyRow) + Math.abs(clickCol - emptyCol)) === 1;
 
             if (isAdjacent) {
-                // Swap positions
-                [clickedTile.currentPos, emptyTile.currentPos] = [emptyTile.currentPos, clickedTile.currentPos];
-                movesCount++;
-                moveDisplay.textContent = `${movesCount} Moves`;
-                playSound('snap');
+                swapTiles(clickedTile, emptyTile);
+            }
+        } else if (puzzleMode === 'jigsaw') {
+            if (!selectedTile) {
+                selectedTile = clickedTile;
+                playSound('click');
                 renderTiles();
-                checkWinCondition();
+            } else if (selectedTile.id === clickedTile.id) {
+                selectedTile = null;
+                playSound('click');
+                renderTiles();
+            } else {
+                swapTiles(selectedTile, clickedTile);
+                selectedTile = null;
             }
         }
     }
