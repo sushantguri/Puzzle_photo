@@ -91,20 +91,20 @@ flowchart TD
 
 ## 🚀 Project Development Roadmap
 
-- [x] **Phase 1: Project Proposal & Design Architecture** *(Current)*
-- [ ] **Phase 2: Core Foundation & UI Shell**
-  - Setup glassmorphism layout, camera view container, and game controls.
-- [ ] **Phase 3: Camera Capture & Image Processing Engine**
-  - Implement WebRTC media stream, snapshot capture canvas, and filter options.
-- [ ] **Phase 4: Jigsaw & Sliding Puzzle Engine**
-  - Build bezier-based interlocking jigsaw piece generator.
-  - Implement drag-and-drop, magnetic snap detection, and grid mapping.
-  - Implement sliding tile algorithm and solvability check.
-- [ ] **Phase 5: Audio Engine, Gamification & Particle FX**
-  - Integrate Web Audio sound effects.
-  - Add timer, move counter, hint system, and victory confetti.
-- [ ] **Phase 6: Optimization & Mobile Responsiveness**
-  - Test touch input, performance audit, cross-browser compatibility.
+- [x] **Phase 1: Project Proposal & Design Architecture**
+- [x] **Phase 2: Core Foundation & UI Shell**
+  - Setup glassmorphism layout, camera view container, theme switcher, and game controls.
+- [x] **Phase 3: Camera Capture & Image Processing Engine**
+  - Implement WebRTC media stream, camera flip mirror toggle, snapshot capture, and image filter sliders.
+- [x] **Phase 4: Dual Puzzle Engine & Interaction**
+  - Interactive tile swap and drag-and-drop mechanics.
+  - Implement sliding tile algorithm with solvability checks.
+- [x] **Phase 5: Audio Engine, Local Leaderboard & Particle FX**
+  - Synthesize Web Audio sound effects.
+  - High Score & Hall of Fame LocalStorage tracking system.
+  - Add timer, move counter, hint overlay, and celebration confetti.
+- [x] **Phase 6: Optimization & Mobile Responsiveness**
+  - Touch input support, responsive grid scaling, cross-browser compatibility.
 
 ---
 
