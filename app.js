@@ -706,6 +706,26 @@ document.addEventListener('DOMContentLoaded', () => {
         soundToggleBtn.textContent = soundEnabled ? '🔊' : '🔇';
     });
 
+    // --- THEME SELECTOR & PERSISTENCE ---
+    const themeSelect = document.getElementById('themeSelect');
+    const savedTheme = localStorage.getItem('snappuzzle_theme') || 'cyber';
+
+    function applyTheme(themeName) {
+        document.documentElement.setAttribute('data-theme', themeName);
+        if (themeSelect) themeSelect.value = themeName;
+        localStorage.setItem('snappuzzle_theme', themeName);
+    }
+
+    if (themeSelect) {
+        themeSelect.addEventListener('change', (e) => {
+            applyTheme(e.target.value);
+            playSound('click');
+        });
+    }
+
+    // Apply initial saved theme
+    applyTheme(savedTheme);
+
     // Auto-start webcam initially
     startWebcam();
 });
