@@ -35,6 +35,7 @@
                 </div>
             </div>
             <div class="header-actions">
+                <button id="leaderboardBtn" class="btn btn-icon" title="View Best Records / High Scores">🏆</button>
                 <button id="soundToggleBtn" class="btn btn-icon" title="Toggle Sound">🔊</button>
                 <button id="resetAppBtn" class="btn btn-secondary" style="display: none;">📷 New Snap</button>
             </div>
@@ -172,6 +173,36 @@
                 </div>
             </section>
         </main>
+
+        <!-- LEADERBOARD MODAL -->
+        <div id="leaderboardModal" class="modal-backdrop" style="display: none;">
+            <div class="modal-card leaderboard-card">
+                <div class="modal-header">
+                    <h2>🏆 Hall of Fame & Best Records</h2>
+                    <button id="closeLeaderboardBtn" class="btn-close">&times;</button>
+                </div>
+                <p class="modal-subtitle">Your fastest times and fewest moves saved locally.</p>
+                <div class="leaderboard-table-container">
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>Mode & Grid</th>
+                                <th>Best Time</th>
+                                <th>Min Moves</th>
+                                <th>Stars</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button id="clearLeaderboardBtn" class="btn btn-outline-danger">Clear Records</button>
+                    <button id="closeLeaderboardFooterBtn" class="btn btn-secondary">Close</button>
+                </div>
+            </div>
+        </div>
 
         <!-- VICTORY MODAL -->
         <div id="victoryModal" class="modal-backdrop" style="display: none;">

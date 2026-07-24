@@ -427,9 +427,97 @@ document.addEventListener('DOMContentLoaded', () => {
         if (movesCount > selectedGridSize * 30) stars = '⭐';
         finalStars.textContent = stars;
 
+        saveHighScore(selectedGridSize, puzzleMode, secondsElapsed, movesCount, stars);
+
         victoryModal.style.display = 'flex';
         startConfetti();
     }
+
+    // --- LEADERBOARD LOCALSTORAGE SYSTEM ---
+    const LEADERBOARD_KEY = 'snappuzzle_high_scores';
+
+    function getHighScores() {
+        try {
+            return JSON.parse(localStorage.getItem(LEADERBOARD_KEY)) || [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function saveHighScore(gridSize, mode, timeSecs, moves, stars) {
+        const scores = getHighScores();
+        const modeLabel = `${mode === 'sliding' ? 'Sliding Tile' : 'Jigsaw'} (${gridSize}x${gridSize})`;
+        
+        const existingIdx = scores.findIndex(s => s.gridSize === gridSize && s.mode === mode);
+        const newRecord = {
+            gridSize,
+            mode,
+            modeLabel,
+            timeSecs,
+            timeFormatted: `${String(Math.floor(timeSecs / 60)).padStart(2, '0')}:${String(timeSecs % 60).padStart(2, '0')}`,
+            moves,
+            stars,
+            date: new Date().toLocaleDateString()
+        };
+
+        if (existingIdx !== -1) {
+            // Update if better time or moves
+            if (timeSecs < scores[existingIdx].timeSecs || (timeSecs === scores[existingIdx].timeSecs && moves < scores[existingIdx].moves)) {
+                scores[existingIdx] = newRecord;
+            }
+        } else {
+            scores.push(newRecord);
+        }
+
+        localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(scores));
+    }
+
+    function renderLeaderboard() {
+        const leaderboardBody = document.getElementById('leaderboardBody');
+        const scores = getHighScores();
+
+        if (scores.length === 0) {
+            leaderboardBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color: var(--text-muted); padding: 20px;">No high scores yet! Solve a puzzle to log your record.</td></tr>`;
+            return;
+        }
+
+        leaderboardBody.innerHTML = scores.map(s => `
+            <tr>
+                <td><strong>${s.modeLabel}</strong></td>
+                <td>⏱️ ${s.timeFormatted}</td>
+                <td>🎯 ${s.moves}</td>
+                <td>${s.stars}</td>
+            </tr>
+        `).join('');
+    }
+
+    // Leaderboard Modal Event Listeners
+    const leaderboardBtn = document.getElementById('leaderboardBtn');
+    const leaderboardModal = document.getElementById('leaderboardModal');
+    const closeLeaderboardBtn = document.getElementById('closeLeaderboardBtn');
+    const closeLeaderboardFooterBtn = document.getElementById('closeLeaderboardFooterBtn');
+    const clearLeaderboardBtn = document.getElementById('clearLeaderboardBtn');
+
+    leaderboardBtn.addEventListener('click', () => {
+        renderLeaderboard();
+        leaderboardModal.style.display = 'flex';
+        playSound('click');
+    });
+
+    [closeLeaderboardBtn, closeLeaderboardFooterBtn].forEach(b => {
+        if (b) b.addEventListener('click', () => {
+            leaderboardModal.style.display = 'none';
+            playSound('click');
+        });
+    });
+
+    clearLeaderboardBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to clear all high score records?')) {
+            localStorage.removeItem(LEADERBOARD_KEY);
+            renderLeaderboard();
+            playSound('click');
+        }
+    });
 
     // --- CONFETTI PARTICLES ENGINE ---
     function startConfetti() {
