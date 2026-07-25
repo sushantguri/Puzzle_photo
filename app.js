@@ -67,6 +67,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- WEB AUDIO SYNTHESIZER ---
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     let audioCtx = null;
+    let soundPreset = localStorage.getItem('snappuzzle_sound_preset') || 'synth';
+
+    const soundPresetSelect = document.getElementById('soundPresetSelect');
+    if (soundPresetSelect) {
+        soundPresetSelect.value = soundPreset;
+        soundPresetSelect.addEventListener('change', (e) => {
+            soundPreset = e.target.value;
+            localStorage.setItem('snappuzzle_sound_preset', soundPreset);
+            playSound('click');
+        });
+    }
+
+    function getWaveType() {
+        if (soundPreset === 'arcade') return 'square';
+        if (soundPreset === 'chime') return 'triangle';
+        return 'sine'; // synth
+    }
 
     function playSound(type) {
         if (!soundEnabled) return;
@@ -74,14 +91,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!audioCtx) audioCtx = new AudioCtx();
             if (audioCtx.state === 'suspended') audioCtx.resume();
 
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-
+            const wave = getWaveType();
             const now = audioCtx.currentTime;
 
             if (type === 'click') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = wave;
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
                 osc.frequency.setValueAtTime(300, now);
                 osc.frequency.exponentialRampToValueAtTime(150, now + 0.08);
                 gain.gain.setValueAtTime(0.15, now);
@@ -89,6 +107,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 osc.start(now);
                 osc.stop(now + 0.08);
             } else if (type === 'snap') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = wave;
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
                 osc.frequency.setValueAtTime(523.25, now); // C5
                 osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.12); // E5
                 gain.gain.setValueAtTime(0.2, now);
@@ -100,6 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
                     const o = audioCtx.createOscillator();
                     const g = audioCtx.createGain();
+                    o.type = wave;
                     o.connect(g);
                     g.connect(audioCtx.destination);
                     o.frequency.setValueAtTime(freq, now + i * 0.1);
