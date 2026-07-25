@@ -716,6 +716,54 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('snappuzzle_theme', themeName);
     }
 
+    // --- KEYBOARD HOTKEYS & ACCESSIBILITY ---
+    window.addEventListener('keydown', (e) => {
+        // Prevent hotkeys inside inputs
+        if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+
+        if (gameSection.style.display !== 'none' && isGameActive) {
+            const key = e.key.toLowerCase();
+            if (key === 'g') {
+                toggleGhostBtn.click();
+            } else if (key === 'h') {
+                hintBtn.click();
+            } else if (key === 'r') {
+                shuffleBtn.click();
+            } else if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key) && puzzleMode === 'sliding') {
+                e.preventDefault();
+                const emptyTile = tiles.find(t => t.isEmpty);
+                if (!emptyTile) return;
+
+                const size = selectedGridSize;
+                const emptyPos = emptyTile.currentPos;
+                const emptyRow = Math.floor(emptyPos / size);
+                const emptyCol = emptyPos % size;
+
+                let targetRow = emptyRow;
+                let targetCol = emptyCol;
+
+                if (key === 'arrowup') targetRow = emptyRow + 1; // Move tile below UP
+                if (key === 'arrowdown') targetRow = emptyRow - 1; // Move tile above DOWN
+                if (key === 'arrowleft') targetCol = emptyCol + 1; // Move tile right LEFT
+                if (key === 'arrowright') targetCol = emptyCol - 1; // Move tile left RIGHT
+
+                if (targetRow >= 0 && targetRow < size && targetCol >= 0 && targetCol < size) {
+                    const targetPos = targetRow * size + targetCol;
+                    const targetTile = tiles.find(t => t.currentPos === targetPos);
+                    if (targetTile) {
+                        swapTiles(targetTile, emptyTile);
+                    }
+                }
+            }
+        } else if (captureSection.style.display !== 'none' && e.code === 'Space') {
+            const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
+            if (activeTab === 'camera') {
+                e.preventDefault();
+                snapPhotoBtn.click();
+            }
+        }
+    });
+
     if (themeSelect) {
         themeSelect.addEventListener('change', (e) => {
             applyTheme(e.target.value);
