@@ -17,35 +17,29 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
 
 ### 📸 1. Live Camera & Photo Capture
 - **WebRTC Camera Integration:** Real-time video preview with countdown timer, mirror flip option, grid overlays, and instant photo capture.
-- **Custom Filters & Enhancements:** Apply instant filters (Cyberpunk, Retro Vintage, Vivid Pop, Grayscale, Neon Glow) before shattering the image.
+- **Custom Filters & Enhancements:** Apply instant filters (Cyberpunk, Retro Vintage, Vivid Pop, Grayscale, Neon Glow) plus Brightness, Contrast, and Saturation tuning.
 - **Local File Upload & Drag-and-Drop:** Ability to upload any image file (`.png`, `.jpg`, `.webp`) as an alternative to live capture.
 
 ### 🧩 2. Dual Puzzle Engine
 - **Classic Jigsaw Mode:**
-  - Real interlocking piece shapes generated dynamically on HTML5 Canvas using bezier curves (tabs & sockets).
-  - Drag-and-drop mechanics with magnetic snapping when pieces are correctly aligned.
-  - Optional piece rotation for an extra challenge (right-click / double-tap to rotate).
+  - Dynamic piece drag-and-drop snapping and tile swap interactions.
 - **Sliding Tile Mode (15-Puzzle):**
-  - Classic sliding block puzzle with smooth sliding animations.
-  - Solvability validation (guaranteeing every shuffled configuration is mathematically solvable).
+  - Classic sliding block puzzle with arrow key navigation and smooth animations.
+  - Guaranteed solvability validation.
 
 ### 🎚️ 3. Customizable Difficulty Levels
 - 🟢 **Easy:** 3 × 3 (9 pieces) — Perfect for quick fun.
 - 🟡 **Medium:** 4 × 4 (16 pieces) — Balanced challenge.
-- 🟠 **Hard:** 6 × 6 (36 pieces) — For seasoned puzzle solvers.
-- 🔴 **Master:** 8 × 8 (64 pieces) — Ultimate test of spatial memory!
-- ⚙️ **Custom Grid:** Define your own row × column matrix.
+- 🟠 **Hard:** 5 × 5 (25 pieces) — For seasoned puzzle solvers.
+- 🔴 **Master:** 6 × 6 (36 pieces) — Master test!
+- ⚡ **Expert:** 8 × 8 (64 pieces) — Ultimate spatial memory test!
 
 ### 🎮 4. Immersive Gameplay & FX
-- **Ghost Picture / Reference Toggle:** Preview a translucent guide of the full image or dock a thumbnail in the corner.
-- **Auto-Assemble Assistant & Hints:** Highlight piece target slots or auto-place a stubborn piece when stuck.
-- **Web Audio API Sound Engine:** Responsive sound effects for piece pickup, snaps, incorrect moves, timer ticks, and victory fanfare.
-- **Confetti & Particle Victory Celebration:** High-energy visual particle system when the puzzle is solved.
-- **Timer & Move Tracker:** Precision timer, move counter, and performance star rating (1 to 3 stars based on speed & accuracy).
-
-### 🎨 5. Modern UI & Aesthetics
-- **Cyber-Glassmorphism Design:** Dark theme elevated with soft blur gradients, ambient backdrops, neon accent glows, and smooth CSS transitions.
-- **Responsive & Mobile-Friendly:** Full pointer events support (touch screen swipe/drag for smartphones & tablets).
+- **⌨️ Keyboard Hotkey Controls:** Arrow keys to slide tiles, `G` to toggle guide overlay, `H` for hints, `R` to reshuffle, `Space` to snap photo.
+- **📥 Victory Score Badge Generator:** Generate and download high-resolution PNG score cards of completed puzzles with stats overlaid.
+- **🔊 Web Audio Preset Engine:** Switchable sound wave synthesis (8-Bit Arcade, Synthwave, Glass Chime).
+- **🏆 Local Leaderboard & Hall of Fame:** LocalStorage best times and minimum move tracker.
+- **📱 PWA Offline Support:** Built with Web App Manifest (`manifest.json`) and Service Worker (`sw.js`) for 100% offline gameplay.
 
 ---
 
