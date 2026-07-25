@@ -764,6 +764,63 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // --- SCORE BADGE PNG GENERATOR ---
+    const downloadScoreCardBtn = document.getElementById('downloadScoreCardBtn');
+    if (downloadScoreCardBtn) {
+        downloadScoreCardBtn.addEventListener('click', () => {
+            playSound('click');
+            const cardCanvas = document.createElement('canvas');
+            cardCanvas.width = 800;
+            cardCanvas.height = 600;
+            const ctx = cardCanvas.getContext('2d');
+
+            // Background Gradient
+            const bgGrad = ctx.createLinearGradient(0, 0, 800, 600);
+            bgGrad.addColorStop(0, '#090d16');
+            bgGrad.addColorStop(1, '#1e1b4b');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, 800, 600);
+
+            // Card Frame
+            ctx.strokeStyle = '#6366f1';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(20, 20, 760, 560);
+
+            // Title
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 36px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('🧩 SnapPuzzle Champion', 400, 70);
+
+            // Draw Photo
+            const img = new Image();
+            img.crossOrigin = 'Anonymous';
+            img.onload = () => {
+                ctx.drawImage(img, 240, 100, 320, 320);
+
+                // Stats Section
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = '20px sans-serif';
+                ctx.fillText(`Mode: ${puzzleMode.toUpperCase()} (${selectedGridSize}x${selectedGridSize})`, 400, 460);
+
+                ctx.fillStyle = '#38bdf8';
+                ctx.font = 'bold 24px sans-serif';
+                ctx.fillText(`⏱️ Time: ${timerDisplay.textContent}   |   🎯 Moves: ${movesCount}`, 400, 500);
+
+                ctx.fillStyle = '#facc15';
+                ctx.font = '26px sans-serif';
+                ctx.fillText(finalStars.textContent, 400, 540);
+
+                // Trigger PNG Download
+                const link = document.createElement('a');
+                link.download = `SnapPuzzle_Victory_ScoreCard.png`;
+                link.href = cardCanvas.toDataURL('image/png');
+                link.click();
+            };
+            img.src = currentPhotoDataUrl;
+        });
+    }
+
     if (themeSelect) {
         themeSelect.addEventListener('change', (e) => {
             applyTheme(e.target.value);
