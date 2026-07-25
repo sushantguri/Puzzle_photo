@@ -1,0 +1,21 @@
+{
+  "name": "SnapPuzzle — Photo Camera Jigsaw & Sliding Puzzle",
+  "short_name": "SnapPuzzle",
+  "description": "Capture photos with your camera and solve custom interactive jigsaw and sliding puzzles instantly in your browser.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#090d16",
+  "theme_color": "#6366f1",
+  "icons": [
+    {
+      "src": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=192&h=192&q=80",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=512&h=512&q=80",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

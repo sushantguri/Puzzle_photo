@@ -831,6 +831,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Apply initial saved theme
     applyTheme(savedTheme);
 
+    // --- SERVICE WORKER REGISTRATION (PWA) ---
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('SnapPuzzle Service Worker registered:', reg.scope))
+                .catch(err => console.warn('Service Worker registration failed:', err));
+        });
+    }
+
     // Auto-start webcam initially
     startWebcam();
 });
