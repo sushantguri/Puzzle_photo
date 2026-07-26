@@ -35,7 +35,9 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
 - ⚡ **Expert:** 8 × 8 (64 pieces) — Ultimate spatial memory test!
 
 ### 🎮 4. Immersive Gameplay & FX
-- **⌨️ Keyboard Hotkey Controls:** Arrow keys to slide tiles, `G` to toggle guide overlay, `H` for hints, `R` to reshuffle, `Space` to snap photo.
+- **↩️ Move History & Undo System:** Step-by-step move stack allowing players to undo tile moves (`U` key or `Ctrl+Z`).
+- **🔢 Tile Numbers Overlay:** Toggleable position badges (`N` key) to assist on higher difficulty grid layouts (5x5, 6x6, 8x8).
+- **⌨️ Keyboard Hotkey Controls:** Arrow keys to slide tiles, `G` for guide overlay, `H` for hints, `N` for numbers, `U` for undo, `R` to reshuffle, `Space` to snap photo.
 - **📥 Victory Score Badge Generator:** Generate and download high-resolution PNG score cards of completed puzzles with stats overlaid.
 - **🔊 Web Audio Preset Engine:** Switchable sound wave synthesis (8-Bit Arcade, Synthwave, Glass Chime).
 - **🏆 Local Leaderboard & Hall of Fame:** LocalStorage best times and minimum move tracker.

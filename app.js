@@ -18,6 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let gameTimer = null;
     let secondsElapsed = 0;
     let isGameActive = false;
+    let showTileNumbers = false;
+    let moveHistory = [];
 
     // --- DOM ELEMENTS ---
     const videoEl = document.getElementById('webcamVideo');
@@ -54,6 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const soundToggleBtn = document.getElementById('soundToggleBtn');
     
     const toggleGhostBtn = document.getElementById('toggleGhostBtn');
+    const toggleNumbersBtn = document.getElementById('toggleNumbersBtn');
+    const undoBtn = document.getElementById('undoBtn');
     const hintBtn = document.getElementById('hintBtn');
     const shuffleBtn = document.getElementById('shuffleBtn');
     
@@ -334,10 +338,18 @@ document.addEventListener('DOMContentLoaded', () => {
         initPuzzle();
     });
 
+    function updateUndoButtonState() {
+        if (undoBtn) {
+            undoBtn.disabled = moveHistory.length === 0 || !isGameActive;
+        }
+    }
+
     function initPuzzle() {
         movesCount = 0;
         secondsElapsed = 0;
         isGameActive = true;
+        moveHistory = [];
+        updateUndoButtonState();
         moveDisplay.textContent = '0 Moves';
         timerDisplay.textContent = '00:00';
 
@@ -459,6 +471,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 tileDiv.style.backgroundPosition = `${percentX}% ${percentY}%`;
             }
 
+            if (showTileNumbers && !tile.isEmpty) {
+                const numBadge = document.createElement('span');
+                numBadge.classList.add('tile-number');
+                numBadge.textContent = tile.id + 1;
+                tileDiv.appendChild(numBadge);
+            }
+
             // Click handling
             tileDiv.addEventListener('click', () => handleTileClick(tile));
 
@@ -485,10 +504,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function swapTiles(tileA, tileB) {
+    function swapTiles(tileA, tileB, isUndo = false) {
+        if (!isUndo) {
+            moveHistory.push({ tileAId: tileA.id, tileBId: tileB.id });
+            movesCount++;
+        } else {
+            movesCount = Math.max(0, movesCount - 1);
+        }
         [tileA.currentPos, tileB.currentPos] = [tileB.currentPos, tileA.currentPos];
-        movesCount++;
         moveDisplay.textContent = `${movesCount} Moves`;
+        updateUndoButtonState();
         playSound('snap');
         renderTiles();
         checkWinCondition();
@@ -690,6 +715,27 @@ document.addEventListener('DOMContentLoaded', () => {
         playSound('click');
     });
 
+    if (toggleNumbersBtn) {
+        toggleNumbersBtn.addEventListener('click', () => {
+            showTileNumbers = !showTileNumbers;
+            toggleNumbersBtn.style.background = showTileNumbers ? 'rgba(99, 102, 241, 0.4)' : '';
+            renderTiles();
+            playSound('click');
+        });
+    }
+
+    if (undoBtn) {
+        undoBtn.addEventListener('click', () => {
+            if (!isGameActive || moveHistory.length === 0) return;
+            const lastMove = moveHistory.pop();
+            const tileA = tiles.find(t => t.id === lastMove.tileAId);
+            const tileB = tiles.find(t => t.id === lastMove.tileBId);
+            if (tileA && tileB) {
+                swapTiles(tileA, tileB, true);
+            }
+        });
+    }
+
     hintBtn.addEventListener('click', () => {
         ghostOverlay.style.display = 'block';
         setTimeout(() => { ghostOverlay.style.display = 'none'; }, 1200);
@@ -749,6 +795,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const key = e.key.toLowerCase();
             if (key === 'g') {
                 toggleGhostBtn.click();
+            } else if (key === 'n' && toggleNumbersBtn) {
+                toggleNumbersBtn.click();
+            } else if ((key === 'u' || (e.ctrlKey && key === 'z') || (e.metaKey && key === 'z')) && undoBtn && !undoBtn.disabled) {
+                e.preventDefault();
+                undoBtn.click();
             } else if (key === 'h') {
                 hintBtn.click();
             } else if (key === 'r') {
