@@ -19,6 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let timeAttackDuration = 90;
     let remainingSeconds = 90;
     
+    let isAutoSolving = false;
+    let autoSolveTimer = null;
+    
     // Game state
     let tiles = []; // Array of tile objects { id, currentPos, correctPos, empty }
     let movesCount = 0;
@@ -413,6 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function triggerTimeUpFailure() {
+        stopAutoSolve();
         isGameActive = false;
         playSound('click');
         const victoryHeader = victoryModal.querySelector('.victory-header');
@@ -428,6 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function initPuzzle() {
+        stopAutoSolve();
         movesCount = 0;
         secondsElapsed = 0;
         isGameActive = true;
@@ -684,6 +689,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function triggerVictory() {
+        stopAutoSolve();
         finalTime.textContent = timerDisplay.textContent;
         finalMoves.textContent = movesCount;
 
@@ -859,6 +865,70 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const autoSolveBtn = document.getElementById('autoSolveBtn');
+
+    function stopAutoSolve() {
+        isAutoSolving = false;
+        if (autoSolveTimer) {
+            clearInterval(autoSolveTimer);
+            autoSolveTimer = null;
+        }
+        if (autoSolveBtn) {
+            autoSolveBtn.textContent = '🤖 Auto-Solve (A)';
+            autoSolveBtn.style.background = '';
+        }
+    }
+
+    function startAutoSolve() {
+        if (!isGameActive) return;
+        isAutoSolving = true;
+        if (autoSolveBtn) {
+            autoSolveBtn.textContent = '⏸️ Stop Bot';
+            autoSolveBtn.style.background = 'rgba(239, 68, 68, 0.4)';
+        }
+
+        autoSolveTimer = setInterval(() => {
+            if (!isGameActive || !isAutoSolving) {
+                stopAutoSolve();
+                return;
+            }
+
+            const isSolved = tiles.every(t => t.currentPos === t.correctPos);
+            if (isSolved) {
+                stopAutoSolve();
+                return;
+            }
+
+            if (moveHistory.length > 0) {
+                const lastMove = moveHistory.pop();
+                const tileA = tiles.find(t => t.id === lastMove.tileAId);
+                const tileB = tiles.find(t => t.id === lastMove.tileBId);
+                if (tileA && tileB) {
+                    swapTiles(tileA, tileB, true);
+                }
+            } else {
+                const misplaced = tiles.find(t => t.currentPos !== t.correctPos);
+                if (misplaced) {
+                    const targetTile = tiles.find(t => t.currentPos === misplaced.correctPos);
+                    if (targetTile) {
+                        swapTiles(misplaced, targetTile);
+                    }
+                }
+            }
+        }, 220);
+    }
+
+    if (autoSolveBtn) {
+        autoSolveBtn.addEventListener('click', () => {
+            playSound('click');
+            if (isAutoSolving) {
+                stopAutoSolve();
+            } else {
+                startAutoSolve();
+            }
+        });
+    }
+
     hintBtn.addEventListener('click', () => {
         ghostOverlay.style.display = 'block';
         setTimeout(() => { ghostOverlay.style.display = 'none'; }, 1200);
@@ -876,6 +946,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     newPhotoBtn.addEventListener('click', () => {
+        stopAutoSolve();
         victoryModal.style.display = 'none';
         gameSection.style.display = 'none';
         headerStats.style.display = 'none';
@@ -885,6 +956,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     resetAppBtn.addEventListener('click', () => {
+        stopAutoSolve();
         clearInterval(gameTimer);
         gameSection.style.display = 'none';
         configSection.style.display = 'none';
@@ -925,6 +997,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 undoBtn.click();
             } else if (key === 'h') {
                 hintBtn.click();
+            } else if (key === 'a' && autoSolveBtn) {
+                autoSolveBtn.click();
             } else if (key === 'r') {
                 shuffleBtn.click();
             } else if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key) && puzzleMode === 'sliding') {
