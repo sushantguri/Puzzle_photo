@@ -11,6 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let puzzleMode = 'sliding'; // 'sliding' or 'jigsaw'
     let soundEnabled = true;
     let isMirrored = true;
+    let rotationAngle = 0;
+    let flipH = false;
+    let flipV = false;
     
     // Game state
     let tiles = []; // Array of tile objects { id, currentPos, correctPos, empty }
@@ -266,7 +269,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Slider photo enhancement listeners
+    // Slider & transform photo enhancement listeners
+    const rotateCwBtn = document.getElementById('rotateCwBtn');
+    const flipHorizBtn = document.getElementById('flipHorizBtn');
+    const flipVertBtn = document.getElementById('flipVertBtn');
+
     function applyPhotoAdjustments() {
         if (!rawPhotoDataUrl) return;
         const b = brightnessSlider ? brightnessSlider.value : 100;
@@ -277,10 +284,25 @@ document.addEventListener('DOMContentLoaded', () => {
         img.crossOrigin = "Anonymous";
         img.onload = () => {
             const ctx = canvasEl.getContext('2d');
-            canvasEl.width = img.width;
-            canvasEl.height = img.height;
+            const origW = img.width;
+            const origH = img.height;
+
+            if (rotationAngle === 90 || rotationAngle === 270) {
+                canvasEl.width = origH;
+                canvasEl.height = origW;
+            } else {
+                canvasEl.width = origW;
+                canvasEl.height = origH;
+            }
+
+            ctx.save();
             ctx.filter = `brightness(${b}%) contrast(${c}%) saturate(${s}%)`;
-            ctx.drawImage(img, 0, 0);
+            ctx.translate(canvasEl.width / 2, canvasEl.height / 2);
+            ctx.rotate((rotationAngle * Math.PI) / 180);
+            ctx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
+            ctx.drawImage(img, -origW / 2, -origH / 2);
+            ctx.restore();
+
             currentPhotoDataUrl = canvasEl.toDataURL('image/jpeg', 0.95);
             photoPreviewImg.src = currentPhotoDataUrl;
             ghostImg.src = currentPhotoDataUrl;
@@ -292,10 +314,37 @@ document.addEventListener('DOMContentLoaded', () => {
     if (contrastSlider) contrastSlider.addEventListener('input', applyPhotoAdjustments);
     if (saturationSlider) saturationSlider.addEventListener('input', applyPhotoAdjustments);
 
+    if (rotateCwBtn) {
+        rotateCwBtn.addEventListener('click', () => {
+            rotationAngle = (rotationAngle + 90) % 360;
+            playSound('click');
+            applyPhotoAdjustments();
+        });
+    }
+
+    if (flipHorizBtn) {
+        flipHorizBtn.addEventListener('click', () => {
+            flipH = !flipH;
+            playSound('click');
+            applyPhotoAdjustments();
+        });
+    }
+
+    if (flipVertBtn) {
+        flipVertBtn.addEventListener('click', () => {
+            flipV = !flipV;
+            playSound('click');
+            applyPhotoAdjustments();
+        });
+    }
+
     function showConfigSection() {
         stopWebcam();
         captureSection.style.display = 'none';
         configSection.style.display = 'grid';
+        rotationAngle = 0;
+        flipH = false;
+        flipV = false;
         if (brightnessSlider) brightnessSlider.value = 100;
         if (contrastSlider) contrastSlider.value = 100;
         if (saturationSlider) saturationSlider.value = 100;

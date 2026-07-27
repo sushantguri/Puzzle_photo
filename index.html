@@ -163,7 +163,7 @@
                     </div>
 
                     <div class="setting-group photo-adjustments">
-                        <label>Photo Enhancements:</label>
+                        <label>Photo Enhancements & Orientation:</label>
                         <div class="sliders-grid">
                             <div class="slider-item">
                                 <span>☀️ Brightness</span>
@@ -177,6 +177,11 @@
                                 <span>🎨 Saturation</span>
                                 <input type="range" id="saturationSlider" min="0" max="200" value="100">
                             </div>
+                        </div>
+                        <div class="transform-actions" style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+                            <button id="rotateCwBtn" class="btn btn-secondary btn-sm" type="button" title="Rotate Photo 90° Clockwise">🔄 Rotate 90°</button>
+                            <button id="flipHorizBtn" class="btn btn-secondary btn-sm" type="button" title="Flip Photo Horizontally">↔️ Flip H</button>
+                            <button id="flipVertBtn" class="btn btn-secondary btn-sm" type="button" title="Flip Photo Vertically">↕️ Flip V</button>
                         </div>
                     </div>
 

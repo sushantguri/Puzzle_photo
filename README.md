@@ -17,7 +17,7 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
 
 ### 📸 1. Live Camera & Photo Capture
 - **WebRTC Camera Integration:** Real-time video preview with countdown timer, mirror flip option, grid overlays, and instant photo capture.
-- **Custom Filters & Enhancements:** Apply instant filters (Cyberpunk, Retro Vintage, Vivid Pop, Grayscale, Neon Glow) plus Brightness, Contrast, and Saturation tuning.
+- **Custom Filters & Photo Editor:** Apply instant filters (Cyberpunk, Retro Vintage, Vivid Pop, Grayscale, Neon Glow) plus Brightness, Contrast, Saturation tuning, 90° rotation, and horizontal/vertical flip controls.
 - **Local File Upload & Drag-and-Drop:** Ability to upload any image file (`.png`, `.jpg`, `.webp`) as an alternative to live capture.
 
 ### 🧩 2. Dual Puzzle Engine
