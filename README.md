@@ -34,7 +34,7 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
 - 🔴 **Master:** 6 × 6 (36 pieces) — Master test!
 - ⚡ **Expert:** 8 × 8 (64 pieces) — Ultimate spatial memory test!
 
-### 🎮 4. Immersive Gameplay & FX
+- **⚡ Time Attack Countdown Mode:** High-stakes race against the clock with an animated progress bar and low-time audio warnings.
 - **↩️ Move History & Undo System:** Step-by-step move stack allowing players to undo tile moves (`U` key or `Ctrl+Z`).
 - **🔢 Tile Numbers Overlay:** Toggleable position badges (`N` key) to assist on higher difficulty grid layouts (5x5, 6x6, 8x8).
 - **⌨️ Keyboard Hotkey Controls:** Arrow keys to slide tiles, `G` for guide overlay, `H` for hints, `N` for numbers, `U` for undo, `R` to reshuffle, `Space` to snap photo.

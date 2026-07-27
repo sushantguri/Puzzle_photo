@@ -15,6 +15,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let flipH = false;
     let flipV = false;
     
+    let timerMode = 'stopwatch'; // 'stopwatch' or 'countdown'
+    let timeAttackDuration = 90;
+    let remainingSeconds = 90;
+    
     // Game state
     let tiles = []; // Array of tile objects { id, currentPos, correctPos, empty }
     let movesCount = 0;
@@ -378,6 +382,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    document.querySelectorAll('.timer-mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.timer-mode-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            timerMode = btn.dataset.timermode;
+            playSound('click');
+        });
+    });
+
     // --- PUZZLE ENGINE & GAMEPLAY ---
     startPuzzleBtn.addEventListener('click', () => {
         configSection.style.display = 'none';
@@ -393,6 +406,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function formatTime(s) {
+        const mins = String(Math.floor(Math.max(0, s) / 60)).padStart(2, '0');
+        const secs = String(Math.max(0, s) % 60).padStart(2, '0');
+        return `${mins}:${secs}`;
+    }
+
+    function triggerTimeUpFailure() {
+        isGameActive = false;
+        playSound('click');
+        const victoryHeader = victoryModal.querySelector('.victory-header');
+        if (victoryHeader) {
+            victoryHeader.querySelector('.victory-icon').textContent = '⏰';
+            victoryHeader.querySelector('h2').textContent = "Time's Up!";
+            victoryHeader.querySelector('p').textContent = 'Time ran out in Time Attack mode! Give it another shot.';
+        }
+        finalTime.textContent = formatTime(timeAttackDuration);
+        finalMoves.textContent = movesCount;
+        finalStars.textContent = '❌ Failed';
+        victoryModal.style.display = 'flex';
+    }
+
     function initPuzzle() {
         movesCount = 0;
         secondsElapsed = 0;
@@ -400,15 +434,48 @@ document.addEventListener('DOMContentLoaded', () => {
         moveHistory = [];
         updateUndoButtonState();
         moveDisplay.textContent = '0 Moves';
-        timerDisplay.textContent = '00:00';
+
+        const timerProgressWrapper = document.getElementById('timerProgressWrapper');
+        const timerProgressBar = document.getElementById('timerProgressBar');
+
+        if (timerMode === 'countdown') {
+            const timeAttackMap = { 3: 60, 4: 90, 5: 120, 6: 180, 8: 300 };
+            timeAttackDuration = timeAttackMap[selectedGridSize] || 90;
+            remainingSeconds = timeAttackDuration;
+            if (timerProgressWrapper) timerProgressWrapper.style.display = 'block';
+            if (timerProgressBar) {
+                timerProgressBar.style.width = '100%';
+                timerProgressBar.classList.remove('low-time');
+            }
+            timerDisplay.textContent = formatTime(remainingSeconds);
+        } else {
+            if (timerProgressWrapper) timerProgressWrapper.style.display = 'none';
+            timerDisplay.textContent = '00:00';
+        }
 
         clearInterval(gameTimer);
         gameTimer = setInterval(() => {
-            if (isGameActive) {
+            if (!isGameActive) return;
+
+            if (timerMode === 'stopwatch') {
                 secondsElapsed++;
-                const mins = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
-                const secs = String(secondsElapsed % 60).padStart(2, '0');
-                timerDisplay.textContent = `${mins}:${secs}`;
+                timerDisplay.textContent = formatTime(secondsElapsed);
+            } else {
+                secondsElapsed++;
+                remainingSeconds--;
+                timerDisplay.textContent = formatTime(remainingSeconds);
+                const pct = Math.max(0, (remainingSeconds / timeAttackDuration) * 100);
+                if (timerProgressBar) {
+                    timerProgressBar.style.width = `${pct}%`;
+                    if (remainingSeconds <= 10) {
+                        timerProgressBar.classList.add('low-time');
+                        playSound('click');
+                    }
+                }
+                if (remainingSeconds <= 0) {
+                    clearInterval(gameTimer);
+                    triggerTimeUpFailure();
+                }
             }
         }, 1000);
 
@@ -619,6 +686,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function triggerVictory() {
         finalTime.textContent = timerDisplay.textContent;
         finalMoves.textContent = movesCount;
+
+        const victoryHeader = victoryModal.querySelector('.victory-header');
+        if (victoryHeader) {
+            victoryHeader.querySelector('.victory-icon').textContent = '🎉';
+            victoryHeader.querySelector('h2').textContent = timerMode === 'countdown' ? '⚡ Time Attack Cleared!' : 'Puzzle Solved!';
+            victoryHeader.querySelector('p').textContent = 'Awesome job! You completed the photo puzzle.';
+        }
 
         // Rating
         let stars = '⭐⭐⭐';

@@ -152,6 +152,18 @@
                     </div>
 
                     <div class="setting-group">
+                        <label>Timer Mode:</label>
+                        <div class="mode-toggle">
+                            <button class="timer-mode-btn active" data-timermode="stopwatch">
+                                <span class="mode-icon">⏱️</span> Stopwatch
+                            </button>
+                            <button class="timer-mode-btn" data-timermode="countdown">
+                                <span class="mode-icon">⚡</span> Time Attack
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
                         <label>Grid Difficulty:</label>
                         <div class="grid-selector">
                             <button class="grid-btn active" data-grid="3">3 × 3 <span>(9 Pcs - Easy)</span></button>
@@ -204,6 +216,11 @@
                     <button id="undoBtn" class="btn btn-secondary btn-sm" disabled>↩️ Undo (U)</button>
                     <button id="hintBtn" class="btn btn-secondary btn-sm">💡 Hint (H)</button>
                     <button id="shuffleBtn" class="btn btn-secondary btn-sm">🔀 Reshuffle (R)</button>
+                </div>
+
+                <!-- Time Attack Countdown Bar -->
+                <div id="timerProgressWrapper" class="timer-progress-wrapper" style="display: none;">
+                    <div id="timerProgressBar" class="timer-progress-bar"></div>
                 </div>
 
                 <!-- Puzzle Board Container -->
