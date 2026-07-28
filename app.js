@@ -146,6 +146,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     o.start(now + i * 0.1);
                     o.stop(now + i * 0.1 + 0.4);
                 });
+            } else if (type === 'achievement') {
+                // Upward arpeggio fanfare for achievement unlock
+                [523.25, 659.25, 783.99, 987.77, 1046.50].forEach((freq, i) => {
+                    const o = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    o.type = wave;
+                    o.connect(g);
+                    g.connect(audioCtx.destination);
+                    o.frequency.setValueAtTime(freq, now + i * 0.07);
+                    g.gain.setValueAtTime(0.2, now + i * 0.07);
+                    g.gain.linearRampToValueAtTime(0.01, now + i * 0.07 + 0.3);
+                    o.start(now + i * 0.07);
+                    o.stop(now + i * 0.07 + 0.3);
+                });
             }
         } catch (e) {
             console.log('Audio playback error:', e);
@@ -357,6 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (saturationSlider) saturationSlider.value = 100;
         photoPreviewImg.src = currentPhotoDataUrl;
         ghostImg.src = currentPhotoDataUrl;
+        unlockAchievement('first_snap');
     }
 
     reTakeBtn.addEventListener('click', () => {
@@ -708,6 +723,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         saveHighScore(selectedGridSize, puzzleMode, secondsElapsed, movesCount, stars);
 
+        // Unlock Victory Achievements
+        if (selectedGridSize === 3) unlockAchievement('novice_solver');
+        if (selectedGridSize >= 5) unlockAchievement('master_mind');
+        if (secondsElapsed <= 30) unlockAchievement('speed_demon');
+        if (timerMode === 'countdown') unlockAchievement('time_survivor');
+        if (stars === '⭐⭐⭐') unlockAchievement('three_stars');
+
         victoryModal.style.display = 'flex';
         startConfetti();
     }
@@ -749,6 +771,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(scores));
+        unlockAchievement('hall_of_fame');
     }
 
     function renderLeaderboard() {
@@ -797,6 +820,117 @@ document.addEventListener('DOMContentLoaded', () => {
             playSound('click');
         }
     });
+
+    // --- ACHIEVEMENTS SYSTEM ---
+    const ACHIEVEMENTS = [
+        { id: 'first_snap', icon: '📸', title: 'First Snap', desc: 'Capture, upload, or choose your first photo.' },
+        { id: 'novice_solver', icon: '🧩', title: 'Puzzle Novice', desc: 'Complete any 3x3 grid puzzle.' },
+        { id: 'speed_demon', icon: '⚡', title: 'Speed Demon', desc: 'Solve a puzzle in under 30 seconds.' },
+        { id: 'master_mind', icon: '🧠', title: 'Master Mind', desc: 'Complete a 5x5 grid puzzle or larger.' },
+        { id: 'ai_assistant', icon: '🤖', title: 'AI Assistant', desc: 'Use the Auto-Solve assistant bot.' },
+        { id: 'time_survivor', icon: '⌛', title: 'Time Survivor', desc: 'Complete a puzzle in Time Attack mode.' },
+        { id: 'three_stars', icon: '🌟', title: 'Three-Star Finish', desc: 'Earn a 3-star rating on a puzzle.' },
+        { id: 'palette_explorer', icon: '🎨', title: 'Palette Explorer', desc: 'Switch theme color palettes.' },
+        { id: 'hall_of_fame', icon: '🏆', title: 'Record Holder', desc: 'Record a high score in the Hall of Fame.' }
+    ];
+
+    let unlockedAchievements = [];
+    try {
+        unlockedAchievements = JSON.parse(localStorage.getItem('snappuzzle_achievements')) || [];
+    } catch (e) {
+        unlockedAchievements = [];
+    }
+
+    function unlockAchievement(id) {
+        if (unlockedAchievements.includes(id)) return;
+        unlockedAchievements.push(id);
+        localStorage.setItem('snappuzzle_achievements', JSON.stringify(unlockedAchievements));
+        
+        const ach = ACHIEVEMENTS.find(a => a.id === id);
+        if (!ach) return;
+
+        playSound('achievement');
+        showAchievementToast(ach);
+        updateAchievementsUI();
+    }
+
+    function showAchievementToast(ach) {
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        toast.className = 'achievement-toast';
+        toast.innerHTML = `
+            <div class="achievement-toast-icon">${ach.icon}</div>
+            <div class="achievement-toast-content">
+                <div class="achievement-toast-tag">Achievement Unlocked!</div>
+                <div class="achievement-toast-name">${ach.title}</div>
+            </div>
+        `;
+        container.appendChild(toast);
+        setTimeout(() => {
+            if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 4000);
+    }
+
+    function updateAchievementsUI() {
+        const badgeEl = document.getElementById('achievementsBadge');
+        if (badgeEl) {
+            badgeEl.textContent = `${unlockedAchievements.length}/${ACHIEVEMENTS.length}`;
+        }
+
+        const progressText = document.getElementById('achievementsProgressText');
+        const percentText = document.getElementById('achievementsPercentText');
+        const fillEl = document.getElementById('achievementsFill');
+        const gridEl = document.getElementById('achievementsGrid');
+
+        const total = ACHIEVEMENTS.length;
+        const count = unlockedAchievements.length;
+        const percent = Math.round((count / total) * 100);
+
+        if (progressText) progressText.textContent = `${count} of ${total} Unlocked`;
+        if (percentText) percentText.textContent = `${percent}%`;
+        if (fillEl) fillEl.style.width = `${percent}%`;
+
+        if (gridEl) {
+            gridEl.innerHTML = ACHIEVEMENTS.map(ach => {
+                const isUnlocked = unlockedAchievements.includes(ach.id);
+                return `
+                    <div class="achievement-item ${isUnlocked ? 'unlocked' : 'locked'}">
+                        <div class="achievement-icon">${ach.icon}</div>
+                        <div class="achievement-info">
+                            <div class="achievement-title">${ach.title} ${isUnlocked ? '✓' : ''}</div>
+                            <div class="achievement-desc">${ach.desc}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    }
+
+    // Achievements Modal Event Listeners
+    const achievementsBtn = document.getElementById('achievementsBtn');
+    const achievementsModal = document.getElementById('achievementsModal');
+    const closeAchievementsBtn = document.getElementById('closeAchievementsBtn');
+    const closeAchievementsFooterBtn = document.getElementById('closeAchievementsFooterBtn');
+
+    if (achievementsBtn) {
+        achievementsBtn.addEventListener('click', () => {
+            updateAchievementsUI();
+            achievementsModal.style.display = 'flex';
+            playSound('click');
+        });
+    }
+
+    [closeAchievementsBtn, closeAchievementsFooterBtn].forEach(b => {
+        if (b) b.addEventListener('click', () => {
+            achievementsModal.style.display = 'none';
+            playSound('click');
+        });
+    });
+
+    // Initialize UI count
+    updateAchievementsUI();
 
     // --- CONFETTI PARTICLES ENGINE ---
     function startConfetti() {
@@ -924,6 +1058,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isAutoSolving) {
                 stopAutoSolve();
             } else {
+                unlockAchievement('ai_assistant');
                 startAutoSolve();
             }
         });
@@ -1096,6 +1231,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (themeSelect) {
         themeSelect.addEventListener('change', (e) => {
             applyTheme(e.target.value);
+            unlockAchievement('palette_explorer');
             playSound('click');
         });
     }

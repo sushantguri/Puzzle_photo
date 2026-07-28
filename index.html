@@ -44,6 +44,7 @@
                     <option value="emerald">🌿 Deep Emerald</option>
                     <option value="retro">📻 Retro Sepia</option>
                 </select>
+                <button id="achievementsBtn" class="btn btn-icon achievements-btn" title="View Achievements & Badges">🎖️ <span id="achievementsBadge" class="badge-count">0/9</span></button>
                 <button id="leaderboardBtn" class="btn btn-icon" title="View Best Records / High Scores">🏆</button>
                 <select id="soundPresetSelect" class="form-select theme-select" title="Sound Effect Preset">
                     <option value="arcade">🕹️ 8-Bit Arcade</option>
@@ -234,6 +235,34 @@
                 </div>
             </section>
         </main>
+
+        <!-- ACHIEVEMENTS MODAL -->
+        <div id="achievementsModal" class="modal-backdrop" style="display: none;">
+            <div class="modal-card achievements-card">
+                <div class="modal-header">
+                    <h2>🎖️ Achievements & Badges</h2>
+                    <button id="closeAchievementsBtn" class="btn-close">&times;</button>
+                </div>
+                <div class="achievements-summary">
+                    <div class="achievements-progress-info">
+                        <span id="achievementsProgressText">0 of 9 Unlocked</span>
+                        <span id="achievementsPercentText">0%</span>
+                    </div>
+                    <div class="achievements-progress-bar">
+                        <div id="achievementsFill" class="achievements-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+                <div class="achievements-grid" id="achievementsGrid">
+                    <!-- Populated dynamically -->
+                </div>
+                <div class="modal-footer">
+                    <button id="closeAchievementsFooterBtn" class="btn btn-secondary">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast container for notifications -->
+        <div id="toastContainer" class="toast-container"></div>
 
         <!-- LEADERBOARD MODAL -->
         <div id="leaderboardModal" class="modal-backdrop" style="display: none;">

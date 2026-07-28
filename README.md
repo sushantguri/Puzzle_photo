@@ -34,6 +34,7 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
 - 🔴 **Master:** 6 × 6 (36 pieces) — Master test!
 - ⚡ **Expert:** 8 × 8 (64 pieces) — Ultimate spatial memory test!
 
+- **🎖️ Achievements & Badges System:** 9 unlockable trophies with animated toast notifications, sound fanfares, progress bar tracking, and dedicated modal card.
 - **🤖 Auto-Solve Demo Assistant:** Interactive animated AI bot (`A` key) that steps through move history or auto-arranges tiles to help players get unstuck.
 - **⚡ Time Attack Countdown Mode:** High-stakes race against the clock with an animated progress bar and low-time audio warnings.
 - **↩️ Move History & Undo System:** Step-by-step move stack allowing players to undo tile moves (`U` key or `Ctrl+Z`).
