@@ -34,12 +34,13 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
 - 🔴 **Master:** 6 × 6 (36 pieces) — Master test!
 - ⚡ **Expert:** 8 × 8 (64 pieces) — Ultimate spatial memory test!
 
+- **▶️ Animated Move Playback & Replay:** Step-by-step interactive move replay system (`P` key) with 1x/2x/4x speed controls, timeline scrubber, move highlights, and Web Audio step sound FX.
 - **🎖️ Achievements & Badges System:** 9 unlockable trophies with animated toast notifications, sound fanfares, progress bar tracking, and dedicated modal card.
 - **🤖 Auto-Solve Demo Assistant:** Interactive animated AI bot (`A` key) that steps through move history or auto-arranges tiles to help players get unstuck.
 - **⚡ Time Attack Countdown Mode:** High-stakes race against the clock with an animated progress bar and low-time audio warnings.
 - **↩️ Move History & Undo System:** Step-by-step move stack allowing players to undo tile moves (`U` key or `Ctrl+Z`).
 - **🔢 Tile Numbers Overlay:** Toggleable position badges (`N` key) to assist on higher difficulty grid layouts (5x5, 6x6, 8x8).
-- **⌨️ Keyboard Hotkey Controls:** Arrow keys to slide tiles, `G` for guide overlay, `H` for hints, `N` for numbers, `U` for undo, `A` for auto-solve, `R` to reshuffle, `Space` to snap photo.
+- **⌨️ Keyboard Hotkey Controls:** Arrow keys to slide tiles, `G` for guide, `H` for hints, `N` for numbers, `U` for undo, `A` for auto-solve, `P` for replay, `R` to reshuffle, `Space` to snap photo.
 - **📥 Victory Score Badge Generator:** Generate and download high-resolution PNG score cards of completed puzzles with stats overlaid.
 - **🔊 Web Audio Preset Engine:** Switchable sound wave synthesis (8-Bit Arcade, Synthwave, Glass Chime).
 - **🏆 Local Leaderboard & Hall of Fame:** LocalStorage best times and minimum move tracker.

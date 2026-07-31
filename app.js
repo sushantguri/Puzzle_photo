@@ -31,6 +31,15 @@ document.addEventListener('DOMContentLoaded', () => {
     let showTileNumbers = false;
     let moveHistory = [];
 
+    // Replay State
+    let recordedInitialTilesState = [];
+    let fullRecordedMoves = [];
+    let isReplaying = false;
+    let replayCurrentStep = 0;
+    let replaySpeed = 1;
+    let replayTimer = null;
+
+
     // --- DOM ELEMENTS ---
     const videoEl = document.getElementById('webcamVideo');
     const canvasEl = document.getElementById('snapshotCanvas');
@@ -73,6 +82,22 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const victoryModal = document.getElementById('victoryModal');
     const finalTime = document.getElementById('finalTime');
+
+    // Replay DOM Elements
+    const replayModal = document.getElementById('replayModal');
+    const closeReplayBtn = document.getElementById('closeReplayBtn');
+    const replayStepText = document.getElementById('replayStepText');
+    const replaySpeedBadge = document.getElementById('replaySpeedBadge');
+    const replayScrubber = document.getElementById('replayScrubber');
+    const replayBoard = document.getElementById('replayBoard');
+    const replayStepBackBtn = document.getElementById('replayStepBackBtn');
+    const replayTogglePlayBtn = document.getElementById('replayTogglePlayBtn');
+    const replayStepForwardBtn = document.getElementById('replayStepForwardBtn');
+    const replaySpeedBtn = document.getElementById('replaySpeedBtn');
+    const replayResetBtn = document.getElementById('replayResetBtn');
+    const replayMovesBtn = document.getElementById('replayMovesBtn');
+    const replayToolbarBtn = document.getElementById('replayToolbarBtn');
+
     const finalMoves = document.getElementById('finalMoves');
     const finalStars = document.getElementById('finalStars');
     const playAgainBtn = document.getElementById('playAgainBtn');
@@ -522,7 +547,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Shuffle tiles with guaranteed solvability
         shuffleTilesSolvable();
         renderTiles();
+
+        // Capture initial layout for Move Replay
+        recordedInitialTilesState = JSON.parse(JSON.stringify(tiles));
+        fullRecordedMoves = [];
+        if (replayToolbarBtn) replayToolbarBtn.style.display = 'none';
     }
+
 
     function shuffleTilesSolvable() {
         const total = tiles.length;
@@ -732,7 +763,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         victoryModal.style.display = 'flex';
         startConfetti();
+
+        // Save recorded moves & make Replay available
+        fullRecordedMoves = JSON.parse(JSON.stringify(moveHistory));
+        if (replayToolbarBtn) replayToolbarBtn.style.display = 'inline-block';
     }
+
 
     // --- LEADERBOARD LOCALSTORAGE SYSTEM ---
     const LEADERBOARD_KEY = 'snappuzzle_high_scores';
@@ -1080,6 +1116,190 @@ document.addEventListener('DOMContentLoaded', () => {
         initPuzzle();
     });
 
+    // --- ANIMATED MOVE REPLAY SYSTEM ---
+    function openReplayModal() {
+        if (moveHistory.length > 0 && fullRecordedMoves.length === 0) {
+            fullRecordedMoves = JSON.parse(JSON.stringify(moveHistory));
+        }
+        if (fullRecordedMoves.length === 0) {
+            showToast('⚠️ No moves recorded to replay yet!');
+            return;
+        }
+        stopReplayPlayback();
+        replayCurrentStep = 0;
+        replayModal.style.display = 'flex';
+        renderReplayStep(0);
+        playSound('click');
+    }
+
+    function closeReplayModal() {
+        stopReplayPlayback();
+        replayModal.style.display = 'none';
+    }
+
+    function renderReplayStep(stepIndex) {
+        if (!recordedInitialTilesState || recordedInitialTilesState.length === 0) return;
+
+        replayCurrentStep = Math.max(0, Math.min(stepIndex, fullRecordedMoves.length));
+
+        // Deep copy initial layout
+        let tempTiles = JSON.parse(JSON.stringify(recordedInitialTilesState));
+
+        let lastMove = null;
+        for (let i = 0; i < replayCurrentStep; i++) {
+            const move = fullRecordedMoves[i];
+            if (!move) break;
+            const tileA = tempTiles.find(t => t.id === move.tileAId);
+            const tileB = tempTiles.find(t => t.id === move.tileBId);
+            if (tileA && tileB) {
+                [tileA.currentPos, tileB.currentPos] = [tileB.currentPos, tileA.currentPos];
+            }
+            if (i === replayCurrentStep - 1) {
+                lastMove = move;
+            }
+        }
+
+        replayBoard.innerHTML = '';
+        const size = selectedGridSize;
+        replayBoard.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+        replayBoard.style.gridTemplateRows = `repeat(${size}, 1fr)`;
+
+        const sortedTiles = [...tempTiles].sort((a, b) => a.currentPos - b.currentPos);
+
+        sortedTiles.forEach((tile) => {
+            const tileDiv = document.createElement('div');
+            tileDiv.classList.add('puzzle-tile');
+            tileDiv.dataset.id = tile.id;
+
+            if (puzzleMode === 'jigsaw') {
+                tileDiv.classList.add('jigsaw-tile');
+                if (tile.currentPos === tile.correctPos) {
+                    tileDiv.classList.add('correctly-placed');
+                }
+            }
+
+            if (lastMove && (tile.id === lastMove.tileAId || tile.id === lastMove.tileBId)) {
+                tileDiv.classList.add('replay-highlight');
+            }
+
+            if (tile.isEmpty) {
+                tileDiv.classList.add('empty-tile');
+            } else {
+                const row = Math.floor(tile.id / size);
+                const col = tile.id % size;
+                const percentX = (col / (size - 1)) * 100;
+                const percentY = (row / (size - 1)) * 100;
+
+                tileDiv.style.backgroundImage = `url(${currentPhotoDataUrl})`;
+                tileDiv.style.backgroundSize = `${size * 100}% ${size * 100}%`;
+                tileDiv.style.backgroundPosition = `${percentX}% ${percentY}%`;
+            }
+
+            if (showTileNumbers && !tile.isEmpty) {
+                const numBadge = document.createElement('span');
+                numBadge.classList.add('tile-number');
+                numBadge.textContent = tile.id + 1;
+                tileDiv.appendChild(numBadge);
+            }
+
+            replayBoard.appendChild(tileDiv);
+        });
+
+        if (replayScrubber) {
+            replayScrubber.max = fullRecordedMoves.length;
+            replayScrubber.value = replayCurrentStep;
+        }
+        if (replayStepText) {
+            replayStepText.textContent = `Move ${replayCurrentStep} / ${fullRecordedMoves.length}`;
+        }
+    }
+
+    function toggleReplayPlay() {
+        if (isReplaying) {
+            stopReplayPlayback();
+        } else {
+            if (replayCurrentStep >= fullRecordedMoves.length) {
+                replayCurrentStep = 0;
+            }
+            isReplaying = true;
+            if (replayTogglePlayBtn) replayTogglePlayBtn.textContent = '⏸️ Pause';
+            replayTimer = setInterval(() => {
+                stepReplayForward();
+            }, Math.round(600 / replaySpeed));
+        }
+    }
+
+    function stopReplayPlayback() {
+        isReplaying = false;
+        if (replayTimer) {
+            clearInterval(replayTimer);
+            replayTimer = null;
+        }
+        if (replayTogglePlayBtn) replayTogglePlayBtn.textContent = '▶️ Play';
+    }
+
+    function stepReplayForward() {
+        if (replayCurrentStep < fullRecordedMoves.length) {
+            replayCurrentStep++;
+            renderReplayStep(replayCurrentStep);
+            playSound('snap');
+        } else {
+            stopReplayPlayback();
+            playSound('win');
+        }
+    }
+
+    function stepReplayBack() {
+        stopReplayPlayback();
+        if (replayCurrentStep > 0) {
+            replayCurrentStep--;
+            renderReplayStep(replayCurrentStep);
+            playSound('click');
+        }
+    }
+
+    function cycleReplaySpeed() {
+        replaySpeed = replaySpeed === 1 ? 2 : (replaySpeed === 2 ? 4 : 1);
+        if (replaySpeedBadge) replaySpeedBadge.textContent = `Speed: ${replaySpeed}x`;
+        if (replaySpeedBtn) replaySpeedBtn.textContent = `⚡ ${replaySpeed}x`;
+        if (isReplaying) {
+            stopReplayPlayback();
+            toggleReplayPlay();
+        }
+        playSound('click');
+    }
+
+    function resetReplay() {
+        stopReplayPlayback();
+        replayCurrentStep = 0;
+        renderReplayStep(0);
+        playSound('click');
+    }
+
+    if (replayMovesBtn) replayMovesBtn.addEventListener('click', openReplayModal);
+    if (replayToolbarBtn) replayToolbarBtn.addEventListener('click', openReplayModal);
+    if (closeReplayBtn) closeReplayBtn.addEventListener('click', closeReplayModal);
+    if (replayTogglePlayBtn) replayTogglePlayBtn.addEventListener('click', toggleReplayPlay);
+    if (replayStepForwardBtn) replayStepForwardBtn.addEventListener('click', stepReplayForward);
+    if (replayStepBackBtn) replayStepBackBtn.addEventListener('click', stepReplayBack);
+    if (replaySpeedBtn) replaySpeedBtn.addEventListener('click', cycleReplaySpeed);
+    if (replayResetBtn) replayResetBtn.addEventListener('click', resetReplay);
+
+    if (replayScrubber) {
+        replayScrubber.addEventListener('input', (e) => {
+            stopReplayPlayback();
+            const step = parseInt(e.target.value, 10);
+            renderReplayStep(step);
+        });
+    }
+
+    if (replayModal) {
+        replayModal.addEventListener('click', (e) => {
+            if (e.target === replayModal) closeReplayModal();
+        });
+    }
+
+
     newPhotoBtn.addEventListener('click', () => {
         stopAutoSolve();
         victoryModal.style.display = 'none';
@@ -1121,44 +1341,68 @@ document.addEventListener('DOMContentLoaded', () => {
         // Prevent hotkeys inside inputs
         if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
 
-        if (gameSection.style.display !== 'none' && isGameActive) {
+        // Replay modal key bindings
+        if (replayModal && replayModal.style.display === 'flex') {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                toggleReplayPlay();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                stepReplayBack();
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                stepReplayForward();
+            } else if (e.key === 'Escape') {
+                closeReplayModal();
+            }
+            return;
+        }
+
+        if (gameSection.style.display !== 'none') {
             const key = e.key.toLowerCase();
-            if (key === 'g') {
-                toggleGhostBtn.click();
-            } else if (key === 'n' && toggleNumbersBtn) {
-                toggleNumbersBtn.click();
-            } else if ((key === 'u' || (e.ctrlKey && key === 'z') || (e.metaKey && key === 'z')) && undoBtn && !undoBtn.disabled) {
-                e.preventDefault();
-                undoBtn.click();
-            } else if (key === 'h') {
-                hintBtn.click();
-            } else if (key === 'a' && autoSolveBtn) {
-                autoSolveBtn.click();
-            } else if (key === 'r') {
-                shuffleBtn.click();
-            } else if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key) && puzzleMode === 'sliding') {
-                e.preventDefault();
-                const emptyTile = tiles.find(t => t.isEmpty);
-                if (!emptyTile) return;
+            if (key === 'p' && (moveHistory.length > 0 || fullRecordedMoves.length > 0)) {
+                openReplayModal();
+                return;
+            }
 
-                const size = selectedGridSize;
-                const emptyPos = emptyTile.currentPos;
-                const emptyRow = Math.floor(emptyPos / size);
-                const emptyCol = emptyPos % size;
+            if (isGameActive) {
+                if (key === 'g') {
+                    toggleGhostBtn.click();
+                } else if (key === 'n' && toggleNumbersBtn) {
+                    toggleNumbersBtn.click();
+                } else if ((key === 'u' || (e.ctrlKey && key === 'z') || (e.metaKey && key === 'z')) && undoBtn && !undoBtn.disabled) {
+                    e.preventDefault();
+                    undoBtn.click();
+                } else if (key === 'h') {
+                    hintBtn.click();
+                } else if (key === 'a' && autoSolveBtn) {
+                    autoSolveBtn.click();
+                } else if (key === 'r') {
+                    shuffleBtn.click();
+                } else if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key) && puzzleMode === 'sliding') {
+                    e.preventDefault();
+                    const emptyTile = tiles.find(t => t.isEmpty);
+                    if (!emptyTile) return;
 
-                let targetRow = emptyRow;
-                let targetCol = emptyCol;
+                    const size = selectedGridSize;
+                    const emptyPos = emptyTile.currentPos;
+                    const emptyRow = Math.floor(emptyPos / size);
+                    const emptyCol = emptyPos % size;
 
-                if (key === 'arrowup') targetRow = emptyRow + 1; // Move tile below UP
-                if (key === 'arrowdown') targetRow = emptyRow - 1; // Move tile above DOWN
-                if (key === 'arrowleft') targetCol = emptyCol + 1; // Move tile right LEFT
-                if (key === 'arrowright') targetCol = emptyCol - 1; // Move tile left RIGHT
+                    let targetRow = emptyRow;
+                    let targetCol = emptyCol;
 
-                if (targetRow >= 0 && targetRow < size && targetCol >= 0 && targetCol < size) {
-                    const targetPos = targetRow * size + targetCol;
-                    const targetTile = tiles.find(t => t.currentPos === targetPos);
-                    if (targetTile) {
-                        swapTiles(targetTile, emptyTile);
+                    if (key === 'arrowup') targetRow = emptyRow + 1; // Move tile below UP
+                    if (key === 'arrowdown') targetRow = emptyRow - 1; // Move tile above DOWN
+                    if (key === 'arrowleft') targetCol = emptyCol + 1; // Move tile right LEFT
+                    if (key === 'arrowright') targetCol = emptyCol - 1; // Move tile left RIGHT
+
+                    if (targetRow >= 0 && targetRow < size && targetCol >= 0 && targetCol < size) {
+                        const targetPos = targetRow * size + targetCol;
+                        const targetTile = tiles.find(t => t.currentPos === targetPos);
+                        if (targetTile) {
+                            swapTiles(targetTile, emptyTile);
+                        }
                     }
                 }
             }

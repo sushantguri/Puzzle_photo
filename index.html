@@ -217,6 +217,7 @@
                     <button id="undoBtn" class="btn btn-secondary btn-sm" disabled>↩️ Undo (U)</button>
                     <button id="hintBtn" class="btn btn-secondary btn-sm">💡 Hint (H)</button>
                     <button id="autoSolveBtn" class="btn btn-secondary btn-sm" title="Watch AI step through puzzle solution (A)">🤖 Auto-Solve (A)</button>
+                    <button id="replayToolbarBtn" class="btn btn-secondary btn-sm" title="Watch animated step-by-step move replay (P)" style="display: none;">▶️ Replay (P)</button>
                     <button id="shuffleBtn" class="btn btn-secondary btn-sm">🔀 Reshuffle (R)</button>
                 </div>
 
@@ -294,6 +295,34 @@
             </div>
         </div>
 
+        <!-- REPLAY MODAL -->
+        <div id="replayModal" class="modal-backdrop" style="display: none;">
+            <div class="modal-card replay-modal-card">
+                <div class="modal-header">
+                    <h2>▶️ Move Playback & Replay</h2>
+                    <button id="closeReplayBtn" class="btn-close">&times;</button>
+                </div>
+                <p class="modal-subtitle">Watch step-by-step playback of your puzzle solution.</p>
+                <div class="replay-status-bar">
+                    <span id="replayStepText">Move 0 / 0</span>
+                    <span id="replaySpeedBadge" class="replay-badge">Speed: 1x</span>
+                </div>
+                <div class="replay-progress-container">
+                    <input type="range" id="replayScrubber" min="0" max="0" value="0" step="1">
+                </div>
+                <div class="replay-board-wrapper">
+                    <div id="replayBoard" class="puzzle-board replay-board"></div>
+                </div>
+                <div class="replay-controls">
+                    <button id="replayStepBackBtn" class="btn btn-secondary btn-sm" title="Previous Move (Left Arrow)">⏮️ Back</button>
+                    <button id="replayTogglePlayBtn" class="btn btn-primary btn-sm" title="Play / Pause (Space)">▶️ Play</button>
+                    <button id="replayStepForwardBtn" class="btn btn-secondary btn-sm" title="Next Move (Right Arrow)">⏭️ Forward</button>
+                    <button id="replaySpeedBtn" class="btn btn-secondary btn-sm" title="Playback Speed">⚡ 1x</button>
+                    <button id="replayResetBtn" class="btn btn-secondary btn-sm" title="Reset Playback">🔄 Reset</button>
+                </div>
+            </div>
+        </div>
+
         <!-- VICTORY MODAL -->
         <div id="victoryModal" class="modal-backdrop" style="display: none;">
             <div class="modal-card">
@@ -318,9 +347,10 @@
                     </div>
                 </div>
                 <div class="victory-actions">
-                    <button id="downloadScoreCardBtn" class="btn btn-secondary">📥 Save Score Badge</button>
-                    <button id="playAgainBtn" class="btn btn-secondary">Re-shuffle Photo</button>
-                    <button id="newPhotoBtn" class="btn btn-primary">Take New Snap</button>
+                    <button id="replayMovesBtn" class="btn btn-secondary">▶️ Replay Moves</button>
+                    <button id="downloadScoreCardBtn" class="btn btn-secondary">📥 Save Score</button>
+                    <button id="playAgainBtn" class="btn btn-secondary">Re-shuffle</button>
+                    <button id="newPhotoBtn" class="btn btn-primary">New Snap</button>
                 </div>
             </div>
         </div>
