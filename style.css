@@ -974,4 +974,134 @@ body {
     transform: scale(0.97);
 }
 
+/* --- DOODLE & PAINT TAB STYLES --- */
+.doodle-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+    width: 100%;
+}
+
+.doodle-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-md);
+    padding: 12px 18px;
+    width: 100%;
+    max-width: 640px;
+}
+
+.doodle-tool-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.doodle-color-picker {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    background: transparent;
+    padding: 0;
+}
+.doodle-color-picker::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+.doodle-color-picker::-webkit-color-swatch {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+}
+
+.preset-colors {
+    display: flex;
+    gap: 5px;
+}
+
+.color-swatch {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 1.5px solid rgba(255, 255, 255, 0.3);
+    transition: transform 0.15s ease;
+}
+.color-swatch:hover {
+    transform: scale(1.3);
+}
+
+.doodle-size-slider {
+    width: 80px;
+    accent-color: #6366f1;
+    cursor: pointer;
+}
+
+.mode-group {
+    display: flex;
+    gap: 4px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 3px;
+    border-radius: var(--radius-sm);
+}
+
+.doodle-mode-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.doodle-mode-btn:hover {
+    color: #fff;
+}
+
+.doodle-mode-btn.active {
+    background: var(--primary-gradient);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+}
+
+.doodle-canvas-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 640px;
+    aspect-ratio: 4/3;
+    background: #0f172a;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--card-border);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    touch-action: none;
+}
+
+#doodleCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: crosshair;
+}
+
+.doodle-actions {
+    margin-top: 6px;
+}
+
 

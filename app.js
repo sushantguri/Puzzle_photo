@@ -315,6 +315,232 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // --- DOODLE & PAINT CANVAS LOGIC ---
+    const doodleCanvas = document.getElementById('doodleCanvas');
+    const doodleColorInput = document.getElementById('doodleColor');
+    const doodleSizeInput = document.getElementById('doodleSize');
+    const doodleSizeVal = document.getElementById('doodleSizeVal');
+    const doodleClearBtn = document.getElementById('doodleClearBtn');
+    const doodleRandomBtn = document.getElementById('doodleRandomBtn');
+    const useDoodleBtn = document.getElementById('useDoodleBtn');
+
+    let doodleCtx = null;
+    let isDrawing = false;
+    let doodleMode = 'brush'; // 'brush', 'rainbow', 'glow', 'eraser'
+    let hue = 0;
+
+    if (doodleCanvas) {
+        doodleCtx = doodleCanvas.getContext('2d');
+        initDoodleCanvas();
+    }
+
+    function initDoodleCanvas() {
+        if (!doodleCtx) return;
+        // Fill default dark slate canvas background
+        doodleCtx.fillStyle = '#0f172a';
+        doodleCtx.fillRect(0, 0, doodleCanvas.width, doodleCanvas.height);
+        
+        // Add a subtle grid starter pattern
+        doodleCtx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+        doodleCtx.lineWidth = 1;
+        for (let i = 40; i < doodleCanvas.width; i += 40) {
+            doodleCtx.beginPath();
+            doodleCtx.moveTo(i, 0);
+            doodleCtx.lineTo(i, doodleCanvas.height);
+            doodleCtx.stroke();
+        }
+        for (let j = 40; j < doodleCanvas.height; j += 40) {
+            doodleCtx.beginPath();
+            doodleCtx.moveTo(0, j);
+            doodleCtx.lineTo(doodleCanvas.width, j);
+            doodleCtx.stroke();
+        }
+    }
+
+    // Swatches
+    document.querySelectorAll('.preset-colors .color-swatch').forEach(swatch => {
+        swatch.addEventListener('click', () => {
+            if (doodleColorInput) doodleColorInput.value = swatch.dataset.color;
+            if (doodleMode === 'eraser') setDoodleMode('brush');
+        });
+    });
+
+    if (doodleSizeInput && doodleSizeVal) {
+        doodleSizeInput.addEventListener('input', () => {
+            doodleSizeVal.textContent = doodleSizeInput.value + 'px';
+        });
+    }
+
+    // Mode Buttons
+    document.querySelectorAll('.doodle-mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            setDoodleMode(btn.dataset.mode);
+        });
+    });
+
+    function setDoodleMode(mode) {
+        doodleMode = mode;
+        document.querySelectorAll('.doodle-mode-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.mode === mode);
+        });
+    }
+
+    // Helper for mouse/touch coordinates
+    function getCanvasCoords(e) {
+        const rect = doodleCanvas.getBoundingClientRect();
+        const scaleX = doodleCanvas.width / rect.width;
+        const scaleY = doodleCanvas.height / rect.height;
+        let clientX = e.clientX;
+        let clientY = e.clientY;
+        if (e.touches && e.touches[0]) {
+            clientX = e.touches[0].clientX;
+            clientY = e.touches[0].clientY;
+        }
+        return {
+            x: (clientX - rect.left) * scaleX,
+            y: (clientY - rect.top) * scaleY
+        };
+    }
+
+    function startDraw(e) {
+        e.preventDefault();
+        isDrawing = true;
+        const coords = getCanvasCoords(e);
+        doodleCtx.beginPath();
+        doodleCtx.moveTo(coords.x, coords.y);
+        draw(e);
+    }
+
+    function draw(e) {
+        if (!isDrawing || !doodleCtx) return;
+        e.preventDefault();
+        const coords = getCanvasCoords(e);
+        const brushSize = parseInt(doodleSizeInput ? doodleSizeInput.value : 10);
+
+        doodleCtx.lineWidth = brushSize;
+        doodleCtx.lineCap = 'round';
+        doodleCtx.lineJoin = 'round';
+
+        if (doodleMode === 'eraser') {
+            doodleCtx.globalCompositeOperation = 'source-over';
+            doodleCtx.strokeStyle = '#0f172a';
+            doodleCtx.shadowBlur = 0;
+        } else if (doodleMode === 'rainbow') {
+            doodleCtx.globalCompositeOperation = 'source-over';
+            hue = (hue + 4) % 360;
+            doodleCtx.strokeStyle = `hsl(${hue}, 100%, 60%)`;
+            doodleCtx.shadowBlur = 0;
+        } else if (doodleMode === 'glow') {
+            doodleCtx.globalCompositeOperation = 'source-over';
+            const color = doodleColorInput ? doodleColorInput.value : '#6366f1';
+            doodleCtx.strokeStyle = color;
+            doodleCtx.shadowColor = color;
+            doodleCtx.shadowBlur = brushSize * 1.5;
+        } else {
+            doodleCtx.globalCompositeOperation = 'source-over';
+            doodleCtx.strokeStyle = doodleColorInput ? doodleColorInput.value : '#6366f1';
+            doodleCtx.shadowBlur = 0;
+        }
+
+        doodleCtx.lineTo(coords.x, coords.y);
+        doodleCtx.stroke();
+    }
+
+    function stopDraw() {
+        if (isDrawing && doodleCtx) {
+            doodleCtx.closePath();
+            isDrawing = false;
+        }
+    }
+
+    if (doodleCanvas) {
+        doodleCanvas.addEventListener('mousedown', startDraw);
+        doodleCanvas.addEventListener('mousemove', draw);
+        doodleCanvas.addEventListener('mouseup', stopDraw);
+        doodleCanvas.addEventListener('mouseleave', stopDraw);
+
+        doodleCanvas.addEventListener('touchstart', startDraw, { passive: false });
+        doodleCanvas.addEventListener('touchmove', draw, { passive: false });
+        doodleCanvas.addEventListener('touchend', stopDraw);
+    }
+
+    if (doodleClearBtn) {
+        doodleClearBtn.addEventListener('click', () => {
+            initDoodleCanvas();
+            playSound('click');
+        });
+    }
+
+    if (doodleRandomBtn) {
+        doodleRandomBtn.addEventListener('click', () => {
+            generateRandomArt();
+            playSound('click');
+        });
+    }
+
+    function generateRandomArt() {
+        if (!doodleCtx) return;
+        initDoodleCanvas();
+        
+        // Draw colorful random geometric nodes & curves
+        const colors = ['#ef4444', '#f59e0b', '#10b981', '#06b6d4', '#6366f1', '#ec4899', '#8b5cf6'];
+        const numShapes = 12 + Math.floor(Math.random() * 10);
+
+        for (let i = 0; i < numShapes; i++) {
+            doodleCtx.save();
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            doodleCtx.strokeStyle = color;
+            doodleCtx.fillStyle = color;
+            doodleCtx.globalAlpha = 0.4 + Math.random() * 0.5;
+            doodleCtx.lineWidth = 3 + Math.random() * 15;
+
+            const shapeType = Math.floor(Math.random() * 3);
+            const cx = Math.random() * doodleCanvas.width;
+            const cy = Math.random() * doodleCanvas.height;
+
+            if (shapeType === 0) {
+                // Glowing Circle
+                const r = 20 + Math.random() * 80;
+                doodleCtx.shadowColor = color;
+                doodleCtx.shadowBlur = 20;
+                doodleCtx.beginPath();
+                doodleCtx.arc(cx, cy, r, 0, Math.PI * 2);
+                doodleCtx.fill();
+            } else if (shapeType === 1) {
+                // Curved Swirl
+                doodleCtx.beginPath();
+                doodleCtx.moveTo(cx, cy);
+                doodleCtx.bezierCurveTo(
+                    Math.random() * doodleCanvas.width, Math.random() * doodleCanvas.height,
+                    Math.random() * doodleCanvas.width, Math.random() * doodleCanvas.height,
+                    Math.random() * doodleCanvas.width, Math.random() * doodleCanvas.height
+                );
+                doodleCtx.stroke();
+            } else {
+                // Starburst lines
+                const rays = 8;
+                const len = 40 + Math.random() * 90;
+                for (let a = 0; a < Math.PI * 2; a += (Math.PI * 2) / rays) {
+                    doodleCtx.beginPath();
+                    doodleCtx.moveTo(cx, cy);
+                    doodleCtx.lineTo(cx + Math.cos(a) * len, cy + Math.sin(a) * len);
+                    doodleCtx.stroke();
+                }
+            }
+            doodleCtx.restore();
+        }
+    }
+
+    if (useDoodleBtn) {
+        useDoodleBtn.addEventListener('click', () => {
+            if (!doodleCanvas) return;
+            rawPhotoDataUrl = doodleCanvas.toDataURL('image/jpeg', 0.95);
+            currentPhotoDataUrl = rawPhotoDataUrl;
+            showConfigSection();
+            playSound('snap');
+        });
+    }
+
     // Slider & transform photo enhancement listeners
     const rotateCwBtn = document.getElementById('rotateCwBtn');
     const flipHorizBtn = document.getElementById('flipHorizBtn');
