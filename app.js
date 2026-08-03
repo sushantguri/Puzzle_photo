@@ -118,6 +118,106 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- AMBIENT MUSIC ENGINE ---
+    let musicTrack = localStorage.getItem('snappuzzle_music_track') || 'off';
+    let musicInterval = null;
+    let musicStepIndex = 0;
+
+    const musicTrackSelect = document.getElementById('musicTrackSelect');
+    if (musicTrackSelect) {
+        musicTrackSelect.value = musicTrack;
+        musicTrackSelect.addEventListener('change', (e) => {
+            musicTrack = e.target.value;
+            localStorage.setItem('snappuzzle_music_track', musicTrack);
+            stopAmbientMusic();
+            if (musicTrack !== 'off') {
+                startAmbientMusic();
+            }
+        });
+    }
+
+    function startAmbientMusic() {
+        stopAmbientMusic();
+        if (musicTrack === 'off') return;
+        if (!audioCtx) audioCtx = new AudioCtx();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        musicStepIndex = 0;
+        
+        const tracks = {
+            cyber: [
+                { notes: [130.81, 164.81, 196.00], duration: 0.6, type: 'sawtooth', filterCutoff: 600 },
+                { notes: [174.61, 220.00, 261.63], duration: 0.6, type: 'sawtooth', filterCutoff: 700 },
+                { notes: [146.83, 174.61, 220.00], duration: 0.6, type: 'sawtooth', filterCutoff: 650 },
+                { notes: [196.00, 246.94, 293.66], duration: 0.6, type: 'sawtooth', filterCutoff: 800 }
+            ],
+            lofi: [
+                { notes: [261.63, 329.63, 392.00, 493.88], duration: 0.8, type: 'sine', filterCutoff: 500 },
+                { notes: [220.00, 261.63, 329.63, 392.00], duration: 0.8, type: 'sine', filterCutoff: 450 },
+                { notes: [174.61, 220.00, 261.63, 329.63], duration: 0.8, type: 'sine', filterCutoff: 500 },
+                { notes: [196.00, 246.94, 293.66, 349.23], duration: 0.8, type: 'sine', filterCutoff: 450 }
+            ],
+            arcade: [
+                { notes: [523.25], duration: 0.2, type: 'square' },
+                { notes: [659.25], duration: 0.2, type: 'square' },
+                { notes: [783.99], duration: 0.2, type: 'square' },
+                { notes: [1046.50], duration: 0.2, type: 'square' }
+            ]
+        };
+
+        const currentSeq = tracks[musicTrack] || tracks.cyber;
+        const stepTime = musicTrack === 'arcade' ? 300 : 1200;
+
+        musicInterval = setInterval(() => {
+            if (!soundEnabled || musicTrack === 'off') return;
+            try {
+                if (!audioCtx) audioCtx = new AudioCtx();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const step = currentSeq[musicStepIndex % currentSeq.length];
+                musicStepIndex++;
+
+                const now = audioCtx.currentTime;
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(step.filterCutoff || 800, now);
+
+                const masterGain = audioCtx.createGain();
+                masterGain.gain.setValueAtTime(0.03, now);
+                masterGain.gain.linearRampToValueAtTime(0.001, now + step.duration);
+
+                filter.connect(masterGain);
+                masterGain.connect(audioCtx.destination);
+
+                step.notes.forEach(freq => {
+                    const osc = audioCtx.createOscillator();
+                    osc.type = step.type || 'sine';
+                    osc.frequency.setValueAtTime(freq, now);
+                    osc.connect(filter);
+                    osc.start(now);
+                    osc.stop(now + step.duration);
+                });
+            } catch (err) {
+                console.warn('Ambient music error:', err);
+            }
+        }, stepTime);
+    }
+
+    function stopAmbientMusic() {
+        if (musicInterval) {
+            clearInterval(musicInterval);
+            musicInterval = null;
+        }
+    }
+
+    document.addEventListener('click', () => {
+        if (audioCtx && audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+        if (musicTrack !== 'off' && !musicInterval) {
+            startAmbientMusic();
+        }
+    }, { once: true });
+
     function getWaveType() {
         if (soundPreset === 'arcade') return 'square';
         if (soundPreset === 'chime') return 'triangle';
