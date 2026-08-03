@@ -103,6 +103,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const playAgainBtn = document.getElementById('playAgainBtn');
     const newPhotoBtn = document.getElementById('newPhotoBtn');
 
+    // Daily Challenge DOM Elements
+    let isDailyChallenge = false;
+    const dailyChallengeBtn = document.getElementById('dailyChallengeBtn');
+    const dailyStreakBadge = document.getElementById('dailyStreakBadge');
+    const dailyChallengeModal = document.getElementById('dailyChallengeModal');
+    const closeDailyChallengeBtn = document.getElementById('closeDailyChallengeBtn');
+    const startDailyChallengeBtn = document.getElementById('startDailyChallengeBtn');
+    const dailyDateBadge = document.getElementById('dailyDateBadge');
+    const dailyStreakText = document.getElementById('dailyStreakText');
+    const dailyObjectiveText = document.getElementById('dailyObjectiveText');
+
     // --- WEB AUDIO SYNTHESIZER ---
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     let audioCtx = null;
@@ -1128,6 +1139,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (timerMode === 'countdown') unlockAchievement('time_survivor');
         if (stars === '⭐⭐⭐') unlockAchievement('three_stars');
 
+        // Daily Challenge streak update
+        if (isDailyChallenge) {
+            const data = loadDailyStreakData();
+            const today = getTodayDateStr();
+            if (!data.dates.includes(today)) {
+                data.dates.push(today);
+                data.streak = (data.streak || 0) + 1;
+                data.lastDate = today;
+                saveDailyStreakData(data);
+                updateDailyStreakUI();
+                showToast(`🔥 Daily Streak Updated! You are now on a ${data.streak}-day streak!`);
+            }
+            isDailyChallenge = false;
+        }
+
         victoryModal.style.display = 'flex';
         startConfetti();
 
@@ -1135,6 +1161,95 @@ document.addEventListener('DOMContentLoaded', () => {
         fullRecordedMoves = JSON.parse(JSON.stringify(moveHistory));
         if (replayToolbarBtn) replayToolbarBtn.style.display = 'inline-block';
     }
+
+    // --- DAILY CHALLENGE ENGINE ---
+    function getTodayDateStr() {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    function loadDailyStreakData() {
+        const raw = localStorage.getItem('snappuzzle_daily_streak');
+        if (!raw) return { streak: 0, lastDate: '', dates: [] };
+        try {
+            return JSON.parse(raw);
+        } catch(e) {
+            return { streak: 0, lastDate: '', dates: [] };
+        }
+    }
+
+    function saveDailyStreakData(data) {
+        localStorage.setItem('snappuzzle_daily_streak', JSON.stringify(data));
+    }
+
+    function updateDailyStreakUI() {
+        const data = loadDailyStreakData();
+        if (dailyStreakBadge) dailyStreakBadge.innerHTML = `🔥 ${data.streak}`;
+        if (dailyStreakText) dailyStreakText.textContent = `${data.streak} Day Streak`;
+
+        if (dailyDateBadge) {
+            const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+            dailyDateBadge.textContent = new Date().toLocaleDateString('en-US', options);
+        }
+
+        const currentDayIndex = (new Date().getDay() + 6) % 7;
+        for (let i = 0; i < 7; i++) {
+            const dot = document.getElementById(`dayDot${i}`);
+            if (dot) {
+                if (i <= currentDayIndex && data.dates.length > 0) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            }
+        }
+    }
+
+    if (dailyChallengeBtn) {
+        dailyChallengeBtn.addEventListener('click', () => {
+            updateDailyStreakUI();
+            dailyChallengeModal.style.display = 'flex';
+            playSound('click');
+        });
+    }
+
+    if (closeDailyChallengeBtn) {
+        closeDailyChallengeBtn.addEventListener('click', () => {
+            dailyChallengeModal.style.display = 'none';
+            playSound('click');
+        });
+    }
+
+    if (startDailyChallengeBtn) {
+        startDailyChallengeBtn.addEventListener('click', () => {
+            isDailyChallenge = true;
+            dailyChallengeModal.style.display = 'none';
+            
+            const sampleCards = document.querySelectorAll('.sample-card img');
+            if (sampleCards.length > 0) {
+                const dayNum = new Date().getDate();
+                const chosenSample = sampleCards[dayNum % sampleCards.length];
+                rawPhotoDataUrl = chosenSample.src;
+                currentPhotoDataUrl = rawPhotoDataUrl;
+            }
+            
+            selectedGridSize = 4;
+            puzzleMode = 'sliding';
+            
+            captureSection.style.display = 'none';
+            configSection.style.display = 'none';
+            gameSection.style.display = 'flex';
+            headerStats.style.display = 'flex';
+            resetAppBtn.style.display = 'inline-flex';
+            
+            initPuzzle();
+            playSound('win');
+            showToast('🔥 Daily Seeded Challenge Started! Grid: 4x4');
+        });
+    }
+
+    // Initial streak load on boot
+    updateDailyStreakUI();
 
 
     // --- LEADERBOARD LOCALSTORAGE SYSTEM ---

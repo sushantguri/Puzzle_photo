@@ -44,6 +44,7 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
 - **⌨️ Keyboard Hotkey Controls:** Arrow keys to slide tiles, `G` for guide, `H` for hints, `N` for numbers, `U` for undo, `A` for auto-solve, `P` for replay, `R` to reshuffle, `Space` to snap photo.
 - **📥 Victory Score Badge Generator:** Generate and download high-resolution PNG score cards of completed puzzles with stats overlaid.
 - **🔊 Web Audio Sound FX & Ambient Music Generator:** Switchable sound wave synthesis (8-Bit Arcade, Synthwave, Glass Chime) plus procedural background ambient music tracks (Cyber Synth, Lo-Fi Chill, 8-Bit Chiptune).
+- **📅 Daily Seeded Challenge & Streak Tracker:** Daily mission generator with 7-day calendar checkmark tracking, streak flame counter (`🔥`), and daily completion awards.
 - **🏆 Local Leaderboard & Hall of Fame:** LocalStorage best times and minimum move tracker.
 - **📱 PWA Offline Support:** Built with Web App Manifest (`manifest.json`) and Service Worker (`sw.js`) for 100% offline gameplay.
 

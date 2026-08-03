@@ -1122,4 +1122,32 @@ body {
     transform: scale(0.92);
 }
 
+/* Daily Challenge Calendar Styling */
+.day-dot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+.day-dot.active {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: #10b981;
+    color: #34d399;
+}
+.day-dot .check-icon {
+    font-size: 0.85rem;
+    font-weight: 800;
+    opacity: 0.3;
+}
+.day-dot.active .check-icon {
+    opacity: 1;
+}
+
 

@@ -44,6 +44,7 @@
                     <option value="emerald">🌿 Deep Emerald</option>
                     <option value="retro">📻 Retro Sepia</option>
                 </select>
+                <button id="dailyChallengeBtn" class="btn btn-icon daily-btn" title="Daily Seeded Challenge & Streak Tracker">📅 <span id="dailyStreakBadge" class="badge-count">🔥 0</span></button>
                 <button id="achievementsBtn" class="btn btn-icon achievements-btn" title="View Achievements & Badges">🎖️ <span id="achievementsBadge" class="badge-count">0/9</span></button>
                 <button id="leaderboardBtn" class="btn btn-icon" title="View Best Records / High Scores">🏆</button>
                 <select id="soundPresetSelect" class="form-select theme-select" title="Sound Effect Preset">
@@ -356,6 +357,41 @@
                 <div class="modal-footer">
                     <button id="clearLeaderboardBtn" class="btn btn-outline-danger">Clear Records</button>
                     <button id="closeLeaderboardFooterBtn" class="btn btn-secondary">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- DAILY CHALLENGE MODAL -->
+        <div id="dailyChallengeModal" class="modal-backdrop" style="display: none;">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <h2>📅 Daily Seeded Challenge</h2>
+                    <button id="closeDailyChallengeBtn" class="btn-close">&times;</button>
+                </div>
+                <div class="daily-challenge-body" style="display: flex; flex-direction: column; gap: 16px; margin: 16px 0;">
+                    <div class="daily-header-card" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                        <span class="daily-date-badge" id="dailyDateBadge" style="font-weight: 600; color: #a5b4fc;">Today's Date</span>
+                        <div class="daily-streak-box" style="display: flex; align-items: center; gap: 6px; font-weight: 700; color: #f59e0b;">
+                            <span class="flame-icon">🔥</span>
+                            <span id="dailyStreakText">0 Day Streak</span>
+                        </div>
+                    </div>
+                    <div class="daily-objective-card" style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); padding: 14px; border-radius: 12px;">
+                        <h3 style="margin-bottom: 6px; font-size: 1rem; color: #818cf8;">🎯 Today's Mission</h3>
+                        <p id="dailyObjectiveText" style="font-size: 0.9rem; line-height: 1.4; color: #e0e7ff;">Solve today's featured photo puzzle (4x4 Grid) in under 50 moves to claim 3 Daily Stars & advance your streak!</p>
+                    </div>
+                    <div class="daily-calendar-row" style="display: flex; justify-content: space-between; gap: 6px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 12px;">
+                        <div class="day-dot" id="dayDot0"><span>M</span><div class="check-icon">✓</div></div>
+                        <div class="day-dot" id="dayDot1"><span>T</span><div class="check-icon">✓</div></div>
+                        <div class="day-dot" id="dayDot2"><span>W</span><div class="check-icon">✓</div></div>
+                        <div class="day-dot" id="dayDot3"><span>T</span><div class="check-icon">✓</div></div>
+                        <div class="day-dot" id="dayDot4"><span>F</span><div class="check-icon">✓</div></div>
+                        <div class="day-dot" id="dayDot5"><span>S</span><div class="check-icon">✓</div></div>
+                        <div class="day-dot" id="dayDot6"><span>S</span><div class="check-icon">✓</div></div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="justify-content: flex-end;">
+                    <button id="startDailyChallengeBtn" class="btn btn-primary btn-lg">🚀 Launch Today's Challenge</button>
                 </div>
             </div>
         </div>
