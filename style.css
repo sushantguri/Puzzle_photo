@@ -1104,4 +1104,22 @@ body {
     margin-top: 6px;
 }
 
+/* Sticker & Stamp Buttons */
+.sticker-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    font-size: 1.25rem;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+.sticker-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.18);
+}
+.sticker-btn:active {
+    transform: scale(0.92);
+}
+
 

@@ -646,6 +646,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const flipHorizBtn = document.getElementById('flipHorizBtn');
     const flipVertBtn = document.getElementById('flipVertBtn');
 
+    let activeStickers = [];
+
     function applyPhotoAdjustments() {
         if (!rawPhotoDataUrl) return;
         const b = brightnessSlider ? brightnessSlider.value : 100;
@@ -674,6 +676,21 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
             ctx.drawImage(img, -origW / 2, -origH / 2);
             ctx.restore();
+
+            // Draw active stickers on canvas
+            if (activeStickers.length > 0) {
+                ctx.save();
+                const fontSize = Math.round(Math.min(canvasEl.width, canvasEl.height) * 0.16);
+                ctx.font = `${fontSize}px sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                activeStickers.forEach((st) => {
+                    const x = canvasEl.width * st.xRatio;
+                    const y = canvasEl.height * st.yRatio;
+                    ctx.fillText(st.emoji, x, y);
+                });
+                ctx.restore();
+            }
 
             currentPhotoDataUrl = canvasEl.toDataURL('image/jpeg', 0.95);
             photoPreviewImg.src = currentPhotoDataUrl;
@@ -710,6 +727,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Sticker Button Listeners
+    document.querySelectorAll('.sticker-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const stickerEmoji = e.currentTarget.getAttribute('data-sticker');
+            if (stickerEmoji) {
+                const xRatio = 0.25 + Math.random() * 0.5;
+                const yRatio = 0.25 + Math.random() * 0.5;
+                activeStickers.push({ emoji: stickerEmoji, xRatio, yRatio });
+                playSound('snap');
+                applyPhotoAdjustments();
+            }
+        });
+    });
+
+    const clearStickersBtn = document.getElementById('clearStickersBtn');
+    if (clearStickersBtn) {
+        clearStickersBtn.addEventListener('click', () => {
+            activeStickers = [];
+            playSound('click');
+            applyPhotoAdjustments();
+        });
+    }
+
     function showConfigSection() {
         stopWebcam();
         captureSection.style.display = 'none';
@@ -717,6 +757,7 @@ document.addEventListener('DOMContentLoaded', () => {
         rotationAngle = 0;
         flipH = false;
         flipV = false;
+        activeStickers = [];
         if (brightnessSlider) brightnessSlider.value = 100;
         if (contrastSlider) contrastSlider.value = 100;
         if (saturationSlider) saturationSlider.value = 100;
