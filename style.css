@@ -1150,4 +1150,111 @@ body {
     opacity: 1;
 }
 
+/* Tile Cutout Shape Selector */
+.shape-selector {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.shape-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--text-main);
+    padding: 8px 14px;
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: var(--transition);
+}
+.shape-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+}
+.shape-btn.active {
+    background: linear-gradient(135deg, var(--primary-accent), var(--primary-glow));
+    border-color: transparent;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+}
+
+/* Tile Cutout Shapes */
+.puzzle-tile.shape-rounded {
+    border-radius: 18px !important;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5), 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+.puzzle-tile.shape-hexagon {
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+.puzzle-tile.shape-diamond {
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+.puzzle-tile.shape-cyber {
+    border: 2px solid var(--cyan-accent) !important;
+    border-radius: 6px;
+    box-shadow: 0 0 12px rgba(6, 182, 212, 0.6), inset 0 0 8px rgba(6, 182, 212, 0.4);
+}
+
+/* AI Rival Speedrun HUD */
+.ai-rival-hud {
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(236, 72, 153, 0.3);
+    padding: 10px 16px;
+    border-radius: var(--radius-md);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 20px rgba(236, 72, 153, 0.15);
+}
+.ai-rival-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.ai-rival-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.ai-avatar {
+    font-size: 1.25rem;
+}
+.ai-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #f472b6;
+}
+.ai-status-badge {
+    font-size: 0.75rem;
+    color: #cbd5e1;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+.ai-pct-text {
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: #ec4899;
+}
+.ai-rival-progress-bg {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.ai-rival-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ec4899, #f43f5e);
+    border-radius: 4px;
+    transition: width 0.4s ease-out;
+}
+
+
 

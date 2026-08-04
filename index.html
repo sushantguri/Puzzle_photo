@@ -45,7 +45,7 @@
                     <option value="retro">📻 Retro Sepia</option>
                 </select>
                 <button id="dailyChallengeBtn" class="btn btn-icon daily-btn" title="Daily Seeded Challenge & Streak Tracker">📅 <span id="dailyStreakBadge" class="badge-count">🔥 0</span></button>
-                <button id="achievementsBtn" class="btn btn-icon achievements-btn" title="View Achievements & Badges">🎖️ <span id="achievementsBadge" class="badge-count">0/9</span></button>
+                <button id="achievementsBtn" class="btn btn-icon achievements-btn" title="View Achievements & Badges">🎖️ <span id="achievementsBadge" class="badge-count">0/12</span></button>
                 <button id="leaderboardBtn" class="btn btn-icon" title="View Best Records / High Scores">🏆</button>
                 <select id="soundPresetSelect" class="form-select theme-select" title="Sound Effect Preset">
                     <option value="arcade">🕹️ 8-Bit Arcade</option>
@@ -97,6 +97,10 @@
                                 <option value="vivid">Vivid Pop</option>
                                 <option value="grayscale">Noir Grayscale</option>
                                 <option value="neon">Neon Glow</option>
+                                <option value="pixel">👾 8-Bit Pixel Art</option>
+                                <option value="glitch">📺 CRT & Glitch</option>
+                                <option value="sketch">✏️ Neon Edge Sketch</option>
+                                <option value="thermal">🌈 Thermal Heatmap</option>
                             </select>
                         </div>
                         <button id="mirrorToggleBtn" class="btn btn-secondary" title="Mirror Flip Stream">🪞 Flip Camera</button>
@@ -204,6 +208,31 @@
                     </div>
 
                     <div class="setting-group">
+                        <label>Tile Cutout Style:</label>
+                        <div class="shape-selector">
+                            <button class="shape-btn active" data-shape="square" type="button"><span class="shape-icon">🟦</span> Square</button>
+                            <button class="shape-btn" data-shape="rounded" type="button"><span class="shape-icon">🟢</span> Pill</button>
+                            <button class="shape-btn" data-shape="hexagon" type="button"><span class="shape-icon">🐝</span> Hexagon</button>
+                            <button class="shape-btn" data-shape="diamond" type="button"><span class="shape-icon">💎</span> Diamond</button>
+                            <button class="shape-btn" data-shape="cyber" type="button"><span class="shape-icon">⚡</span> Cyber Glow</button>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <label>AI Rival Speedrun Mode:</label>
+                        <div class="ai-rival-controls" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <button id="toggleAiRivalBtn" class="mode-btn" type="button">
+                                <span class="mode-icon">🤖</span> AI Rival: Off
+                            </button>
+                            <select id="aiLevelSelect" class="form-select" style="display: none; width: auto;" title="AI Rival Bot Speed">
+                                <option value="easy">🐱 Novice Cat (Slow)</option>
+                                <option value="medium" selected>🤖 Cyber Bot (Medium)</option>
+                                <option value="hard">⚡ Grandmaster AI (Fast)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
                         <label>Timer Mode:</label>
                         <div class="mode-toggle">
                             <button class="timer-mode-btn active" data-timermode="stopwatch">
@@ -285,6 +314,21 @@
                     <button id="autoSolveBtn" class="btn btn-secondary btn-sm" title="Watch AI step through puzzle solution (A)">🤖 Auto-Solve (A)</button>
                     <button id="replayToolbarBtn" class="btn btn-secondary btn-sm" title="Watch animated step-by-step move replay (P)" style="display: none;">▶️ Replay (P)</button>
                     <button id="shuffleBtn" class="btn btn-secondary btn-sm">🔀 Reshuffle (R)</button>
+                </div>
+
+                <!-- AI Rival Speedrun HUD -->
+                <div id="aiRivalHud" class="ai-rival-hud" style="display: none;">
+                    <div class="ai-rival-header">
+                        <div class="ai-rival-info">
+                            <span class="ai-avatar" id="aiRivalAvatar">🤖</span>
+                            <span class="ai-name" id="aiRivalName">CyberBot AI</span>
+                            <span class="ai-status-badge" id="aiRivalStatusText">Matching moves...</span>
+                        </div>
+                        <span class="ai-pct-text" id="aiRivalPctText">0%</span>
+                    </div>
+                    <div class="ai-rival-progress-bg">
+                        <div id="aiRivalProgressBar" class="ai-rival-progress-fill" style="width: 0%;"></div>
+                    </div>
                 </div>
 
                 <!-- Time Attack Countdown Bar -->

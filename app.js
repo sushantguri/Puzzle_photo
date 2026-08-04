@@ -21,6 +21,14 @@ document.addEventListener('DOMContentLoaded', () => {
     
     let isAutoSolving = false;
     let autoSolveTimer = null;
+
+    // Cutout Shape & AI Rival State
+    let selectedShape = 'square'; // 'square', 'rounded', 'hexagon', 'diamond', 'cyber'
+    let isAiRivalActive = false;
+    let aiRivalLevel = 'medium'; // 'easy', 'medium', 'hard'
+    let aiRivalProgress = 0;
+    let aiRivalTimer = null;
+    let aiRivalSolvedCount = 0;
     
     // Game state
     let tiles = []; // Array of tile objects { id, currentPos, correctPos, empty }
@@ -38,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let replayCurrentStep = 0;
     let replaySpeed = 1;
     let replayTimer = null;
+
 
 
     // --- DOM ELEMENTS ---
@@ -703,6 +712,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.restore();
             }
 
+            // Apply advanced canvas FX filters if selected
+            const selectedFilter = filterSelect ? filterSelect.value : 'none';
+            if (['pixel', 'glitch', 'sketch', 'thermal'].includes(selectedFilter)) {
+                applyAdvancedCanvasFX(ctx, canvasEl.width, canvasEl.height, selectedFilter);
+                unlockAchievement('pixel_artist');
+            }
+
             currentPhotoDataUrl = canvasEl.toDataURL('image/jpeg', 0.95);
             photoPreviewImg.src = currentPhotoDataUrl;
             ghostImg.src = currentPhotoDataUrl;
@@ -710,6 +726,77 @@ document.addEventListener('DOMContentLoaded', () => {
         img.src = rawPhotoDataUrl;
     }
 
+    function applyAdvancedCanvasFX(ctx, width, height, filterType) {
+        if (filterType === 'pixel') {
+            const size = Math.max(8, Math.round(Math.min(width, height) / 32));
+            const imgData = ctx.getImageData(0, 0, width, height);
+            const data = imgData.data;
+            for (let y = 0; y < height; y += size) {
+                for (let x = 0; x < width; x += size) {
+                    const pixelIndex = (y * width + x) * 4;
+                    const r = data[pixelIndex];
+                    const g = data[pixelIndex + 1];
+                    const b = data[pixelIndex + 2];
+                    ctx.fillStyle = `rgb(${r},${g},${b})`;
+                    ctx.fillRect(x, y, size, size);
+                }
+            }
+        } else if (filterType === 'glitch') {
+            const imgData = ctx.getImageData(0, 0, width, height);
+            const data = imgData.data;
+            const offset = Math.round(width * 0.02);
+            for (let i = 0; i < data.length; i += 4) {
+                if (i + offset * 4 < data.length) {
+                    data[i] = data[i + offset * 4];
+                }
+            }
+            ctx.putImageData(imgData, 0, 0);
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+            for (let y = 0; y < height; y += 4) {
+                ctx.fillRect(0, y, width, 2);
+            }
+        } else if (filterType === 'sketch') {
+            const imgData = ctx.getImageData(0, 0, width, height);
+            const data = imgData.data;
+            const w = width;
+            const h = height;
+            for (let y = 0; y < h - 1; y++) {
+                for (let x = 0; x < w - 1; x++) {
+                    const idx = (y * w + x) * 4;
+                    const rightIdx = (y * w + (x + 1)) * 4;
+                    const downIdx = ((y + 1) * w + x) * 4;
+                    const lum1 = (data[idx] + data[idx+1] + data[idx+2]) / 3;
+                    const lum2 = (data[rightIdx] + data[rightIdx+1] + data[rightIdx+2]) / 3;
+                    const lum3 = (data[downIdx] + data[downIdx+1] + data[downIdx+2]) / 3;
+                    const edge = Math.abs(lum1 - lum2) + Math.abs(lum1 - lum3);
+                    if (edge > 25) {
+                        data[idx] = 99; data[idx+1] = 102; data[idx+2] = 241;
+                    } else {
+                        data[idx] = 15; data[idx+1] = 23; data[idx+2] = 42;
+                    }
+                }
+            }
+            ctx.putImageData(imgData, 0, 0);
+        } else if (filterType === 'thermal') {
+            const imgData = ctx.getImageData(0, 0, width, height);
+            const data = imgData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                const lum = (data[i] * 0.299 + data[i+1] * 0.587 + data[i+2] * 0.114) / 255;
+                if (lum < 0.25) {
+                    data[i] = 0; data[i+1] = 0; data[i+2] = Math.round(lum * 4 * 255);
+                } else if (lum < 0.5) {
+                    data[i] = 0; data[i+1] = Math.round((lum - 0.25) * 4 * 255); data[i+2] = 255;
+                } else if (lum < 0.75) {
+                    data[i] = Math.round((lum - 0.5) * 4 * 255); data[i+1] = 255; data[i+2] = 0;
+                } else {
+                    data[i] = 255; data[i+1] = Math.round((1 - lum) * 4 * 255); data[i+2] = 0;
+                }
+            }
+            ctx.putImageData(imgData, 0, 0);
+        }
+    }
+
+    if (filterSelect) filterSelect.addEventListener('change', applyPhotoAdjustments);
     if (brightnessSlider) brightnessSlider.addEventListener('input', applyPhotoAdjustments);
     if (contrastSlider) contrastSlider.addEventListener('input', applyPhotoAdjustments);
     if (saturationSlider) saturationSlider.addEventListener('input', applyPhotoAdjustments);
@@ -812,6 +899,37 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // --- TILE SHAPE SELECTOR LISTENERS ---
+    document.querySelectorAll('.shape-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.shape-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedShape = btn.dataset.shape;
+            playSound('click');
+        });
+    });
+
+    // --- AI RIVAL SPEEDRUN CONTROLS ---
+    const toggleAiRivalBtn = document.getElementById('toggleAiRivalBtn');
+    const aiLevelSelect = document.getElementById('aiLevelSelect');
+
+    if (toggleAiRivalBtn) {
+        toggleAiRivalBtn.addEventListener('click', () => {
+            isAiRivalActive = !isAiRivalActive;
+            toggleAiRivalBtn.classList.toggle('active', isAiRivalActive);
+            toggleAiRivalBtn.innerHTML = isAiRivalActive ? '<span class="mode-icon">🤖⚡</span> AI Rival: ON' : '<span class="mode-icon">🤖</span> AI Rival: Off';
+            if (aiLevelSelect) aiLevelSelect.style.display = isAiRivalActive ? 'inline-block' : 'none';
+            playSound('click');
+        });
+    }
+
+    if (aiLevelSelect) {
+        aiLevelSelect.addEventListener('change', (e) => {
+            aiRivalLevel = e.target.value;
+            playSound('click');
+        });
+    }
+
     // --- PUZZLE ENGINE & GAMEPLAY ---
     startPuzzleBtn.addEventListener('click', () => {
         configSection.style.display = 'none';
@@ -835,6 +953,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function triggerTimeUpFailure() {
         stopAutoSolve();
+        clearInterval(aiRivalTimer);
         isGameActive = false;
         playSound('click');
         const victoryHeader = victoryModal.querySelector('.victory-header');
@@ -849,6 +968,89 @@ document.addEventListener('DOMContentLoaded', () => {
         victoryModal.style.display = 'flex';
     }
 
+    // AI Rival Speedrun Engine
+    const aiRivalHud = document.getElementById('aiRivalHud');
+    const aiRivalAvatar = document.getElementById('aiRivalAvatar');
+    const aiRivalName = document.getElementById('aiRivalName');
+    const aiRivalStatusText = document.getElementById('aiRivalStatusText');
+    const aiRivalProgressBar = document.getElementById('aiRivalProgressBar');
+    const aiRivalPctText = document.getElementById('aiRivalPctText');
+
+    function initAiRival() {
+        clearInterval(aiRivalTimer);
+        if (!isAiRivalActive) {
+            if (aiRivalHud) aiRivalHud.style.display = 'none';
+            return;
+        }
+        if (aiRivalHud) aiRivalHud.style.display = 'flex';
+
+        aiRivalSolvedCount = 0;
+        aiRivalProgress = 0;
+
+        const botMap = {
+            easy: { name: 'Novice Cat 🐱', avatar: '🐱', interval: 3200 },
+            medium: { name: 'CyberBot AI 🤖', avatar: '🤖', interval: 2000 },
+            hard: { name: 'Grandmaster AI ⚡', avatar: '⚡', interval: 1100 }
+        };
+        const botConfig = botMap[aiRivalLevel] || botMap.medium;
+        if (aiRivalName) aiRivalName.textContent = botConfig.name;
+        if (aiRivalAvatar) aiRivalAvatar.textContent = botConfig.avatar;
+
+        updateAiRivalUI();
+
+        aiRivalTimer = setInterval(() => {
+            if (!isGameActive || !isAiRivalActive) return;
+            const total = selectedGridSize * selectedGridSize;
+            if (aiRivalSolvedCount < total) {
+                aiRivalSolvedCount++;
+                aiRivalProgress = Math.round((aiRivalSolvedCount / total) * 100);
+                updateAiRivalUI();
+
+                if (aiRivalSolvedCount >= total) {
+                    clearInterval(aiRivalTimer);
+                    triggerAiDefeat();
+                }
+            }
+        }, botConfig.interval);
+    }
+
+    function updateAiRivalUI() {
+        if (!isAiRivalActive || !aiRivalProgressBar || !aiRivalPctText || !aiRivalStatusText) return;
+        aiRivalProgressBar.style.width = `${aiRivalProgress}%`;
+        aiRivalPctText.textContent = `${aiRivalProgress}%`;
+
+        const userSolvedCount = tiles.filter(t => t.currentPos === t.correctPos).length;
+        const diff = userSolvedCount - aiRivalSolvedCount;
+
+        if (diff > 0) {
+            aiRivalStatusText.textContent = `🔥 You lead by ${diff} tiles!`;
+            aiRivalStatusText.style.color = '#34d399';
+        } else if (diff < 0) {
+            aiRivalStatusText.textContent = `⚠️ Rival leads by ${Math.abs(diff)} tiles!`;
+            aiRivalStatusText.style.color = '#f87171';
+        } else {
+            aiRivalStatusText.textContent = `⚡ Neck and neck!`;
+            aiRivalStatusText.style.color = '#cbd5e1';
+        }
+    }
+
+    function triggerAiDefeat() {
+        isGameActive = false;
+        clearInterval(gameTimer);
+        clearInterval(aiRivalTimer);
+        playSound('click');
+        const victoryHeader = victoryModal.querySelector('.victory-header');
+        if (victoryHeader) {
+            victoryHeader.querySelector('.victory-icon').textContent = '🤖';
+            victoryHeader.querySelector('h2').textContent = 'AI Bot Defeated You!';
+            victoryHeader.querySelector('p').textContent = 'The AI Bot solved its puzzle faster! Try again or lower bot difficulty.';
+        }
+        finalTime.textContent = timerDisplay.textContent;
+        finalMoves.textContent = movesCount;
+        finalStars.textContent = '🤖 Defeated';
+        victoryModal.style.display = 'flex';
+    }
+
     function initPuzzle() {
         stopAutoSolve();
         movesCount = 0;
@@ -857,6 +1059,8 @@ document.addEventListener('DOMContentLoaded', () => {
         moveHistory = [];
         updateUndoButtonState();
         moveDisplay.textContent = '0 Moves';
+
+        initAiRival();
 
         const timerProgressWrapper = document.getElementById('timerProgressWrapper');
         const timerProgressBar = document.getElementById('timerProgressBar');
@@ -989,6 +1193,9 @@ document.addEventListener('DOMContentLoaded', () => {
         sortedTiles.forEach((tile) => {
             const tileDiv = document.createElement('div');
             tileDiv.classList.add('puzzle-tile');
+            if (selectedShape && selectedShape !== 'square') {
+                tileDiv.classList.add('shape-' + selectedShape);
+            }
             tileDiv.dataset.id = tile.id;
             tileDiv.setAttribute('draggable', puzzleMode === 'jigsaw' ? 'true' : 'false');
 
@@ -1059,6 +1266,7 @@ document.addEventListener('DOMContentLoaded', () => {
         [tileA.currentPos, tileB.currentPos] = [tileB.currentPos, tileA.currentPos];
         moveDisplay.textContent = `${movesCount} Moves`;
         updateUndoButtonState();
+        updateAiRivalUI();
         playSound('snap');
         renderTiles();
         checkWinCondition();
@@ -1107,13 +1315,23 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isSolved) {
             isGameActive = false;
             clearInterval(gameTimer);
+            clearInterval(aiRivalTimer);
             playSound('win');
+
+            if (isAiRivalActive && aiRivalLevel === 'hard') {
+                unlockAchievement('bot_slayer');
+            }
+            if (['hexagon', 'diamond'].includes(selectedShape)) {
+                unlockAchievement('shape_shifter');
+            }
+
             triggerVictory();
         }
     }
 
     function triggerVictory() {
         stopAutoSolve();
+        clearInterval(aiRivalTimer);
         finalTime.textContent = timerDisplay.textContent;
         finalMoves.textContent = movesCount;
 
@@ -1349,7 +1567,10 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'time_survivor', icon: '⌛', title: 'Time Survivor', desc: 'Complete a puzzle in Time Attack mode.' },
         { id: 'three_stars', icon: '🌟', title: 'Three-Star Finish', desc: 'Earn a 3-star rating on a puzzle.' },
         { id: 'palette_explorer', icon: '🎨', title: 'Palette Explorer', desc: 'Switch theme color palettes.' },
-        { id: 'hall_of_fame', icon: '🏆', title: 'Record Holder', desc: 'Record a high score in the Hall of Fame.' }
+        { id: 'hall_of_fame', icon: '🏆', title: 'Record Holder', desc: 'Record a high score in the Hall of Fame.' },
+        { id: 'bot_slayer', icon: '🤖', title: 'Bot Destroyer', desc: 'Defeat the Grandmaster AI Bot in Speedrun Mode.' },
+        { id: 'shape_shifter', icon: '🐝', title: 'Shape Shifter', desc: 'Solve a puzzle using Hexagon or Diamond tile shapes.' },
+        { id: 'pixel_artist', icon: '👾', title: 'Pixel Artist', desc: 'Create a puzzle using 8-Bit Pixel Art or Neon Sketch FX.' }
     ];
 
     let unlockedAchievements = [];
