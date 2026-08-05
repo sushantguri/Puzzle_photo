@@ -2154,6 +2154,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- SCORE BADGE PNG GENERATOR ---
     const downloadScoreCardBtn = document.getElementById('downloadScoreCardBtn');
+    const victoryFrameSelect = document.getElementById('victoryFrameSelect');
+    const victoryCaptionInput = document.getElementById('victoryCaptionInput');
+
     if (downloadScoreCardBtn) {
         downloadScoreCardBtn.addEventListener('click', () => {
             playSound('click');
@@ -2162,46 +2165,129 @@ document.addEventListener('DOMContentLoaded', () => {
             cardCanvas.height = 600;
             const ctx = cardCanvas.getContext('2d');
 
-            // Background Gradient
-            const bgGrad = ctx.createLinearGradient(0, 0, 800, 600);
-            bgGrad.addColorStop(0, '#090d16');
-            bgGrad.addColorStop(1, '#1e1b4b');
-            ctx.fillStyle = bgGrad;
-            ctx.fillRect(0, 0, 800, 600);
+            const frameStyle = victoryFrameSelect ? victoryFrameSelect.value : 'glass';
+            const userCaption = victoryCaptionInput && victoryCaptionInput.value.trim() ? victoryCaptionInput.value.trim() : 'Shattered & Solved! 🧩';
 
-            // Card Frame
-            ctx.strokeStyle = '#6366f1';
-            ctx.lineWidth = 4;
-            ctx.strokeRect(20, 20, 760, 560);
+            if (frameStyle === 'polaroid') {
+                // Retro Polaroid Photo Card Background
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(0, 0, 800, 600);
+                
+                // Outer Polaroid Shadow / Border
+                ctx.strokeStyle = '#cbd5e1';
+                ctx.lineWidth = 4;
+                ctx.strokeRect(10, 10, 780, 580);
 
-            // Title
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 36px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('🧩 SnapPuzzle Champion', 400, 70);
+                // Polaroid Header Title
+                ctx.fillStyle = '#0f172a';
+                ctx.font = 'bold 36px "Outfit", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('🧩 SnapPuzzle Snapshot', 400, 65);
 
-            // Draw Photo
+            } else if (frameStyle === 'neon') {
+                // Cyberpunk Neon Glow Background
+                ctx.fillStyle = '#05050d';
+                ctx.fillRect(0, 0, 800, 600);
+
+                // Dual Glowing Cyber Borders
+                ctx.strokeStyle = '#06b6d4';
+                ctx.lineWidth = 6;
+                ctx.strokeRect(15, 15, 770, 570);
+                ctx.strokeStyle = '#ec4899';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(22, 22, 756, 556);
+
+                ctx.fillStyle = '#38bdf8';
+                ctx.font = 'bold 38px "Outfit", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('⚡ CYBER SNACK PUZZLE', 400, 70);
+
+            } else if (frameStyle === 'gold') {
+                // Royal Gold Metallic Frame
+                const bgGrad = ctx.createRadialGradient(400, 300, 50, 400, 300, 450);
+                bgGrad.addColorStop(0, '#1c1917');
+                bgGrad.addColorStop(1, '#0c0a09');
+                ctx.fillStyle = bgGrad;
+                ctx.fillRect(0, 0, 800, 600);
+
+                const goldGrad = ctx.createLinearGradient(0, 0, 800, 600);
+                goldGrad.addColorStop(0, '#fef08a');
+                goldGrad.addColorStop(0.5, '#eab308');
+                goldGrad.addColorStop(1, '#854d0e');
+                ctx.strokeStyle = goldGrad;
+                ctx.lineWidth = 8;
+                ctx.strokeRect(20, 20, 760, 560);
+
+                ctx.fillStyle = '#fef08a';
+                ctx.font = 'bold 38px "Outfit", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('🏆 ROYAL PUZZLE VICTORY 🥇', 400, 70);
+
+            } else {
+                // Classic Cyber Glass (Default)
+                const bgGrad = ctx.createLinearGradient(0, 0, 800, 600);
+                bgGrad.addColorStop(0, '#090d16');
+                bgGrad.addColorStop(1, '#1e1b4b');
+                ctx.fillStyle = bgGrad;
+                ctx.fillRect(0, 0, 800, 600);
+
+                ctx.strokeStyle = '#6366f1';
+                ctx.lineWidth = 4;
+                ctx.strokeRect(20, 20, 760, 560);
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 36px "Outfit", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('🧩 SnapPuzzle Champion', 400, 70);
+            }
+
+            // Draw Photo Snapshot
             const img = new Image();
             img.crossOrigin = 'Anonymous';
             img.onload = () => {
-                ctx.drawImage(img, 240, 100, 320, 320);
+                if (frameStyle === 'polaroid') {
+                    // Photo Inner Border
+                    ctx.fillStyle = '#020617';
+                    ctx.fillRect(245, 95, 310, 310);
+                    ctx.drawImage(img, 250, 100, 300, 300);
 
-                // Stats Section
-                ctx.fillStyle = '#94a3b8';
-                ctx.font = '20px sans-serif';
-                ctx.fillText(`Mode: ${puzzleMode.toUpperCase()} (${selectedGridSize}x${selectedGridSize})`, 400, 460);
+                    // Polaroid Handwritten Caption
+                    ctx.fillStyle = '#334155';
+                    ctx.font = 'italic bold 26px sans-serif';
+                    ctx.fillText(`"${userCaption}"`, 400, 440);
 
-                ctx.fillStyle = '#38bdf8';
-                ctx.font = 'bold 24px sans-serif';
-                ctx.fillText(`⏱️ Time: ${timerDisplay.textContent}   |   🎯 Moves: ${movesCount}`, 400, 500);
+                    ctx.fillStyle = '#64748b';
+                    ctx.font = '18px sans-serif';
+                    ctx.fillText(`Mode: ${puzzleMode.toUpperCase()} (${selectedGridSize}x${selectedGridSize})  |  ⏱️ ${timerDisplay.textContent}  |  🎯 ${movesCount} Moves`, 400, 485);
 
-                ctx.fillStyle = '#facc15';
-                ctx.font = '26px sans-serif';
-                ctx.fillText(finalStars.textContent, 400, 540);
+                    ctx.fillStyle = '#f59e0b';
+                    ctx.font = '26px sans-serif';
+                    ctx.fillText(finalStars.textContent, 400, 530);
+                } else {
+                    ctx.drawImage(img, 240, 100, 320, 320);
+
+                    // User Caption
+                    ctx.fillStyle = frameStyle === 'neon' ? '#f472b6' : (frameStyle === 'gold' ? '#fef08a' : '#c084fc');
+                    ctx.font = 'italic bold 22px sans-serif';
+                    ctx.fillText(`"${userCaption}"`, 400, 450);
+
+                    // Stats Section
+                    ctx.fillStyle = frameStyle === 'neon' ? '#38bdf8' : (frameStyle === 'gold' ? '#e2e8f0' : '#94a3b8');
+                    ctx.font = '18px sans-serif';
+                    ctx.fillText(`Mode: ${puzzleMode.toUpperCase()} (${selectedGridSize}x${selectedGridSize})`, 400, 485);
+
+                    ctx.fillStyle = frameStyle === 'neon' ? '#67e8f9' : (frameStyle === 'gold' ? '#facc15' : '#38bdf8');
+                    ctx.font = 'bold 22px sans-serif';
+                    ctx.fillText(`⏱️ Time: ${timerDisplay.textContent}   |   🎯 Moves: ${movesCount}`, 400, 520);
+
+                    ctx.fillStyle = '#facc15';
+                    ctx.font = '26px sans-serif';
+                    ctx.fillText(finalStars.textContent, 400, 555);
+                }
 
                 // Trigger PNG Download
                 const link = document.createElement('a');
-                link.download = `SnapPuzzle_Victory_ScoreCard.png`;
+                link.download = `SnapPuzzle_${frameStyle.toUpperCase()}_ScoreCard.png`;
                 link.href = cardCanvas.toDataURL('image/png');
                 link.click();
             };

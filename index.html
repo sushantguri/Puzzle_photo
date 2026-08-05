@@ -496,6 +496,24 @@
                         <span class="v-val stars" id="finalStars">⭐⭐⭐</span>
                     </div>
                 </div>
+                
+                <!-- Victory Card Customizer -->
+                <div class="victory-card-customizer" style="margin: 12px 0; padding: 10px; background: rgba(0, 0, 0, 0.25); border-radius: 12px; border: 1px solid var(--border-color); text-align: left;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+                        <label for="victoryFrameSelect" style="font-size: 0.85rem; font-weight: 600; color: #94a3b8;">🖼️ Frame Preset:</label>
+                        <select id="victoryFrameSelect" class="form-select" style="width: auto; padding: 4px 8px; font-size: 0.85rem;">
+                            <option value="glass">🌌 Cyber Glass</option>
+                            <option value="polaroid">📸 Retro Polaroid</option>
+                            <option value="neon">⚡ Neon Cyberpunk</option>
+                            <option value="gold">🥇 Royal Gold</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <label for="victoryCaptionInput" style="font-size: 0.85rem; font-weight: 600; color: #94a3b8; white-space: nowrap;">✏️ Caption:</label>
+                        <input type="text" id="victoryCaptionInput" class="form-select" value="Shattered & Solved! 🧩" placeholder="Custom photo caption..." style="width: 100%; font-size: 0.85rem; padding: 4px 8px;">
+                    </div>
+                </div>
+
                 <div class="victory-actions">
                     <button id="replayMovesBtn" class="btn btn-secondary">▶️ Replay Moves</button>
                     <button id="downloadScoreCardBtn" class="btn btn-secondary">📥 Save Score</button>
