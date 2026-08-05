@@ -729,7 +729,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Apply advanced canvas FX filters if selected
             const selectedFilter = filterSelect ? filterSelect.value : 'none';
-            if (['pixel', 'glitch', 'sketch', 'thermal'].includes(selectedFilter)) {
+            if (['pixel', 'glitch', 'sketch', 'thermal', 'vortex', 'kaleidoscope', 'matrix', 'comic'].includes(selectedFilter)) {
                 applyAdvancedCanvasFX(ctx, canvasEl.width, canvasEl.height, selectedFilter);
                 unlockAchievement('pixel_artist');
             }
@@ -808,6 +808,99 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             ctx.putImageData(imgData, 0, 0);
+        } else if (filterType === 'vortex') {
+            const imgData = ctx.getImageData(0, 0, width, height);
+            const data = imgData.data;
+            const outputData = ctx.createImageData(width, height);
+            const out = outputData.data;
+            const cx = width / 2;
+            const cy = height / 2;
+            const maxR = Math.min(width, height) / 2;
+
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const dx = x - cx;
+                    const dy = y - cy;
+                    const r = Math.sqrt(dx * dx + dy * dy);
+                    let angle = Math.atan2(dy, dx);
+                    if (r < maxR) {
+                        const amount = (1 - r / maxR);
+                        angle += amount * amount * 2.5; // Swirl angle offset
+                    }
+                    const sx = Math.round(cx + r * Math.cos(angle));
+                    const sy = Math.round(cy + r * Math.sin(angle));
+
+                    if (sx >= 0 && sx < width && sy >= 0 && sy < height) {
+                        const srcIdx = (sy * width + sx) * 4;
+                        const dstIdx = (y * width + x) * 4;
+                        out[dstIdx] = data[srcIdx];
+                        out[dstIdx + 1] = data[srcIdx + 1];
+                        out[dstIdx + 2] = data[srcIdx + 2];
+                        out[dstIdx + 3] = 255;
+                    }
+                }
+            }
+            ctx.putImageData(outputData, 0, 0);
+        } else if (filterType === 'kaleidoscope') {
+            // Mirror quadrant 1 into all 4 quadrants
+            const halfW = Math.floor(width / 2);
+            const halfH = Math.floor(height / 2);
+            const qData = ctx.getImageData(0, 0, halfW, halfH);
+
+            ctx.save();
+            // Top Right
+            ctx.translate(width, 0);
+            ctx.scale(-1, 1);
+            ctx.drawImage(ctx.canvas, 0, 0, halfW, halfH, 0, 0, halfW, halfH);
+            ctx.restore();
+
+            ctx.save();
+            // Bottom Left
+            ctx.translate(0, height);
+            ctx.scale(1, -1);
+            ctx.drawImage(ctx.canvas, 0, 0, halfW, halfH, 0, 0, halfW, halfH);
+            ctx.restore();
+
+            ctx.save();
+            // Bottom Right
+            ctx.translate(width, height);
+            ctx.scale(-1, -1);
+            ctx.drawImage(ctx.canvas, 0, 0, halfW, halfH, 0, 0, halfW, halfH);
+            ctx.restore();
+        } else if (filterType === 'matrix') {
+            const imgData = ctx.getImageData(0, 0, width, height);
+            const data = imgData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                const lum = (data[i] * 0.299 + data[i+1] * 0.587 + data[i+2] * 0.114);
+                data[i] = Math.round(lum * 0.1);
+                data[i + 1] = Math.min(255, Math.round(lum * 1.3 + 30)); // Vivid Matrix green glow
+                data[i + 2] = Math.round(lum * 0.2);
+            }
+            ctx.putImageData(imgData, 0, 0);
+            // Draw digital scanlines
+            ctx.fillStyle = 'rgba(0, 255, 128, 0.08)';
+            for (let y = 0; y < height; y += 6) {
+                ctx.fillRect(0, y, width, 3);
+            }
+        } else if (filterType === 'comic') {
+            const imgData = ctx.getImageData(0, 0, width, height);
+            const data = imgData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                // Color quantization to 4 posterized levels
+                data[i] = Math.round(data[i] / 64) * 64;
+                data[i + 1] = Math.round(data[i + 1] / 64) * 64;
+                data[i + 2] = Math.round(data[i + 2] / 64) * 64;
+            }
+            ctx.putImageData(imgData, 0, 0);
+            // Halftone Dots Overlay
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.12)';
+            for (let y = 0; y < height; y += 8) {
+                for (let x = 0; x < width; x += 8) {
+                    ctx.beginPath();
+                    ctx.arc(x, y, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
         }
     }
 
