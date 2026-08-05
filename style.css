@@ -599,6 +599,10 @@ body {
     inset: 0;
     opacity: 0.35;
     pointer-events: none;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.ghost-overlay.peek-active {
+    opacity: 0.95 !important;
 }
 .ghost-overlay img {
     width: 100%;

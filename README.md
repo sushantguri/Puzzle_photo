@@ -41,7 +41,8 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
 - **⚡ Time Attack Countdown Mode:** High-stakes race against the clock with an animated progress bar and low-time audio warnings.
 - **↩️ Move History & Undo System:** Step-by-step move stack allowing players to undo tile moves (`U` key or `Ctrl+Z`).
 - **🔢 Tile Numbers Overlay:** Toggleable position badges (`N` key) to assist on higher difficulty grid layouts (5x5, 6x6, 8x8).
-- **⌨️ Keyboard Hotkey Controls:** Arrow keys to slide tiles, `G` for guide, `H` for hints, `N` for numbers, `U` for undo, `A` for auto-solve, `P` for replay, `R` to reshuffle, `Space` to snap photo.
+- **👁️ Speed Peek & Adjustable Ghost Guide:** Toggleable phantom background image (`G` key) with dynamic opacity slider (10%–90%) and 1.2s flash speed peek button (`B` key).
+- **⌨️ Keyboard Hotkey Controls:** Arrow keys to slide tiles, `G` for guide, `B` for speed peek, `H` for hints, `N` for numbers, `U` for undo, `A` for auto-solve, `P` for replay, `R` to reshuffle, `Space` to snap photo.
 - **📥 Victory Score Badge Generator:** Generate and download high-resolution PNG score cards of completed puzzles with stats overlaid.
 - **🔊 Web Audio Sound FX & Ambient Music Generator:** Switchable sound wave synthesis (8-Bit Arcade, Synthwave, Glass Chime) plus procedural background ambient music tracks (Cyber Synth, Lo-Fi Chill, 8-Bit Chiptune).
 - **📅 Daily Seeded Challenge & Streak Tracker:** Daily mission generator with 7-day calendar checkmark tracking, streak flame counter (`🔥`), and daily completion awards.

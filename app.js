@@ -84,6 +84,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const soundToggleBtn = document.getElementById('soundToggleBtn');
     
     const toggleGhostBtn = document.getElementById('toggleGhostBtn');
+    const peekGhostBtn = document.getElementById('ghostOpacitySlider') ? document.getElementById('peekGhostBtn') : null;
+    const ghostOpacitySlider = document.getElementById('ghostOpacitySlider');
     const toggleNumbersBtn = document.getElementById('toggleNumbersBtn');
     const undoBtn = document.getElementById('undoBtn');
     const hintBtn = document.getElementById('hintBtn');
@@ -1711,11 +1713,41 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Toolbar buttons
+    let peekTimeout = null;
     toggleGhostBtn.addEventListener('click', () => {
         const isHidden = ghostOverlay.style.display === 'none';
         ghostOverlay.style.display = isHidden ? 'block' : 'none';
+        toggleGhostBtn.style.background = isHidden ? 'rgba(99, 102, 241, 0.4)' : '';
         playSound('click');
     });
+
+    if (ghostOpacitySlider) {
+        ghostOpacitySlider.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value) / 100;
+            ghostOverlay.style.opacity = val;
+        });
+    }
+
+    const triggerSpeedPeek = () => {
+        if (!ghostOverlay) return;
+        if (peekTimeout) clearTimeout(peekTimeout);
+        ghostOverlay.style.display = 'block';
+        ghostOverlay.classList.add('peek-active');
+        playSound('click');
+
+        peekTimeout = setTimeout(() => {
+            ghostOverlay.classList.remove('peek-active');
+            if (toggleGhostBtn.style.background === '') {
+                ghostOverlay.style.display = 'none';
+            } else {
+                ghostOverlay.style.opacity = ghostOpacitySlider ? (parseFloat(ghostOpacitySlider.value) / 100) : 0.35;
+            }
+        }, 1200);
+    };
+
+    if (peekGhostBtn) {
+        peekGhostBtn.addEventListener('click', triggerSpeedPeek);
+    }
 
     if (toggleNumbersBtn) {
         toggleNumbersBtn.addEventListener('click', () => {
@@ -2071,6 +2103,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isGameActive) {
                 if (key === 'g') {
                     toggleGhostBtn.click();
+                } else if (key === 'b' && peekGhostBtn) {
+                    peekGhostBtn.click();
                 } else if (key === 'n' && toggleNumbersBtn) {
                     toggleNumbersBtn.click();
                 } else if ((key === 'u' || (e.ctrlKey && key === 'z') || (e.metaKey && key === 'z')) && undoBtn && !undoBtn.disabled) {
