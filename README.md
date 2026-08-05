@@ -38,7 +38,7 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
 - **▶️ Animated Move Playback & Replay:** Step-by-step interactive move replay system (`P` key) with 1x/2x/4x speed controls, timeline scrubber, move highlights, and Web Audio step sound FX.
 - **🎖️ Achievements & Badges System:** 9 unlockable trophies with animated toast notifications, sound fanfares, progress bar tracking, and dedicated modal card.
 - **🤖 Auto-Solve Demo Assistant:** Interactive animated AI bot (`A` key) that steps through move history or auto-arranges tiles to help players get unstuck.
-- **⚡ Time Attack Countdown Mode:** High-stakes race against the clock with an animated progress bar and low-time audio warnings.
+- **🧘 Zen Relax & Time Attack Modes:** Switch between competitive Time Attack countdown, classic Stopwatch, or untimed Zen Relax mode with 528Hz Solfeggio audio chime synthesis for mindful puzzle solving!
 - **↩️ Move History & Undo System:** Step-by-step move stack allowing players to undo tile moves (`U` key or `Ctrl+Z`).
 - **🔢 Tile Numbers Overlay:** Toggleable position badges (`N` key) to assist on higher difficulty grid layouts (5x5, 6x6, 8x8).
 - **👁️ Speed Peek & Adjustable Ghost Guide:** Toggleable phantom background image (`G` key) with dynamic opacity slider (10%–90%) and 1.2s flash speed peek button (`B` key).

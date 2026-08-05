@@ -270,15 +270,28 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (type === 'snap') {
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
-                osc.type = wave;
+                osc.type = timerMode === 'zen' ? 'sine' : wave;
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
-                osc.frequency.setValueAtTime(523.25, now); // C5
-                osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.12); // E5
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
-                osc.start(now);
-                osc.stop(now + 0.12);
+
+                if (timerMode === 'zen') {
+                    // Solfeggio 528Hz Transformation & Miracle Tone for Zen mode
+                    const zenTones = [432, 528, 639, 741];
+                    const freq = zenTones[Math.floor(Math.random() * zenTones.length)];
+                    osc.frequency.setValueAtTime(freq, now);
+                    osc.frequency.exponentialRampToValueAtTime(freq * 1.5, now + 0.35);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+                } else {
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.12); // E5
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
+                    osc.start(now);
+                    osc.stop(now + 0.12);
+                }
             } else if (type === 'win') {
                 // Play major chord fanfare
                 [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
@@ -1077,6 +1090,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 timerProgressBar.classList.remove('low-time');
             }
             timerDisplay.textContent = formatTime(remainingSeconds);
+        } else if (timerMode === 'zen') {
+            if (timerProgressWrapper) timerProgressWrapper.style.display = 'none';
+            timerDisplay.textContent = '🧘 Zen Mode';
         } else {
             if (timerProgressWrapper) timerProgressWrapper.style.display = 'none';
             timerDisplay.textContent = '00:00';
@@ -1089,6 +1105,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (timerMode === 'stopwatch') {
                 secondsElapsed++;
                 timerDisplay.textContent = formatTime(secondsElapsed);
+            } else if (timerMode === 'zen') {
+                secondsElapsed++;
+                timerDisplay.textContent = '🧘 Zen Mode';
             } else {
                 secondsElapsed++;
                 remainingSeconds--;
@@ -1339,9 +1358,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const victoryHeader = victoryModal.querySelector('.victory-header');
         if (victoryHeader) {
-            victoryHeader.querySelector('.victory-icon').textContent = '🎉';
-            victoryHeader.querySelector('h2').textContent = timerMode === 'countdown' ? '⚡ Time Attack Cleared!' : 'Puzzle Solved!';
-            victoryHeader.querySelector('p').textContent = 'Awesome job! You completed the photo puzzle.';
+            if (timerMode === 'countdown') {
+                victoryHeader.querySelector('h2').textContent = '⚡ Time Attack Cleared!';
+                victoryHeader.querySelector('p').textContent = 'Awesome job! You beat the countdown clock!';
+            } else if (timerMode === 'zen') {
+                victoryHeader.querySelector('.victory-icon').textContent = '🧘';
+                victoryHeader.querySelector('h2').textContent = '🧘 Mindful Solved!';
+                victoryHeader.querySelector('p').textContent = 'Peaceful completion! You solved the puzzle in Zen Relax mode.';
+            } else {
+                victoryHeader.querySelector('h2').textContent = 'Puzzle Solved!';
+                victoryHeader.querySelector('p').textContent = 'Awesome job! You completed the photo puzzle.';
+            }
         }
 
         // Rating
