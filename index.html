@@ -309,6 +309,26 @@
                                 <button id="clearStickersBtn" type="button" class="btn btn-secondary btn-sm" title="Remove All Stickers">🗑️ Clear</button>
                             </div>
                         </div>
+                        <div class="watermark-toolbar" style="margin-top: 14px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);">
+                            <label style="display:block; margin-bottom: 6px; font-weight: 500; font-size: 0.9rem;">✍️ Signature & Watermark Stamp:</label>
+                            <div class="watermark-inputs" style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                                <input type="text" id="watermarkInput" class="form-input" placeholder="e.g. SnapPuzzle 2026" style="flex: 1; min-width: 140px; padding: 6px 12px; font-size: 0.85rem;" maxlength="30">
+                                <select id="watermarkPosition" class="form-select" style="width: auto; font-size: 0.85rem;" title="Watermark Alignment">
+                                    <option value="bottom-right">↘️ Bottom-Right</option>
+                                    <option value="bottom-left">↙️ Bottom-Left</option>
+                                    <option value="top-right">↗️ Top-Right</option>
+                                    <option value="top-left">↖️ Top-Left</option>
+                                    <option value="center">🎯 Center</option>
+                                </select>
+                                <select id="watermarkFont" class="form-select" style="width: auto; font-size: 0.85rem;" title="Font Family">
+                                    <option value="Outfit">Modern Bold</option>
+                                    <option value="cursive">Cursive Script</option>
+                                    <option value="monospace">Retro Matrix</option>
+                                </select>
+                                <input type="color" id="watermarkColor" value="#6366f1" class="doodle-color-picker" title="Watermark Color" style="height: 32px; width: 36px; padding: 2px;">
+                                <button id="applyWatermarkBtn" type="button" class="btn btn-secondary btn-sm" title="Stamp Watermark Text onto Photo">✍️ Stamp Text</button>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="action-bar">

@@ -14,6 +14,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let rotationAngle = 0;
     let flipH = false;
     let flipV = false;
+    let stampedWatermarkText = null;
+    let stampedWatermarkPos = 'bottom-right';
+    let stampedWatermarkFont = 'Outfit';
+    let stampedWatermarkColor = '#6366f1';
     
     let timerMode = 'stopwatch'; // 'stopwatch' or 'countdown'
     let timeAttackDuration = 90;
@@ -727,6 +731,48 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.restore();
             }
 
+            // Draw watermark text if present
+            if (stampedWatermarkText) {
+                ctx.save();
+                const fontSize = Math.round(Math.min(canvasEl.width, canvasEl.height) * 0.05);
+                ctx.font = `bold ${fontSize}px ${stampedWatermarkFont}, sans-serif`;
+                ctx.fillStyle = stampedWatermarkColor;
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+                ctx.shadowBlur = 8;
+                ctx.shadowOffsetX = 2;
+                ctx.shadowOffsetY = 2;
+
+                let tx = canvasEl.width * 0.95;
+                let ty = canvasEl.height * 0.95;
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'bottom';
+
+                if (stampedWatermarkPos === 'bottom-left') {
+                    tx = canvasEl.width * 0.05;
+                    ty = canvasEl.height * 0.95;
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'bottom';
+                } else if (stampedWatermarkPos === 'top-right') {
+                    tx = canvasEl.width * 0.95;
+                    ty = canvasEl.height * 0.05;
+                    ctx.textAlign = 'right';
+                    ctx.textBaseline = 'top';
+                } else if (stampedWatermarkPos === 'top-left') {
+                    tx = canvasEl.width * 0.05;
+                    ty = canvasEl.height * 0.05;
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'top';
+                } else if (stampedWatermarkPos === 'center') {
+                    tx = canvasEl.width * 0.5;
+                    ty = canvasEl.height * 0.5;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                }
+
+                ctx.fillText(stampedWatermarkText, tx, ty);
+                ctx.restore();
+            }
+
             // Apply advanced canvas FX filters if selected
             const selectedFilter = filterSelect ? filterSelect.value : 'none';
             if (['pixel', 'glitch', 'sketch', 'thermal', 'vortex', 'kaleidoscope', 'matrix', 'comic'].includes(selectedFilter)) {
@@ -956,6 +1002,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const applyWatermarkBtn = document.getElementById('applyWatermarkBtn');
+    if (applyWatermarkBtn) {
+        applyWatermarkBtn.addEventListener('click', () => {
+            const inputVal = document.getElementById('watermarkInput').value.trim();
+            if (inputVal) {
+                stampedWatermarkText = inputVal;
+                stampedWatermarkPos = document.getElementById('watermarkPosition').value;
+                stampedWatermarkFont = document.getElementById('watermarkFont').value;
+                stampedWatermarkColor = document.getElementById('watermarkColor').value;
+                playSound('snap');
+                applyPhotoAdjustments();
+                showToast(`✍️ Watermark "${stampedWatermarkText}" stamped!`);
+            }
+        });
+    }
+
     function showConfigSection() {
         stopWebcam();
         captureSection.style.display = 'none';
@@ -964,6 +1026,7 @@ document.addEventListener('DOMContentLoaded', () => {
         flipH = false;
         flipV = false;
         activeStickers = [];
+        stampedWatermarkText = null;
         if (brightnessSlider) brightnessSlider.value = 100;
         if (contrastSlider) contrastSlider.value = 100;
         if (saturationSlider) saturationSlider.value = 100;
