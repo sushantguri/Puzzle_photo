@@ -18,7 +18,9 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
 ### 📸 1. Live Camera & Photo Capture
 - **WebRTC Camera Integration:** Real-time video preview with countdown timer, mirror flip option, grid overlays, and instant photo capture.
 - **Custom Filters & Photo FX Shader Lab:** Apply 10+ instant filters (Cyberpunk, Retro Vintage, Vivid Pop, Noir Grayscale, Neon Glow, 8-Bit Pixel Art, CRT Glitch, Thermal Heatmap, Vortex Swirl, Kaleidoscope Mirror, Cyber Matrix Rain, Vintage Comic Pop) plus Brightness, Contrast, Saturation tuning, 90° rotation, and horizontal/vertical flip controls.
-- **🎨 Photo Stickers & Emoji Overlay:** Stamp fun emojis and stickers (sunglasses, crowns, stars, rockets, puzzle badges) directly onto your photo prior to puzzle generation!
+- **🎨 Photo Stickers, Signature & Watermark Stamp Overlay:** Stamp fun emojis, stickers, and custom text signatures/watermarks with font and color pickers onto your photo prior to puzzle generation!
+- **✨ Ambient Canvas Background FX Engine:** Interactive 60fps canvas particle system with 4 dynamic presets (Starfield Dust, Neon Aurora, Matrix Rain, Firefly Bokeh) reacting to mouse parallax.
+- **🎹 Web Audio Sound Lab & Synthesizer Soundboard:** Interactive modal synth pad with real-time canvas waveform visualizer for testing sound FX and solfeggio audio tones.
 - **Local File Upload & Drag-and-Drop:** Ability to upload any image file (`.png`, `.jpg`, `.webp`) as an alternative to live capture.
 
 ### 🧩 2. Dual Puzzle Engine

@@ -1742,6 +1742,92 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // --- SOUND LAB & SYNTHESIZER MODAL ---
+    const soundboardBtn = document.getElementById('soundboardBtn');
+    const soundboardModal = document.getElementById('soundboardModal');
+    const closeSoundboardBtn = document.getElementById('closeSoundboardBtn');
+    const closeSoundboardFooterBtn = document.getElementById('closeSoundboardFooterBtn');
+    const soundVisualizerCanvas = document.getElementById('soundVisualizerCanvas');
+    const soundVisualizerCtx = soundVisualizerCanvas ? soundVisualizerCanvas.getContext('2d') : null;
+    let visualizerAnimFrame = null;
+
+    if (soundboardBtn && soundboardModal) {
+        soundboardBtn.addEventListener('click', () => {
+            soundboardModal.style.display = 'flex';
+            drawIdleSoundWaveform();
+            playSound('click');
+        });
+
+        [closeSoundboardBtn, closeSoundboardFooterBtn].forEach(btn => {
+            if (btn) btn.addEventListener('click', () => {
+                soundboardModal.style.display = 'none';
+                if (visualizerAnimFrame) cancelAnimationFrame(visualizerAnimFrame);
+                playSound('click');
+            });
+        });
+
+        document.querySelectorAll('.sound-key-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const soundType = e.currentTarget.getAttribute('data-sound');
+                playSound(soundType);
+                triggerVisualizerWaveform(soundType);
+            });
+        });
+    }
+
+    function drawIdleSoundWaveform() {
+        if (!soundVisualizerCtx || !soundVisualizerCanvas) return;
+        const w = soundVisualizerCanvas.width;
+        const h = soundVisualizerCanvas.height;
+        soundVisualizerCtx.clearRect(0, 0, w, h);
+
+        soundVisualizerCtx.strokeStyle = 'rgba(99, 102, 241, 0.4)';
+        soundVisualizerCtx.lineWidth = 2;
+        soundVisualizerCtx.beginPath();
+        soundVisualizerCtx.moveTo(0, h / 2);
+        soundVisualizerCtx.lineTo(w, h / 2);
+        soundVisualizerCtx.stroke();
+    }
+
+    function triggerVisualizerWaveform(soundType) {
+        if (!soundVisualizerCtx || !soundVisualizerCanvas) return;
+        if (visualizerAnimFrame) cancelAnimationFrame(visualizerAnimFrame);
+
+        let startTime = Date.now();
+        const duration = 600;
+
+        function animateWave() {
+            const elapsed = Date.now() - startTime;
+            if (elapsed > duration) {
+                drawIdleSoundWaveform();
+                return;
+            }
+
+            const w = soundVisualizerCanvas.width;
+            const h = soundVisualizerCanvas.height;
+            soundVisualizerCtx.clearRect(0, 0, w, h);
+
+            const progress = 1 - (elapsed / duration);
+            const freq = soundType === 'win' ? 0.05 : soundType === 'zen' ? 0.02 : 0.08;
+            const amp = (h / 3) * progress;
+
+            soundVisualizerCtx.strokeStyle = soundType === 'win' ? '#f59e0b' : soundType === 'error' ? '#ef4444' : '#6366f1';
+            soundVisualizerCtx.lineWidth = 3;
+            soundVisualizerCtx.beginPath();
+
+            for (let x = 0; x < w; x += 3) {
+                const y = (h / 2) + Math.sin(x * freq + elapsed * 0.02) * amp * Math.sin((x / w) * Math.PI);
+                if (x === 0) soundVisualizerCtx.moveTo(x, y);
+                else soundVisualizerCtx.lineTo(x, y);
+            }
+
+            soundVisualizerCtx.stroke();
+            visualizerAnimFrame = requestAnimationFrame(animateWave);
+        }
+
+        animateWave();
+    }
+
     // --- ACHIEVEMENTS SYSTEM ---
     const ACHIEVEMENTS = [
         { id: 'first_snap', icon: '📸', title: 'First Snap', desc: 'Capture, upload, or choose your first photo.' },

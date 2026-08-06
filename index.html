@@ -64,6 +64,7 @@
                     <option value="chime">🔔 Glass Chime</option>
                 </select>
                 <button id="soundToggleBtn" class="btn btn-icon" title="Toggle Sound">🔊</button>
+                <button id="soundboardBtn" class="btn btn-icon" title="Open Web Audio Sound Lab & Synthesizer Modal">🎹 Sound Lab</button>
                 <select id="musicTrackSelect" class="form-select theme-select" title="Procedural Ambient Music Track">
                     <option value="off">🔇 Music Off</option>
                     <option value="cyber">🎧 Cyber Synth</option>
@@ -507,6 +508,36 @@
                     <button id="replayStepForwardBtn" class="btn btn-secondary btn-sm" title="Next Move (Right Arrow)">⏭️ Forward</button>
                     <button id="replaySpeedBtn" class="btn btn-secondary btn-sm" title="Playback Speed">⚡ 1x</button>
                     <button id="replayResetBtn" class="btn btn-secondary btn-sm" title="Reset Playback">🔄 Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SOUNDFX SYNTH SOUNDBOARD MODAL -->
+        <div id="soundboardModal" class="modal-backdrop" style="display: none;">
+            <div class="modal-card soundboard-modal-card" style="max-width: 540px; text-align: center;">
+                <div class="modal-header">
+                    <h2>🎹 Web Audio Sound Lab & Synthesizer</h2>
+                    <button id="closeSoundboardBtn" class="close-btn">&times;</button>
+                </div>
+                <p class="modal-subtitle">Interactive Web Audio sound synthesis pad with real-time waveform visualizer.</p>
+                
+                <div class="sound-visualizer-wrapper" style="margin: 14px 0; background: rgba(0,0,0,0.4); border-radius: 12px; padding: 10px; border: 1px solid rgba(255,255,255,0.1);">
+                    <canvas id="soundVisualizerCanvas" width="480" height="90" style="width: 100%; height: 90px; border-radius: 8px; display: block;"></canvas>
+                </div>
+
+                <div class="soundboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin-top: 10px;">
+                    <button class="btn btn-secondary sound-key-btn" data-sound="snap">🧩 Tile Move</button>
+                    <button class="btn btn-secondary sound-key-btn" data-sound="hint">🔔 Hint Chime</button>
+                    <button class="btn btn-secondary sound-key-btn" data-sound="win">🏆 Victory Fanfare</button>
+                    <button class="btn btn-secondary sound-key-btn" data-sound="shuffle">🔀 Reshuffle</button>
+                    <button class="btn btn-secondary sound-key-btn" data-sound="click">🖱️ Button Click</button>
+                    <button class="btn btn-secondary sound-key-btn" data-sound="error">❌ Error Buzz</button>
+                    <button class="btn btn-secondary sound-key-btn" data-sound="zen">🧘 528Hz Solfeggio</button>
+                    <button class="btn btn-secondary sound-key-btn" data-sound="arcade">🕹️ 8-Bit Jump</button>
+                </div>
+
+                <div class="modal-footer" style="justify-content: flex-end; margin-top: 18px;">
+                    <button id="closeSoundboardFooterBtn" class="btn btn-secondary">Close Sound Lab</button>
                 </div>
             </div>
         </div>
