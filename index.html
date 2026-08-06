@@ -16,7 +16,8 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Background Ambient Glow -->
+    <!-- Background Ambient Canvas & Glow -->
+    <canvas id="bgParticleCanvas" class="bg-particle-canvas"></canvas>
     <div class="ambient-glow glow-1"></div>
     <div class="ambient-glow glow-2"></div>
 
@@ -43,6 +44,16 @@
                     <option value="sunset">🌅 Sunset Synth</option>
                     <option value="emerald">🌿 Deep Emerald</option>
                     <option value="retro">📻 Retro Sepia</option>
+                    <option value="volcano">🌋 Volcanic Ruby</option>
+                    <option value="sakura">🌸 Sakura Blossom</option>
+                    <option value="neon">⚡ Neon Cyberpunk</option>
+                </select>
+                <select id="ambientBgSelect" class="form-select theme-select" title="Background Ambient Effect">
+                    <option value="starfield">✨ Starfield Dust</option>
+                    <option value="aurora">🌌 Neon Aurora</option>
+                    <option value="matrix">🟢 Matrix Rain</option>
+                    <option value="bokeh">🎆 Firefly Bokeh</option>
+                    <option value="off">🚫 FX Off</option>
                 </select>
                 <button id="dailyChallengeBtn" class="btn btn-icon daily-btn" title="Daily Seeded Challenge & Streak Tracker">📅 <span id="dailyStreakBadge" class="badge-count">🔥 0</span></button>
                 <button id="achievementsBtn" class="btn btn-icon achievements-btn" title="View Achievements & Badges">🎖️ <span id="achievementsBadge" class="badge-count">0/12</span></button>

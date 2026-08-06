@@ -45,6 +45,33 @@
     --cyan-accent: #fbbf24;
 }
 
+[data-theme="volcano"] {
+    --bg-dark: #1a0808;
+    --card-bg: rgba(45, 15, 15, 0.75);
+    --primary-glow: #ef4444;
+    --primary-accent: #dc2626;
+    --secondary-accent: #f97316;
+    --cyan-accent: #fbbf24;
+}
+
+[data-theme="sakura"] {
+    --bg-dark: #1a0a14;
+    --card-bg: rgba(48, 18, 38, 0.75);
+    --primary-glow: #ec4899;
+    --primary-accent: #db2777;
+    --secondary-accent: #f472b6;
+    --cyan-accent: #c084fc;
+}
+
+[data-theme="neon"] {
+    --bg-dark: #03001e;
+    --card-bg: rgba(15, 12, 41, 0.8);
+    --primary-glow: #a855f7;
+    --primary-accent: #9333ea;
+    --secondary-accent: #06b6d4;
+    --cyan-accent: #38bdf8;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -61,6 +88,18 @@ body {
     align-items: center;
     overflow-x: hidden;
     position: relative;
+}
+
+/* Background Particle Canvas */
+.bg-particle-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
 }
 
 /* Ambient Background Glows */

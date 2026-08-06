@@ -2426,6 +2426,138 @@ document.addEventListener('DOMContentLoaded', () => {
     // Apply initial saved theme
     applyTheme(savedTheme);
 
+    // --- AMBIENT BACKGROUND PARTICLE ENGINE ---
+    const bgCanvas = document.getElementById('bgParticleCanvas');
+    const ambientBgSelect = document.getElementById('ambientBgSelect');
+    let bgCtx = bgCanvas ? bgCanvas.getContext('2d') : null;
+    let bgParticles = [];
+    let bgAnimFrame = null;
+    let currentAmbientEffect = localStorage.getItem('snappuzzle_ambient_bg') || 'starfield';
+    let mouseX = 0;
+    let mouseY = 0;
+
+    if (ambientBgSelect) {
+        ambientBgSelect.value = currentAmbientEffect;
+    }
+
+    function initBgCanvasSize() {
+        if (!bgCanvas) return;
+        bgCanvas.width = window.innerWidth;
+        bgCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', () => {
+        initBgCanvasSize();
+        createBgParticles();
+    });
+    window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
+
+    function createBgParticles() {
+        if (!bgCanvas) return;
+        bgParticles = [];
+        const w = bgCanvas.width;
+        const h = bgCanvas.height;
+        const count = Math.min(Math.floor((w * h) / 18000), 75);
+
+        for (let i = 0; i < count; i++) {
+            bgParticles.push({
+                x: Math.random() * w,
+                y: Math.random() * h,
+                size: Math.random() * 3 + 1,
+                speedX: (Math.random() - 0.5) * 0.4,
+                speedY: (Math.random() - 0.5) * 0.4,
+                alpha: Math.random() * 0.7 + 0.3,
+                pulseSpeed: Math.random() * 0.02 + 0.005,
+                char: ['0', '1', '🧩', '★', '◇', '▲'][Math.floor(Math.random() * 6)],
+                color: ['#6366f1', '#ec4899', '#06b6d4', '#10b981', '#f59e0b'][Math.floor(Math.random() * 5)]
+            });
+        }
+    }
+
+    function renderBgParticles() {
+        if (!bgCanvas || !bgCtx || currentAmbientEffect === 'off') {
+            if (bgCtx && bgCanvas) bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+            return;
+        }
+
+        const w = bgCanvas.width;
+        const h = bgCanvas.height;
+        bgCtx.clearRect(0, 0, w, h);
+
+        bgParticles.forEach(p => {
+            p.x += p.speedX + (mouseX - w / 2) * 0.00005;
+            p.y += p.speedY + (mouseY - h / 2) * 0.00005;
+            p.alpha += Math.sin(Date.now() * p.pulseSpeed) * 0.005;
+            if (p.alpha > 0.95) p.alpha = 0.95;
+            if (p.alpha < 0.15) p.alpha = 0.15;
+
+            if (p.x < 0) p.x = w;
+            if (p.x > w) p.x = 0;
+            if (p.y < 0) p.y = h;
+            if (p.y > h) p.y = 0;
+
+            bgCtx.save();
+            bgCtx.globalAlpha = p.alpha;
+
+            if (currentAmbientEffect === 'starfield') {
+                bgCtx.fillStyle = p.color;
+                bgCtx.shadowColor = p.color;
+                bgCtx.shadowBlur = 8;
+                bgCtx.beginPath();
+                bgCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                bgCtx.fill();
+            } else if (currentAmbientEffect === 'matrix') {
+                bgCtx.fillStyle = '#10b981';
+                bgCtx.font = `${Math.floor(p.size * 5 + 10)}px monospace`;
+                bgCtx.shadowColor = '#10b981';
+                bgCtx.shadowBlur = 5;
+                bgCtx.fillText(p.char, p.x, p.y);
+            } else if (currentAmbientEffect === 'aurora') {
+                bgCtx.fillStyle = p.color;
+                bgCtx.shadowColor = p.color;
+                bgCtx.shadowBlur = 15;
+                bgCtx.beginPath();
+                bgCtx.arc(p.x, p.y, p.size * 2.5, 0, Math.PI * 2);
+                bgCtx.fill();
+            } else if (currentAmbientEffect === 'bokeh') {
+                bgCtx.fillStyle = p.color;
+                bgCtx.shadowColor = p.color;
+                bgCtx.shadowBlur = 20;
+                bgCtx.beginPath();
+                bgCtx.arc(p.x, p.y, p.size * 4, 0, Math.PI * 2);
+                bgCtx.fill();
+            }
+
+            bgCtx.restore();
+        });
+
+        bgAnimFrame = requestAnimationFrame(renderBgParticles);
+    }
+
+    function setAmbientEffect(effect) {
+        currentAmbientEffect = effect;
+        localStorage.setItem('snappuzzle_ambient_bg', effect);
+        if (bgAnimFrame) cancelAnimationFrame(bgAnimFrame);
+        if (effect !== 'off') {
+            initBgCanvasSize();
+            createBgParticles();
+            renderBgParticles();
+        } else if (bgCtx && bgCanvas) {
+            bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+        }
+    }
+
+    if (ambientBgSelect) {
+        ambientBgSelect.addEventListener('change', (e) => {
+            setAmbientEffect(e.target.value);
+            playSound('click');
+        });
+    }
+
+    setAmbientEffect(currentAmbientEffect);
+
     // --- SERVICE WORKER REGISTRATION (PWA) ---
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
