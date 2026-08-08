@@ -294,6 +294,7 @@
                             <button id="rotateCwBtn" class="btn btn-secondary btn-sm" type="button" title="Rotate Photo 90° Clockwise">🔄 Rotate 90°</button>
                             <button id="flipHorizBtn" class="btn btn-secondary btn-sm" type="button" title="Flip Photo Horizontally">↔️ Flip H</button>
                             <button id="flipVertBtn" class="btn btn-secondary btn-sm" type="button" title="Flip Photo Vertically">↕️ Flip V</button>
+                            <button id="openCropModalBtn" class="btn btn-secondary btn-sm" type="button" title="Crop & Framing Studio">✂️ Crop Photo</button>
                         </div>
                         <div class="sticker-toolbar" style="margin-top: 14px;">
                             <label style="display:block; margin-bottom: 6px; font-weight: 500; font-size: 0.9rem;">🎨 Photo Stamps & Stickers:</label>
@@ -538,6 +539,43 @@
 
                 <div class="modal-footer" style="justify-content: flex-end; margin-top: 18px;">
                     <button id="closeSoundboardFooterBtn" class="btn btn-secondary">Close Sound Lab</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CROP & FRAMING STUDIO MODAL -->
+        <div id="cropModal" class="modal-backdrop" style="display: none;">
+            <div class="modal-card crop-modal-card" style="max-width: 540px; text-align: center;">
+                <div class="modal-header">
+                    <h2>✂️ Photo Crop & Framing Studio</h2>
+                    <button id="closeCropModalBtn" class="btn-close">&times;</button>
+                </div>
+                <p class="modal-subtitle">Drag to reposition, select aspect ratio, and zoom to frame your ideal puzzle image.</p>
+                
+                <div class="crop-ratio-bar" style="display: flex; gap: 8px; justify-content: center; margin: 12px 0; flex-wrap: wrap;">
+                    <button type="button" class="btn btn-secondary btn-sm crop-ratio-btn active" data-ratio="1:1">1:1 Square</button>
+                    <button type="button" class="btn btn-secondary btn-sm crop-ratio-btn" data-ratio="4:3">4:3 Photo</button>
+                    <button type="button" class="btn btn-secondary btn-sm crop-ratio-btn" data-ratio="16:9">16:9 Wide</button>
+                    <button type="button" class="btn btn-secondary btn-sm crop-ratio-btn" data-ratio="free">Freeform</button>
+                </div>
+
+                <div class="crop-viewport-container" style="position: relative; width: 100%; height: 320px; background: #0f172a; border-radius: 12px; overflow: hidden; margin: 10px 0; border: 1px solid rgba(255,255,255,0.1); cursor: grab;">
+                    <canvas id="cropCanvas" width="500" height="320" style="width: 100%; height: 100%; display: block;"></canvas>
+                    <div id="cropGuideGrid" class="crop-guide-grid"></div>
+                </div>
+
+                <div class="crop-zoom-controls" style="display: flex; align-items: center; justify-content: center; gap: 12px; margin: 12px 0;">
+                    <span style="font-size: 0.85rem; color: #94a3b8; font-weight: 500;">🔍 Zoom:</span>
+                    <input type="range" id="cropZoomSlider" min="100" max="300" value="100" style="width: 200px;">
+                    <span id="cropZoomVal" style="font-size: 0.85rem; font-weight: 600; color: #6366f1;">100%</span>
+                </div>
+
+                <div class="modal-footer" style="justify-content: space-between; margin-top: 14px;">
+                    <button id="resetCropBtn" type="button" class="btn btn-secondary">🔄 Reset Frame</button>
+                    <div style="display: flex; gap: 8px;">
+                        <button id="cancelCropBtn" type="button" class="btn btn-secondary">Cancel</button>
+                        <button id="applyCropBtn" type="button" class="btn btn-primary">✂️ Apply Crop</button>
+                    </div>
                 </div>
             </div>
         </div>
