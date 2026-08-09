@@ -2345,6 +2345,21 @@ document.addEventListener('DOMContentLoaded', () => {
         // Prevent hotkeys inside inputs
         if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
 
+        // Dismiss active open modals with Escape key
+        if (e.key === 'Escape') {
+            const cropModal = document.getElementById('cropModal');
+            const soundModal = document.getElementById('soundModal');
+            const achievementsModal = document.getElementById('achievementsModal');
+            const victoryModal = document.getElementById('victoryModal');
+            
+            if (cropModal && cropModal.style.display !== 'none') cropModal.style.display = 'none';
+            if (soundModal && soundModal.style.display !== 'none') soundModal.style.display = 'none';
+            if (achievementsModal && achievementsModal.style.display !== 'none') achievementsModal.style.display = 'none';
+            if (victoryModal && victoryModal.style.display !== 'none') victoryModal.style.display = 'none';
+            if (replayModal && replayModal.style.display === 'flex') closeReplayModal();
+            return;
+        }
+
         // Replay modal key bindings
         if (replayModal && replayModal.style.display === 'flex') {
             if (e.code === 'Space') {
@@ -2356,8 +2371,6 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (e.key === 'ArrowRight') {
                 e.preventDefault();
                 stepReplayForward();
-            } else if (e.key === 'Escape') {
-                closeReplayModal();
             }
             return;
         }
