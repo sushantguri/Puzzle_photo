@@ -346,7 +346,7 @@
             <section id="gameSection" class="card game-card" style="display: none;">
                 <!-- Secondary Game Controls -->
                 <div class="game-toolbar">
-                    <span class="hotkeys-badge" title="Keyboard Shortcuts: Arrow Keys to Move, G = Guide, H = Hint, N = Numbers, U = Undo, A = Auto-Solve, R = Shuffle">⌨️ Hotkeys Active</span>
+                    <button id="openHotkeysBtn" class="hotkeys-badge" type="button" title="View Keyboard Shortcuts Guide (?)">⌨️ Hotkeys Active (?)</button>
                     <button id="toggleGhostBtn" class="btn btn-secondary btn-sm">👁️ Toggle Guide (G)</button>
                     <button id="peekGhostBtn" class="btn btn-secondary btn-sm" title="Flash guide for 1.2s speed peek (B)">⚡ Speed Peek (B)</button>
                     <div class="ghost-opacity-wrapper" style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.8rem; background: rgba(0,0,0,0.25); padding: 4px 8px; border-radius: 8px; border: 1px solid var(--border-color);">
@@ -576,6 +576,72 @@
                         <button id="cancelCropBtn" type="button" class="btn btn-secondary">Cancel</button>
                         <button id="applyCropBtn" type="button" class="btn btn-primary">✂️ Apply Crop</button>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KEYBOARD HOTKEYS MODAL -->
+        <div id="hotkeysModal" class="modal-backdrop" style="display: none;">
+            <div class="modal-card" style="max-width: 520px;">
+                <div class="modal-header">
+                    <h2>⌨️ Keyboard Controls Guide</h2>
+                    <button id="closeHotkeysModalBtn" class="btn-close">&times;</button>
+                </div>
+                <p class="modal-subtitle">Use keyboard shortcuts for rapid, precision puzzle solving and navigation.</p>
+
+                <div class="hotkeys-list" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 16px 0; text-align: left;">
+                    <div class="hotkey-item" style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.04); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                        <span style="font-size: 0.85rem; color: #cbd5e1;">Slide Tiles</span>
+                        <kbd class="kbd-badge">↑ ↓ ← →</kbd>
+                    </div>
+                    <div class="hotkey-item" style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.04); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                        <span style="font-size: 0.85rem; color: #cbd5e1;">Toggle Guide</span>
+                        <kbd class="kbd-badge">G</kbd>
+                    </div>
+                    <div class="hotkey-item" style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.04); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                        <span style="font-size: 0.85rem; color: #cbd5e1;">Speed Peek (1.2s)</span>
+                        <kbd class="kbd-badge">B</kbd>
+                    </div>
+                    <div class="hotkey-item" style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.04); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                        <span style="font-size: 0.85rem; color: #cbd5e1;">Toggle Numbers</span>
+                        <kbd class="kbd-badge">N</kbd>
+                    </div>
+                    <div class="hotkey-item" style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.04); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                        <span style="font-size: 0.85rem; color: #cbd5e1;">Undo Move</span>
+                        <kbd class="kbd-badge">U / Ctrl+Z</kbd>
+                    </div>
+                    <div class="hotkey-item" style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.04); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                        <span style="font-size: 0.85rem; color: #cbd5e1;">Get Hint</span>
+                        <kbd class="kbd-badge">H</kbd>
+                    </div>
+                    <div class="hotkey-item" style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.04); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                        <span style="font-size: 0.85rem; color: #cbd5e1;">Auto-Solve Bot</span>
+                        <kbd class="kbd-badge">A</kbd>
+                    </div>
+                    <div class="hotkey-item" style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.04); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                        <span style="font-size: 0.85rem; color: #cbd5e1;">Move Replay</span>
+                        <kbd class="kbd-badge">P</kbd>
+                    </div>
+                    <div class="hotkey-item" style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.04); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                        <span style="font-size: 0.85rem; color: #cbd5e1;">Reshuffle Board</span>
+                        <kbd class="kbd-badge">R</kbd>
+                    </div>
+                    <div class="hotkey-item" style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.04); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                        <span style="font-size: 0.85rem; color: #cbd5e1;">Snap Photo</span>
+                        <kbd class="kbd-badge">Space</kbd>
+                    </div>
+                    <div class="hotkey-item" style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.04); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                        <span style="font-size: 0.85rem; color: #cbd5e1;">Close Modals</span>
+                        <kbd class="kbd-badge">Esc</kbd>
+                    </div>
+                    <div class="hotkey-item" style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.04); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                        <span style="font-size: 0.85rem; color: #cbd5e1;">Toggle Hotkeys</span>
+                        <kbd class="kbd-badge">?</kbd>
+                    </div>
+                </div>
+
+                <div class="modal-footer" style="justify-content: flex-end;">
+                    <button id="okHotkeysBtn" type="button" class="btn btn-primary">Got it!</button>
                 </div>
             </div>
         </div>

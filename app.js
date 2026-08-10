@@ -2351,12 +2351,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const soundModal = document.getElementById('soundModal');
             const achievementsModal = document.getElementById('achievementsModal');
             const victoryModal = document.getElementById('victoryModal');
+            const hotkeysModal = document.getElementById('hotkeysModal');
             
             if (cropModal && cropModal.style.display !== 'none') cropModal.style.display = 'none';
             if (soundModal && soundModal.style.display !== 'none') soundModal.style.display = 'none';
             if (achievementsModal && achievementsModal.style.display !== 'none') achievementsModal.style.display = 'none';
             if (victoryModal && victoryModal.style.display !== 'none') victoryModal.style.display = 'none';
+            if (hotkeysModal && hotkeysModal.style.display !== 'none') hotkeysModal.style.display = 'none';
             if (replayModal && replayModal.style.display === 'flex') closeReplayModal();
+            return;
+        }
+
+        // Toggle Hotkeys Modal with ? key
+        if (e.key === '?') {
+            const hotkeysModal = document.getElementById('hotkeysModal');
+            if (hotkeysModal) {
+                hotkeysModal.style.display = hotkeysModal.style.display === 'flex' ? 'none' : 'flex';
+                playSound('snap');
+            }
             return;
         }
 
@@ -2957,6 +2969,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
             playSound('snap');
             showToast('✂️ Photo Cropped & Framed!', 'Achievement Unlocked');
+    // --- HOTKEYS GUIDE MODAL ENGINE ---
+    const openHotkeysBtn = document.getElementById('openHotkeysBtn');
+    const hotkeysModal = document.getElementById('hotkeysModal');
+    const closeHotkeysModalBtn = document.getElementById('closeHotkeysModalBtn');
+    const okHotkeysBtn = document.getElementById('okHotkeysBtn');
+
+    if (openHotkeysBtn && hotkeysModal) {
+        openHotkeysBtn.addEventListener('click', () => {
+            hotkeysModal.style.display = 'flex';
+            playSound('snap');
+        });
+    }
+    if (closeHotkeysModalBtn && hotkeysModal) {
+        closeHotkeysModalBtn.addEventListener('click', () => {
+            hotkeysModal.style.display = 'none';
+        });
+    }
+    if (okHotkeysBtn && hotkeysModal) {
+        okHotkeysBtn.addEventListener('click', () => {
+            hotkeysModal.style.display = 'none';
         });
     }
 
