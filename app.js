@@ -444,11 +444,85 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Sample cards click
+    // Procedural CORS-safe canvas generator for sample cards
+    function generateSampleArtDataUrl(type) {
+        const c = document.createElement('canvas');
+        c.width = 640;
+        c.height = 480;
+        const ctx = c.getContext('2d');
+
+        if (type === 'cyberpunk') {
+            const grad = ctx.createLinearGradient(0, 0, 640, 480);
+            grad.addColorStop(0, '#0f0c29');
+            grad.addColorStop(0.5, '#302b63');
+            grad.addColorStop(1, '#24243e');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 640, 480);
+
+            const sunGrad = ctx.createRadialGradient(320, 240, 10, 320, 240, 140);
+            sunGrad.addColorStop(0, '#ff007f');
+            sunGrad.addColorStop(1, '#7928ca');
+            ctx.fillStyle = sunGrad;
+            ctx.beginPath(); ctx.arc(320, 240, 120, 0, Math.PI * 2); ctx.fill();
+
+            ctx.strokeStyle = '#00f2fe'; ctx.lineWidth = 2;
+            for (let x = 0; x <= 640; x += 40) {
+                ctx.beginPath(); ctx.moveTo(x, 240); ctx.lineTo(x, 480); ctx.stroke();
+            }
+            for (let y = 240; y <= 480; y += 25) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(640, y); ctx.stroke();
+            }
+        } else if (type === 'nature') {
+            const grad = ctx.createLinearGradient(0, 0, 0, 480);
+            grad.addColorStop(0, '#ff7e5f');
+            grad.addColorStop(0.5, '#feb47b');
+            grad.addColorStop(1, '#2c3e50');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 640, 480);
+
+            ctx.fillStyle = '#1a252f';
+            ctx.beginPath();
+            ctx.moveTo(0, 480); ctx.lineTo(160, 280); ctx.lineTo(320, 480); ctx.fill();
+            ctx.beginPath();
+            ctx.moveTo(200, 480); ctx.lineTo(440, 220); ctx.lineTo(640, 480); ctx.fill();
+
+            ctx.fillStyle = '#fff7ad';
+            ctx.beginPath(); ctx.arc(440, 180, 50, 0, Math.PI * 2); ctx.fill();
+        } else {
+            const grad = ctx.createRadialGradient(320, 240, 20, 320, 240, 350);
+            grad.addColorStop(0, '#00c6ff');
+            grad.addColorStop(0.5, '#0072ff');
+            grad.addColorStop(1, '#0a0a23');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 640, 480);
+
+            for (let i = 0; i < 40; i++) {
+                ctx.fillStyle = `hsla(${i * 12}, 85%, 65%, 0.35)`;
+                ctx.beginPath();
+                ctx.arc(Math.sin(i) * 200 + 320, Math.cos(i) * 150 + 240, 20 + i * 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        return c.toDataURL('image/jpeg', 0.9);
+    }
+
+    // Sample cards click handler
     document.querySelectorAll('.sample-card').forEach(card => {
         card.addEventListener('click', () => {
+            const sampleType = card.getAttribute('data-sample') || 'cyberpunk';
             const img = card.querySelector('img');
-            rawPhotoDataUrl = img.src;
+            
+            // Try to use image source or fallback to procedural CORS-safe art
+            try {
+                if (img && img.complete && img.naturalWidth !== 0) {
+                    rawPhotoDataUrl = img.src;
+                } else {
+                    rawPhotoDataUrl = generateSampleArtDataUrl(sampleType);
+                }
+            } catch (err) {
+                rawPhotoDataUrl = generateSampleArtDataUrl(sampleType);
+            }
+            
             currentPhotoDataUrl = rawPhotoDataUrl;
             showConfigSection();
         });
