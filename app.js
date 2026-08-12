@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let selectedGridSize = 3; // 3x3 default
     let puzzleMode = 'sliding'; // 'sliding' or 'jigsaw'
     let soundEnabled = true;
+    let masterVolume = parseFloat(localStorage.getItem('snappuzzle_master_volume')) ?? 0.8;
+    if (isNaN(masterVolume)) masterVolume = 0.8;
     let isMirrored = true;
     let rotationAngle = 0;
     let flipH = false;
@@ -208,8 +210,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 filter.frequency.setValueAtTime(step.filterCutoff || 800, now);
 
                 const masterGain = audioCtx.createGain();
-                masterGain.gain.setValueAtTime(0.03, now);
-                masterGain.gain.linearRampToValueAtTime(0.001, now + step.duration);
+                masterGain.gain.setValueAtTime(0.03 * masterVolume, now);
+                masterGain.gain.linearRampToValueAtTime(0.001 * masterVolume, now + step.duration);
 
                 filter.connect(masterGain);
                 masterGain.connect(audioCtx.destination);
@@ -251,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function playSound(type) {
-        if (!soundEnabled) return;
+        if (!soundEnabled || masterVolume <= 0) return;
         try {
             if (!audioCtx) audioCtx = new AudioCtx();
             if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -267,8 +269,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 gain.connect(audioCtx.destination);
                 osc.frequency.setValueAtTime(300, now);
                 osc.frequency.exponentialRampToValueAtTime(150, now + 0.08);
-                gain.gain.setValueAtTime(0.15, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+                gain.gain.setValueAtTime(0.15 * masterVolume, now);
+                gain.gain.linearRampToValueAtTime(0.01 * masterVolume, now + 0.08);
                 osc.start(now);
                 osc.stop(now + 0.08);
             } else if (type === 'snap') {
@@ -284,15 +286,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     const freq = zenTones[Math.floor(Math.random() * zenTones.length)];
                     osc.frequency.setValueAtTime(freq, now);
                     osc.frequency.exponentialRampToValueAtTime(freq * 1.5, now + 0.35);
-                    gain.gain.setValueAtTime(0.12, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                    gain.gain.setValueAtTime(0.12 * masterVolume, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001 * masterVolume, now + 0.35);
                     osc.start(now);
                     osc.stop(now + 0.35);
                 } else {
                     osc.frequency.setValueAtTime(523.25, now); // C5
                     osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.12); // E5
-                    gain.gain.setValueAtTime(0.2, now);
-                    gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
+                    gain.gain.setValueAtTime(0.2 * masterVolume, now);
+                    gain.gain.linearRampToValueAtTime(0.01 * masterVolume, now + 0.12);
                     osc.start(now);
                     osc.stop(now + 0.12);
                 }
@@ -305,8 +307,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     o.connect(g);
                     g.connect(audioCtx.destination);
                     o.frequency.setValueAtTime(freq, now + i * 0.1);
-                    g.gain.setValueAtTime(0.2, now + i * 0.1);
-                    g.gain.linearRampToValueAtTime(0.01, now + i * 0.1 + 0.4);
+                    g.gain.setValueAtTime(0.2 * masterVolume, now + i * 0.1);
+                    g.gain.linearRampToValueAtTime(0.01 * masterVolume, now + i * 0.1 + 0.4);
                     o.start(now + i * 0.1);
                     o.stop(now + i * 0.1 + 0.4);
                 });
@@ -2399,9 +2401,45 @@ document.addEventListener('DOMContentLoaded', () => {
         startWebcam();
     });
 
+    const masterVolumeSlider = document.getElementById('masterVolumeSlider');
+
+    function updateVolumeUI() {
+        if (!soundToggleBtn) return;
+        if (!soundEnabled || masterVolume <= 0) {
+            soundToggleBtn.textContent = '🔇';
+        } else if (masterVolume > 0.5) {
+            soundToggleBtn.textContent = '🔊';
+        } else if (masterVolume > 0.2) {
+            soundToggleBtn.textContent = '🔉';
+        } else {
+            soundToggleBtn.textContent = '🔈';
+        }
+        if (masterVolumeSlider) {
+            masterVolumeSlider.value = Math.round(masterVolume * 100);
+        }
+    }
+
+    if (masterVolumeSlider) {
+        masterVolumeSlider.value = Math.round(masterVolume * 100);
+        masterVolumeSlider.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value) / 100;
+            masterVolume = val;
+            soundEnabled = val > 0;
+            localStorage.setItem('snappuzzle_master_volume', masterVolume.toString());
+            updateVolumeUI();
+        });
+    }
+
+    updateVolumeUI();
+
     soundToggleBtn.addEventListener('click', () => {
         soundEnabled = !soundEnabled;
-        soundToggleBtn.textContent = soundEnabled ? '🔊' : '🔇';
+        if (soundEnabled && masterVolume === 0) {
+            masterVolume = 0.8;
+            localStorage.setItem('snappuzzle_master_volume', '0.8');
+        }
+        updateVolumeUI();
+        if (soundEnabled) playSound('click');
     });
 
     // --- THEME SELECTOR & PERSISTENCE ---
