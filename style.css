@@ -212,6 +212,21 @@ body {
     border-radius: 4px;
 }
 
+.pwa-install-btn {
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%) !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.pwa-install-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(168, 85, 247, 0.6);
+}
+
 /* Cards & Glassmorphism */
 .card {
     background: var(--card-bg);

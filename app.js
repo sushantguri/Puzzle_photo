@@ -3104,7 +3104,36 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- SERVICE WORKER REGISTRATION (PWA) ---
+    // --- SERVICE WORKER & PWA INSTALL PROMPT ---
+    let deferredPrompt = null;
+    const pwaInstallBtn = document.getElementById('pwaInstallBtn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        if (pwaInstallBtn) {
+            pwaInstallBtn.style.display = 'inline-flex';
+        }
+    });
+
+    if (pwaInstallBtn) {
+        pwaInstallBtn.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                pwaInstallBtn.style.display = 'none';
+                playSound('achievement');
+            }
+            deferredPrompt = null;
+        });
+    }
+
+    window.addEventListener('appinstalled', () => {
+        if (pwaInstallBtn) pwaInstallBtn.style.display = 'none';
+        deferredPrompt = null;
+    });
+
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./sw.js')
