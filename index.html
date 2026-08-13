@@ -267,6 +267,9 @@
                             <button class="timer-mode-btn" data-timermode="zen">
                                 <span class="mode-icon">🧘</span> Zen Relax
                             </button>
+                            <button class="timer-mode-btn" data-timermode="speedrun">
+                                <span class="mode-icon">🚀</span> Speedrun Rush
+                            </button>
                         </div>
                     </div>
 
@@ -390,6 +393,11 @@
 
                 <!-- Puzzle Board Container -->
                 <div class="puzzle-wrapper">
+                    <!-- Dynamic Combo Multiplier HUD -->
+                    <div id="comboHud" class="combo-hud" style="display: none;">
+                        <span id="comboBadge" class="combo-badge">🔥 2x COMBO!</span>
+                        <span id="comboPtsText" class="combo-pts">+100 pts</span>
+                    </div>
                     <div id="puzzleBoard" class="puzzle-board"></div>
                     <!-- Translucent Reference Image Overlay -->
                     <div id="ghostOverlay" class="ghost-overlay" style="display: none;">

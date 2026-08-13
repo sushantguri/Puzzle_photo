@@ -1312,16 +1312,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const timerProgressWrapper = document.getElementById('timerProgressWrapper');
         const timerProgressBar = document.getElementById('timerProgressBar');
 
-        if (timerMode === 'countdown') {
+        if (timerMode === 'countdown' || timerMode === 'speedrun') {
             const timeAttackMap = { 3: 60, 4: 90, 5: 120, 6: 180, 8: 300 };
-            timeAttackDuration = timeAttackMap[selectedGridSize] || 90;
+            const speedrunMap = { 3: 35, 4: 50, 5: 75, 6: 100, 8: 150 };
+            timeAttackDuration = (timerMode === 'speedrun') ? (speedrunMap[selectedGridSize] || 45) : (timeAttackMap[selectedGridSize] || 90);
             remainingSeconds = timeAttackDuration;
             if (timerProgressWrapper) timerProgressWrapper.style.display = 'block';
             if (timerProgressBar) {
                 timerProgressBar.style.width = '100%';
                 timerProgressBar.classList.remove('low-time');
             }
-            timerDisplay.textContent = formatTime(remainingSeconds);
+            timerDisplay.textContent = (timerMode === 'speedrun') ? `🚀 ${formatTime(remainingSeconds)}` : formatTime(remainingSeconds);
         } else if (timerMode === 'zen') {
             if (timerProgressWrapper) timerProgressWrapper.style.display = 'none';
             timerDisplay.textContent = '🧘 Zen Mode';
@@ -1520,9 +1521,69 @@ document.addEventListener('DOMContentLoaded', () => {
         moveDisplay.textContent = `${movesCount} Moves`;
         updateUndoButtonState();
         updateAiRivalUI();
+        if (!isUndo) {
+            checkComboMultiplier(tileA, tileB);
+        }
         playSound('snap');
         renderTiles();
         checkWinCondition();
+    }
+
+    let comboStreak = 0;
+    let lastMoveTime = 0;
+    let comboTimer = null;
+
+    function checkComboMultiplier(tileA, tileB) {
+        const now = Date.now();
+        const isCorrect = (tileA && tileA.currentPos === tileA.correctPos) || (tileB && tileB.currentPos === tileB.correctPos);
+        if (isCorrect) {
+            if (now - lastMoveTime < 3200 && lastMoveTime > 0) {
+                comboStreak++;
+            } else {
+                comboStreak = 1;
+            }
+            lastMoveTime = now;
+
+            if (comboStreak >= 2) {
+                const comboHud = document.getElementById('comboHud');
+                const comboBadge = document.getElementById('comboBadge');
+                const comboPtsText = document.getElementById('comboPtsText');
+                if (comboHud && comboBadge && comboPtsText) {
+                    const pts = comboStreak * 75;
+                    comboBadge.textContent = `🔥 ${comboStreak}x COMBO!`;
+                    comboPtsText.textContent = `+${pts} bonus pts`;
+                    comboHud.style.display = 'flex';
+                    playComboSynthTone(comboStreak);
+
+                    clearTimeout(comboTimer);
+                    comboTimer = setTimeout(() => {
+                        if (comboHud) comboHud.style.display = 'none';
+                        comboStreak = 0;
+                    }, 3500);
+                }
+            }
+        }
+    }
+
+    function playComboSynthTone(streak) {
+        try {
+            if (!soundEnabled) return;
+            const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+            if (!audioCtx) audioCtx = new AudioCtxClass();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const freq = 440 * Math.pow(1.12, Math.min(streak, 10));
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(masterVolume * 0.35, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+        } catch(e) {}
     }
 
     function handleTileClick(clickedTile) {
