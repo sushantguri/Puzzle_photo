@@ -58,6 +58,7 @@
                 <button id="dailyChallengeBtn" class="btn btn-icon daily-btn" title="Daily Seeded Challenge & Streak Tracker">📅 <span id="dailyStreakBadge" class="badge-count">🔥 0</span></button>
                 <button id="achievementsBtn" class="btn btn-icon achievements-btn" title="View Achievements & Badges">🎖️ <span id="achievementsBadge" class="badge-count">0/12</span></button>
                 <button id="leaderboardBtn" class="btn btn-icon" title="View Best Records / High Scores">🏆</button>
+                <button id="saveLoadModalBtn" class="btn btn-icon" title="Save & Load Game Slots">💾</button>
                 <select id="soundPresetSelect" class="form-select theme-select" title="Sound Effect Preset">
                     <option value="arcade">🕹️ 8-Bit Arcade</option>
                     <option value="synth" selected>⚡ Synthwave</option>
@@ -452,6 +453,24 @@
                 <div class="modal-footer">
                     <button id="clearLeaderboardBtn" class="btn btn-outline-danger">Clear Records</button>
                     <button id="closeLeaderboardFooterBtn" class="btn btn-secondary">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SAVE & LOAD GAME MODAL -->
+        <div id="saveLoadModal" class="modal-backdrop" style="display: none;">
+            <div class="modal-card save-load-card" style="max-width: 580px;">
+                <div class="modal-header">
+                    <h2>💾 Save & Load Game Manager</h2>
+                    <button id="closeSaveLoadBtn" class="btn-close">&times;</button>
+                </div>
+                <p class="modal-subtitle">Save your active puzzle to any slot or resume a saved game.</p>
+                <div class="save-slots-container" id="saveSlotsContainer" style="display: flex; flex-direction: column; gap: 12px; margin: 16px 0;">
+                    <!-- Save slots generated dynamically -->
+                </div>
+                <div class="modal-footer" style="justify-content: space-between;">
+                    <button id="quickAutoSaveBtn" class="btn btn-secondary btn-sm" title="Instant Auto-Save Active Game">⚡ Quick Save Current</button>
+                    <button id="closeSaveLoadFooterBtn" class="btn btn-secondary">Close</button>
                 </div>
             </div>
         </div>

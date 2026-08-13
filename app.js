@@ -3142,6 +3142,201 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- SAVE & LOAD GAME MANAGER ENGINE ---
+    const saveLoadModalBtn = document.getElementById('saveLoadModalBtn');
+    const saveLoadModal = document.getElementById('saveLoadModal');
+    const closeSaveLoadBtn = document.getElementById('closeSaveLoadBtn');
+    const closeSaveLoadFooterBtn = document.getElementById('closeSaveLoadFooterBtn');
+    const quickAutoSaveBtn = document.getElementById('quickAutoSaveBtn');
+    const saveSlotsContainer = document.getElementById('saveSlotsContainer');
+
+    function renderSaveSlotsModal() {
+        if (!saveSlotsContainer) return;
+        saveSlotsContainer.innerHTML = '';
+        for (let i = 1; i <= 3; i++) {
+            const rawData = localStorage.getItem(`snappuzzle_saveslot_${i}`);
+            const slotCard = document.createElement('div');
+            slotCard.className = 'save-slot-card';
+
+            if (rawData) {
+                try {
+                    const data = JSON.parse(rawData);
+                    const minutes = Math.floor(data.secondsElapsed / 60).toString().padStart(2, '0');
+                    const secs = (data.secondsElapsed % 60).toString().padStart(2, '0');
+                    slotCard.innerHTML = `
+                        <img src="${data.photoDataUrl || 'https://via.placeholder.com/60'}" class="save-slot-thumb" alt="Saved Game Snapshot">
+                        <div class="save-slot-details">
+                            <div class="save-slot-title">
+                                <span>Slot ${i}</span>
+                                <span class="badge" style="background:rgba(99,102,241,0.2); color:#a5b4fc; padding:2px 8px; border-radius:6px; font-size:0.75rem;">${data.gridSize}x${data.gridSize} ${data.puzzleMode}</span>
+                            </div>
+                            <div class="save-slot-meta">
+                                <span>⏱️ ${minutes}:${secs}</span>
+                                <span>🎯 ${data.movesCount} Moves</span>
+                                <span>📅 ${data.timestamp || 'Saved'}</span>
+                            </div>
+                        </div>
+                        <div class="save-slot-actions">
+                            <button class="btn btn-primary btn-sm load-slot-btn" data-slot="${i}" title="Resume saved puzzle">Load</button>
+                            <button class="btn btn-secondary btn-sm save-slot-btn" data-slot="${i}" title="Overwrite this slot">Save</button>
+                            <button class="btn btn-outline-danger btn-sm delete-slot-btn" data-slot="${i}" title="Delete save data">&times;</button>
+                        </div>
+                    `;
+                } catch (e) {
+                    renderEmptySlotUI(slotCard, i);
+                }
+            } else {
+                renderEmptySlotUI(slotCard, i);
+            }
+            saveSlotsContainer.appendChild(slotCard);
+        }
+
+        // Attach slot action buttons listeners
+        saveSlotsContainer.querySelectorAll('.load-slot-btn').forEach(btn => {
+            btn.addEventListener('click', () => loadGameStateFromSlot(btn.dataset.slot));
+        });
+        saveSlotsContainer.querySelectorAll('.save-slot-btn').forEach(btn => {
+            btn.addEventListener('click', () => saveGameStateToSlot(btn.dataset.slot));
+        });
+        saveSlotsContainer.querySelectorAll('.delete-slot-btn').forEach(btn => {
+            btn.addEventListener('click', () => deleteSaveSlot(btn.dataset.slot));
+        });
+    }
+
+    function renderEmptySlotUI(slotCard, slotId) {
+        slotCard.innerHTML = `
+            <div class="save-slot-thumb save-slot-empty-thumb">💾</div>
+            <div class="save-slot-details">
+                <div class="save-slot-title" style="color:var(--text-muted);">Slot ${slotId} (Empty)</div>
+                <div class="save-slot-meta">No saved game state</div>
+            </div>
+            <div class="save-slot-actions">
+                <button class="btn btn-secondary btn-sm save-slot-btn" data-slot="${slotId}">Save Here</button>
+            </div>
+        `;
+    }
+
+    function saveGameStateToSlot(slotId) {
+        if (!currentPhotoDataUrl) {
+            showToast('⚠️ No active photo puzzle to save!', 'Save Warning');
+            return;
+        }
+        const saveData = {
+            slotId,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' }),
+            gridSize: selectedGridSize,
+            puzzleMode: puzzleMode,
+            shape: selectedShape,
+            movesCount: movesCount,
+            secondsElapsed: secondsElapsed,
+            timerMode: timerMode,
+            photoDataUrl: currentPhotoDataUrl,
+            tiles: tiles.map(t => ({ id: t.id, currentPos: t.currentPos, correctPos: t.correctPos, empty: t.empty })),
+            moveHistory: moveHistory
+        };
+        try {
+            localStorage.setItem(`snappuzzle_saveslot_${slotId}`, JSON.stringify(saveData));
+            playSound('snap');
+            showToast(`💾 Game saved to Slot ${slotId}!`, 'Saved Successfully');
+            renderSaveSlotsModal();
+        } catch (err) {
+            showToast('❌ Save failed (Storage full)', 'Storage Error');
+        }
+    }
+
+    function loadGameStateFromSlot(slotId) {
+        const rawData = localStorage.getItem(`snappuzzle_saveslot_${slotId}`);
+        if (!rawData) return;
+        try {
+            const data = JSON.parse(rawData);
+            currentPhotoDataUrl = data.photoDataUrl;
+            selectedGridSize = data.gridSize || 3;
+            puzzleMode = data.puzzleMode || 'sliding';
+            selectedShape = data.shape || 'square';
+            movesCount = data.movesCount || 0;
+            secondsElapsed = data.secondsElapsed || 0;
+            timerMode = data.timerMode || 'stopwatch';
+            moveHistory = data.moveHistory || [];
+
+            // Restore image preview & guide
+            if (photoPreviewImg) photoPreviewImg.src = currentPhotoDataUrl;
+            if (ghostImg) ghostImg.src = currentPhotoDataUrl;
+
+            // Hide previous sections and show game board
+            captureSection.style.display = 'none';
+            configSection.style.display = 'none';
+            gameSection.style.display = 'block';
+            headerStats.style.display = 'flex';
+            if (resetAppBtn) resetAppBtn.style.display = 'inline-block';
+
+            // Restore tiles array
+            tiles = data.tiles.map(t => ({ ...t }));
+            isGameActive = true;
+
+            // Rebuild visual board
+            if (typeof renderBoard === 'function') {
+                renderBoard();
+            } else if (puzzleBoard) {
+                puzzleBoard.innerHTML = '';
+                // Render restored tiles
+                tiles.forEach(tile => {
+                    const tileEl = document.createElement('div');
+                    tileEl.className = `tile ${tile.empty ? 'empty' : ''}`;
+                    tileEl.dataset.id = tile.id;
+                    if (!tile.empty && currentPhotoDataUrl) {
+                        tileEl.style.backgroundImage = `url(${currentPhotoDataUrl})`;
+                    }
+                    puzzleBoard.appendChild(tileEl);
+                });
+            }
+
+            // Reset and start timer
+            clearInterval(gameTimer);
+            gameTimer = setInterval(() => {
+                secondsElapsed++;
+                if (timerDisplay) {
+                    const mins = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
+                    const secs = (secondsElapsed % 60).toString().padStart(2, '0');
+                    timerDisplay.textContent = `${mins}:${secs}`;
+                }
+            }, 1000);
+
+            if (moveDisplay) moveDisplay.textContent = `${movesCount} Moves`;
+
+            if (saveLoadModal) saveLoadModal.style.display = 'none';
+            playSound('win');
+            showToast(`🚀 Slot ${slotId} Loaded! Resume play!`, 'Game Resumed');
+        } catch (err) {
+            showToast('❌ Error loading saved slot', 'Corrupted File');
+        }
+    }
+
+    function deleteSaveSlot(slotId) {
+        localStorage.removeItem(`snappuzzle_saveslot_${slotId}`);
+        playSound('click');
+        showToast(`🗑️ Slot ${slotId} deleted`, 'Slot Cleared');
+        renderSaveSlotsModal();
+    }
+
+    if (saveLoadModalBtn && saveLoadModal) {
+        saveLoadModalBtn.addEventListener('click', () => {
+            renderSaveSlotsModal();
+            saveLoadModal.style.display = 'flex';
+            playSound('snap');
+        });
+    }
+    if (closeSaveLoadBtn && saveLoadModal) {
+        closeSaveLoadBtn.addEventListener('click', () => saveLoadModal.style.display = 'none');
+    }
+    if (closeSaveLoadFooterBtn && saveLoadModal) {
+        closeSaveLoadFooterBtn.addEventListener('click', () => saveLoadModal.style.display = 'none');
+    }
+    if (quickAutoSaveBtn) {
+        quickAutoSaveBtn.addEventListener('click', () => {
+            saveGameStateToSlot(1);
+        });
+    }
+
     // Auto-start webcam initially
     startWebcam();
 });
