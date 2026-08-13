@@ -2623,6 +2623,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadScoreCardBtn = document.getElementById('downloadScoreCardBtn');
     const victoryFrameSelect = document.getElementById('victoryFrameSelect');
     const victoryCaptionInput = document.getElementById('victoryCaptionInput');
+    const victoryFontSelect = document.getElementById('victoryFontSelect');
+    const victoryTextColor = document.getElementById('victoryTextColor');
+    const victoryFontSizeSlider = document.getElementById('victoryFontSizeSlider');
 
     if (downloadScoreCardBtn) {
         downloadScoreCardBtn.addEventListener('click', () => {
@@ -2634,6 +2637,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const frameStyle = victoryFrameSelect ? victoryFrameSelect.value : 'glass';
             const userCaption = victoryCaptionInput && victoryCaptionInput.value.trim() ? victoryCaptionInput.value.trim() : 'Shattered & Solved! 🧩';
+            const fontChoice = victoryFontSelect ? victoryFontSelect.value : 'Outfit';
+            const textColorChoice = victoryTextColor ? victoryTextColor.value : '#ffffff';
+            const fontSizeChoice = victoryFontSizeSlider ? parseInt(victoryFontSizeSlider.value) : 20;
 
             if (frameStyle === 'polaroid') {
                 // Retro Polaroid Photo Card Background
@@ -2651,6 +2657,50 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.textAlign = 'center';
                 ctx.fillText('🧩 SnapPuzzle Snapshot', 400, 65);
 
+            } else if (frameStyle === 'filmroll') {
+                // Retro 35mm Film Roll Frame
+                ctx.fillStyle = '#09090b';
+                ctx.fillRect(0, 0, 800, 600);
+
+                // Draw Film Sprocket Holes along left and right borders
+                ctx.fillStyle = '#27272a';
+                for (let y = 30; y < 580; y += 45) {
+                    ctx.fillRect(20, y, 24, 30);
+                    ctx.fillRect(756, y, 24, 30);
+                }
+
+                ctx.strokeStyle = '#3f3f46';
+                ctx.lineWidth = 4;
+                ctx.strokeRect(54, 15, 692, 570);
+
+                ctx.fillStyle = '#f43f5e';
+                ctx.font = 'bold 36px "Outfit", monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText('🎞️ 35mm FILM PUZZLE REEL', 400, 65);
+
+            } else if (frameStyle === 'holographic') {
+                // Holographic Prism Spectrum Frame
+                const holoGrad = ctx.createLinearGradient(0, 0, 800, 600);
+                holoGrad.addColorStop(0, '#ec4899');
+                holoGrad.addColorStop(0.25, '#8b5cf6');
+                holoGrad.addColorStop(0.5, '#3b82f6');
+                holoGrad.addColorStop(0.75, '#10b981');
+                holoGrad.addColorStop(1, '#f59e0b');
+                ctx.fillStyle = holoGrad;
+                ctx.fillRect(0, 0, 800, 600);
+
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(15, 15, 770, 570);
+
+                ctx.strokeStyle = holoGrad;
+                ctx.lineWidth = 6;
+                ctx.strokeRect(25, 25, 750, 550);
+
+                ctx.fillStyle = '#f472b6';
+                ctx.font = 'bold 38px "Outfit", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('💎 HOLOGRAPHIC PRISM REEL', 400, 70);
+
             } else if (frameStyle === 'neon') {
                 // Cyberpunk Neon Glow Background
                 ctx.fillStyle = '#05050d';
@@ -2667,7 +2717,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.fillStyle = '#38bdf8';
                 ctx.font = 'bold 38px "Outfit", sans-serif';
                 ctx.textAlign = 'center';
-                ctx.fillText('⚡ CYBER SNACK PUZZLE', 400, 70);
+                ctx.fillText('⚡ CYBER SNAP PUZZLE', 400, 70);
 
             } else if (frameStyle === 'gold') {
                 // Royal Gold Metallic Frame
@@ -2718,9 +2768,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     ctx.fillRect(245, 95, 310, 310);
                     ctx.drawImage(img, 250, 100, 300, 300);
 
-                    // Polaroid Handwritten Caption
-                    ctx.fillStyle = '#334155';
-                    ctx.font = 'italic bold 26px sans-serif';
+                    // Custom Styled Caption
+                    ctx.fillStyle = textColorChoice === '#ffffff' ? '#334155' : textColorChoice;
+                    ctx.font = `italic bold ${fontSizeChoice + 4}px "${fontChoice}", sans-serif`;
                     ctx.fillText(`"${userCaption}"`, 400, 440);
 
                     ctx.fillStyle = '#64748b';
@@ -2733,9 +2783,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     ctx.drawImage(img, 240, 100, 320, 320);
 
-                    // User Caption
-                    ctx.fillStyle = frameStyle === 'neon' ? '#f472b6' : (frameStyle === 'gold' ? '#fef08a' : '#c084fc');
-                    ctx.font = 'italic bold 22px sans-serif';
+                    // Custom Styled Caption
+                    ctx.fillStyle = textColorChoice;
+                    ctx.font = `italic bold ${fontSizeChoice}px "${fontChoice}", sans-serif`;
                     ctx.fillText(`"${userCaption}"`, 400, 450);
 
                     // Stats Section
