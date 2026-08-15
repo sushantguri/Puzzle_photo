@@ -2855,6 +2855,150 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const exportBadgeCardBtn = document.getElementById('exportBadgeCardBtn');
+    if (exportBadgeCardBtn) {
+        exportBadgeCardBtn.addEventListener('click', () => {
+            playSound('achievement');
+            const cardCanvas = document.createElement('canvas');
+            cardCanvas.width = 840;
+            cardCanvas.height = 540;
+            const ctx = cardCanvas.getContext('2d');
+
+            // Rich Gradient Background
+            const bgGrad = ctx.createLinearGradient(0, 0, 840, 540);
+            bgGrad.addColorStop(0, '#060b19');
+            bgGrad.addColorStop(0.5, '#0f172a');
+            bgGrad.addColorStop(1, '#1e1b4b');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, 840, 540);
+
+            // Glowing Outer Glass Border
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 6;
+            ctx.strokeRect(16, 16, 808, 508);
+            ctx.strokeStyle = '#6366f1';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(24, 24, 792, 492);
+
+            // Decorative Corner Accent Lines
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 4;
+            // Top-Left
+            ctx.beginPath(); ctx.moveTo(16, 50); ctx.lineTo(16, 16); ctx.lineTo(50, 16); ctx.stroke();
+            // Top-Right
+            ctx.beginPath(); ctx.moveTo(790, 16); ctx.lineTo(824, 16); ctx.lineTo(824, 50); ctx.stroke();
+            // Bottom-Left
+            ctx.beginPath(); ctx.moveTo(16, 490); ctx.lineTo(16, 524); ctx.lineTo(50, 524); ctx.stroke();
+            // Bottom-Right
+            ctx.beginPath(); ctx.moveTo(790, 524); ctx.lineTo(824, 524); ctx.lineTo(824, 490); ctx.stroke();
+
+            // Header Section
+            ctx.fillStyle = '#34d399';
+            ctx.font = '800 28px "Outfit", sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('🧩 SNAPPUZZLE MASTER BADGE', 45, 60);
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '500 14px "Inter", sans-serif';
+            ctx.fillText('OFFICIAL COMPLETION CERTIFICATE & STATS CARD', 45, 82);
+
+            // Divider Line
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(45, 96);
+            ctx.lineTo(795, 96);
+            ctx.stroke();
+
+            // Photo Preview Frame (Left Column)
+            const img = new Image();
+            img.crossOrigin = 'Anonymous';
+            img.onload = () => {
+                // Photo Card Background
+                ctx.fillStyle = '#020617';
+                ctx.fillRect(45, 115, 300, 300);
+                ctx.strokeStyle = '#334155';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(45, 115, 300, 300);
+
+                ctx.drawImage(img, 50, 120, 290, 290);
+
+                // User Victory Caption Under Image
+                const captionVal = victoryCaptionInput && victoryCaptionInput.value.trim() ? victoryCaptionInput.value.trim() : 'Shattered & Solved! 🧩';
+                ctx.fillStyle = '#f8fafc';
+                ctx.font = 'italic 600 16px "Outfit", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(`"${captionVal}"`, 195, 442);
+
+                // Right Column Stats & Badges
+                const timeText = document.getElementById('finalTime') ? document.getElementById('finalTime').textContent : '00:00';
+                const movesText = document.getElementById('finalMoves') ? document.getElementById('finalMoves').textContent : '0';
+                const starsText = document.getElementById('finalStars') ? document.getElementById('finalStars').textContent : '⭐⭐⭐';
+
+                // Stats Box 1: Time
+                drawBadgeStatBox(ctx, 370, 115, 200, 85, '⏱️ TIME TAKEN', timeText, '#6366f1');
+                // Stats Box 2: Moves
+                drawBadgeStatBox(ctx, 590, 115, 200, 85, '🎯 TOTAL MOVES', movesText, '#10b981');
+                // Stats Box 3: Grid Size
+                drawBadgeStatBox(ctx, 370, 215, 200, 85, '🧩 GRID RESOLUTION', `${selectedGridSize}×${selectedGridSize} (${puzzleMode.toUpperCase()})`, '#f59e0b');
+                // Stats Box 4: Star Rating
+                drawBadgeStatBox(ctx, 590, 215, 200, 85, '⭐ STAR RATING', starsText, '#ec4899');
+
+                // Large Master Trophy Badge Banner
+                ctx.fillStyle = 'rgba(16, 185, 129, 0.15)';
+                ctx.strokeStyle = '#10b981';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                if (ctx.roundRect) ctx.roundRect(370, 315, 420, 100, 12); else ctx.rect(370, 315, 420, 100);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.fillStyle = '#34d399';
+                ctx.font = '800 22px "Outfit", sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText('🏆 UNSTOPPABLE PUZZLE MASTER', 390, 352);
+
+                ctx.fillStyle = '#cbd5e1';
+                ctx.font = '500 14px "Inter", sans-serif';
+                ctx.fillText(`Verified Solved on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}`, 390, 382);
+
+                // Footer watermark branding
+                ctx.fillStyle = '#64748b';
+                ctx.font = '600 13px "Outfit", sans-serif';
+                ctx.textAlign = 'right';
+                ctx.fillText('Generated by SnapPuzzle Web App • https://github.com/sushantguri/Puzzle_photo', 795, 495);
+
+                // Download image trigger
+                const link = document.createElement('a');
+                link.download = `SnapPuzzle_Master_Badge_${Date.now()}.png`;
+                link.href = cardCanvas.toDataURL('image/png');
+                link.click();
+
+                showToast('🎴 Puzzle Master Badge Card exported!', 'Badge Downloaded');
+            };
+            img.src = currentPhotoDataUrl || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80';
+        });
+    }
+
+    function drawBadgeStatBox(ctx, x, y, w, h, label, val, accentColor) {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
+        ctx.strokeStyle = accentColor;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        if (ctx.roundRect) ctx.roundRect(x, y, w, h, 10); else ctx.rect(x, y, w, h);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '600 12px "Inter", sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(label, x + 14, y + 26);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '700 20px "Outfit", sans-serif';
+        ctx.fillText(val, x + 14, y + 60);
+    }
+
     if (themeSelect) {
         themeSelect.addEventListener('change', (e) => {
             applyTheme(e.target.value);
