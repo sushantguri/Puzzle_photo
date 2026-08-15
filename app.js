@@ -593,11 +593,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    let selectedDoodleStamp = '🧩';
+
+    document.querySelectorAll('.doodle-stamp-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            selectedDoodleStamp = btn.dataset.stamp;
+            document.querySelectorAll('.doodle-stamp-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.stamp === selectedDoodleStamp);
+            });
+            setDoodleMode('stamp');
+            playSound('click');
+        });
+    });
+
     function setDoodleMode(mode) {
         doodleMode = mode;
         document.querySelectorAll('.doodle-mode-btn').forEach(b => {
             b.classList.toggle('active', b.dataset.mode === mode);
         });
+        if (mode !== 'stamp') {
+            document.querySelectorAll('.doodle-stamp-btn').forEach(b => b.classList.remove('active'));
+        } else {
+            const activeBtn = document.querySelector(`.doodle-stamp-btn[data-stamp="${selectedDoodleStamp}"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+        }
     }
 
     // Helper for mouse/touch coordinates
@@ -605,6 +624,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rect = doodleCanvas.getBoundingClientRect();
         const scaleX = doodleCanvas.width / rect.width;
         const scaleY = doodleCanvas.height / rect.height;
+
         let clientX = e.clientX;
         let clientY = e.clientY;
         if (e.touches && e.touches[0]) {
@@ -617,10 +637,30 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    function stampEmojiOnCanvas(x, y, emoji) {
+        if (!doodleCtx) return;
+        const brushSize = parseInt(doodleSizeInput ? doodleSizeInput.value : 10);
+        const fontSize = Math.max(20, brushSize * 2.8);
+        doodleCtx.save();
+        doodleCtx.globalCompositeOperation = 'source-over';
+        doodleCtx.font = `${fontSize}px sans-serif`;
+        doodleCtx.textAlign = 'center';
+        doodleCtx.textBaseline = 'middle';
+        doodleCtx.shadowColor = 'rgba(0,0,0,0.5)';
+        doodleCtx.shadowBlur = 8;
+        doodleCtx.fillText(emoji, x, y);
+        doodleCtx.restore();
+    }
+
     function startDraw(e) {
         e.preventDefault();
-        isDrawing = true;
         const coords = getCanvasCoords(e);
+        if (doodleMode === 'stamp') {
+            stampEmojiOnCanvas(coords.x, coords.y, selectedDoodleStamp);
+            playSound('snap');
+            return;
+        }
+        isDrawing = true;
         doodleCtx.beginPath();
         doodleCtx.moveTo(coords.x, coords.y);
         draw(e);

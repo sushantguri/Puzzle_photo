@@ -1173,6 +1173,27 @@ body {
     box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
 }
 
+.doodle-stamp-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    font-size: 1rem;
+    padding: 3px 6px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.doodle-stamp-btn:hover {
+    transform: scale(1.2);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.doodle-stamp-btn.active {
+    background: rgba(99, 102, 241, 0.3);
+    border-color: var(--accent-primary);
+    transform: scale(1.15);
+}
+
 .doodle-canvas-wrapper {
     position: relative;
     width: 100%;
