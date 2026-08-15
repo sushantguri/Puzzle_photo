@@ -1525,6 +1525,9 @@ document.addEventListener('DOMContentLoaded', () => {
             checkComboMultiplier(tileA, tileB);
         }
         playSound('snap');
+        if (!isUndo) {
+            triggerTileSnapFx(tileA, tileB);
+        }
         renderTiles();
         checkWinCondition();
     }
@@ -3446,6 +3449,164 @@ document.addEventListener('DOMContentLoaded', () => {
         quickAutoSaveBtn.addEventListener('click', () => {
             saveGameStateToSlot(1);
         });
+    }
+
+    // ----------------------------------------------------
+    // DYNAMIC TILE SNAP SPARKLE & SHOCKWAVE PARTICLE FX
+    // ----------------------------------------------------
+    let tileFxParticles = [];
+    let tileFxRings = [];
+    let tileFxAnimId = null;
+
+    function triggerTileSnapFx(tileA, tileB) {
+        const tileFxCanvas = document.getElementById('tileFxCanvas');
+        if (!tileFxCanvas) return;
+        const rect = tileFxCanvas.getBoundingClientRect();
+        if (rect.width === 0 || rect.height === 0) return;
+
+        if (tileFxCanvas.width !== Math.floor(rect.width) || tileFxCanvas.height !== Math.floor(rect.height)) {
+            tileFxCanvas.width = Math.floor(rect.width);
+            tileFxCanvas.height = Math.floor(rect.height);
+        }
+
+        const size = selectedGridSize || 3;
+        const tileW = tileFxCanvas.width / size;
+        const tileH = tileFxCanvas.height / size;
+
+        const tilesToFx = [tileA, tileB].filter(Boolean);
+        tilesToFx.forEach(tile => {
+            if (!tile) return;
+            const col = tile.currentPos % size;
+            const row = Math.floor(tile.currentPos / size);
+            const centerX = (col + 0.5) * tileW;
+            const centerY = (row + 0.5) * tileH;
+
+            const isCorrect = tile.currentPos === tile.correctPos;
+            const count = isCorrect ? 24 : 12;
+            const colors = isCorrect 
+                ? ['#10b981', '#34d399', '#6ee7b7', '#f59e0b', '#fbbf24', '#ffffff'] 
+                : ['#6366f1', '#818cf8', '#a5b4fc', '#e0e7ff', '#ffffff'];
+
+            for (let i = 0; i < count; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = (isCorrect ? 3.5 : 2) + Math.random() * 4;
+                tileFxParticles.push({
+                    x: centerX,
+                    y: centerY,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    size: 3 + Math.random() * 5,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    alpha: 1,
+                    decay: 0.025 + Math.random() * 0.02,
+                    rotation: Math.random() * Math.PI,
+                    rotSpeed: (Math.random() - 0.5) * 0.2,
+                    shape: Math.random() > 0.35 ? 'star' : 'circle'
+                });
+            }
+
+            if (isCorrect) {
+                tileFxRings.push({
+                    x: centerX,
+                    y: centerY,
+                    radius: 4,
+                    maxRadius: tileW * 0.75,
+                    alpha: 1,
+                    color: '#34d399'
+                });
+            }
+        });
+
+        if (!tileFxAnimId) {
+            animateTileFx();
+        }
+    }
+
+    function animateTileFx() {
+        const tileFxCanvas = document.getElementById('tileFxCanvas');
+        if (!tileFxCanvas) return;
+        const ctx = tileFxCanvas.getContext('2d');
+        ctx.clearRect(0, 0, tileFxCanvas.width, tileFxCanvas.height);
+
+        // Render shockwave rings
+        for (let i = tileFxRings.length - 1; i >= 0; i--) {
+            const ring = tileFxRings[i];
+            ring.radius += (ring.maxRadius - ring.radius) * 0.18 + 1.2;
+            ring.alpha -= 0.045;
+            if (ring.alpha <= 0 || ring.radius >= ring.maxRadius) {
+                tileFxRings.splice(i, 1);
+                continue;
+            }
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(ring.x, ring.y, ring.radius, 0, Math.PI * 2);
+            ctx.strokeStyle = ring.color;
+            ctx.globalAlpha = Math.max(0, ring.alpha);
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        // Render sparkle particles
+        for (let i = tileFxParticles.length - 1; i >= 0; i--) {
+            const p = tileFxParticles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vx *= 0.93;
+            p.vy *= 0.93;
+            p.alpha -= p.decay;
+            p.rotation += p.rotSpeed;
+
+            if (p.alpha <= 0) {
+                tileFxParticles.splice(i, 1);
+                continue;
+            }
+
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rotation);
+            ctx.globalAlpha = Math.max(0, p.alpha);
+            ctx.fillStyle = p.color;
+
+            if (p.shape === 'star') {
+                drawStarFx(ctx, 0, 0, 4, p.size, p.size / 2);
+            } else {
+                ctx.beginPath();
+                ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.restore();
+        }
+
+        if (tileFxParticles.length > 0 || tileFxRings.length > 0) {
+            tileFxAnimId = requestAnimationFrame(animateTileFx);
+        } else {
+            tileFxAnimId = null;
+        }
+    }
+
+    function drawStarFx(ctx, cx, cy, spikes, outerRadius, innerRadius) {
+        let rot = Math.PI / 2 * 3;
+        let x = cx;
+        let y = cy;
+        let step = Math.PI / spikes;
+
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - outerRadius);
+        for (let i = 0; i < spikes; i++) {
+            x = cx + Math.cos(rot) * outerRadius;
+            y = cy + Math.sin(rot) * outerRadius;
+            ctx.lineTo(x, y);
+            rot += step;
+
+            x = cx + Math.cos(rot) * innerRadius;
+            y = cy + Math.sin(rot) * innerRadius;
+            ctx.lineTo(x, y);
+            rot += step;
+        }
+        ctx.lineTo(cx, cy - outerRadius);
+        ctx.closePath();
+        ctx.fill();
     }
 
     // Auto-start webcam initially
