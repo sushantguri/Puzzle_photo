@@ -1352,6 +1352,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const timerProgressWrapper = document.getElementById('timerProgressWrapper');
         const timerProgressBar = document.getElementById('timerProgressBar');
 
+        const zenHud = document.getElementById('zenHud');
+        if (puzzleMode === 'zen') {
+            if (zenHud) zenHud.style.display = 'flex';
+            startZenMeditationSound();
+            timerDisplay.textContent = '🧘 Zen Mode';
+        } else {
+            if (zenHud) zenHud.style.display = 'none';
+            stopZenMeditationSound();
+        }
+
         if (timerMode === 'countdown' || timerMode === 'speedrun') {
             const timeAttackMap = { 3: 60, 4: 90, 5: 120, 6: 180, 8: 300 };
             const speedrunMap = { 3: 35, 4: 50, 5: 75, 6: 100, 8: 150 };
@@ -1363,7 +1373,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 timerProgressBar.classList.remove('low-time');
             }
             timerDisplay.textContent = (timerMode === 'speedrun') ? `🚀 ${formatTime(remainingSeconds)}` : formatTime(remainingSeconds);
-        } else if (timerMode === 'zen') {
+        } else if (timerMode === 'zen' || puzzleMode === 'zen') {
             if (timerProgressWrapper) timerProgressWrapper.style.display = 'none';
             timerDisplay.textContent = '🧘 Zen Mode';
         } else {
@@ -3791,6 +3801,82 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.lineTo(cx, cy - outerRadius);
         ctx.closePath();
         ctx.fill();
+    }
+
+    // ----------------------------------------------------
+    // ZEN MEDITATION BINAURAL AUDIO SYNTHESIZER
+    // ----------------------------------------------------
+    let zenAudioCtx = null;
+    let zenOscillators = [];
+    let zenGainNode = null;
+    let zenBreathTimer = null;
+
+    function startZenMeditationSound() {
+        stopZenMeditationSound();
+        try {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return;
+            zenAudioCtx = new AudioCtx();
+
+            zenGainNode = zenAudioCtx.createGain();
+            const volPct = masterVolumeSlider ? parseInt(masterVolumeSlider.value) / 100 : 0.8;
+            const targetGain = isMuted ? 0 : 0.07 * volPct;
+            zenGainNode.gain.setValueAtTime(targetGain, zenAudioCtx.currentTime);
+            zenGainNode.connect(zenAudioCtx.destination);
+
+            // C-Major 7th Ambient Meditation Drone Chord (C3, E3, G3, B3)
+            const freqs = [130.81, 164.81, 196.00, 246.94];
+            freqs.forEach(freq => {
+                const osc = zenAudioCtx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, zenAudioCtx.currentTime);
+
+                const lfo = zenAudioCtx.createOscillator();
+                lfo.frequency.setValueAtTime(0.18, zenAudioCtx.currentTime);
+                const lfoGain = zenAudioCtx.createGain();
+                lfoGain.gain.setValueAtTime(1.8, zenAudioCtx.currentTime);
+
+                lfo.connect(lfoGain);
+                lfoGain.connect(osc.frequency);
+
+                osc.connect(zenGainNode);
+                osc.start();
+                lfo.start();
+
+                zenOscillators.push(osc, lfo);
+            });
+
+            const prompts = [
+                "Zen Mode • Inhale peace... Exhale stress...",
+                "Zen Mode • Breathe in calm harmony...",
+                "Zen Mode • Enjoy every puzzle piece...",
+                "Zen Mode • Mindful, relaxed focus...",
+                "Zen Mode • Inhale tranquility..."
+            ];
+            let pIdx = 0;
+            const zenBreathText = document.getElementById('zenBreathText');
+            zenBreathTimer = setInterval(() => {
+                pIdx = (pIdx + 1) % prompts.length;
+                if (zenBreathText) zenBreathText.textContent = prompts[pIdx];
+            }, 8000);
+
+        } catch (e) {
+            console.warn('Zen audio context initialization skipped', e);
+        }
+    }
+
+    function stopZenMeditationSound() {
+        if (zenBreathTimer) clearInterval(zenBreathTimer);
+        if (zenOscillators) {
+            zenOscillators.forEach(osc => {
+                try { osc.stop(); osc.disconnect(); } catch (e) {}
+            });
+            zenOscillators = [];
+        }
+        if (zenAudioCtx) {
+            try { zenAudioCtx.close(); } catch (e) {}
+            zenAudioCtx = null;
+        }
     }
 
     // Auto-start webcam initially
