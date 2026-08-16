@@ -2471,6 +2471,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (replayStepText) {
             replayStepText.textContent = `Move ${replayCurrentStep} / ${fullRecordedMoves.length}`;
         }
+
+        const replayMoveDetailText = document.getElementById('replayMoveDetailText');
+        if (replayMoveDetailText) {
+            if (replayCurrentStep === 0) {
+                replayMoveDetailText.textContent = 'Move 0: Initial Board Layout';
+            } else if (lastMove) {
+                replayMoveDetailText.textContent = `Move ${replayCurrentStep}: Swapped Tile #${lastMove.tileAId + 1} & Tile #${lastMove.tileBId + 1}`;
+            }
+        }
     }
 
     function toggleReplayPlay() {
