@@ -390,6 +390,11 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (val === 'vivid') filterCSS = 'saturate(250%) contrast(125%)';
         else if (val === 'grayscale') filterCSS = 'grayscale(100%) contrast(130%)';
         else if (val === 'neon') filterCSS = 'invert(100%) hue-rotate(240deg) saturate(300%)';
+        else if (val === 'tealorange') filterCSS = 'contrast(130%) saturate(160%) hue-rotate(-20deg)';
+        else if (val === 'retro70s') filterCSS = 'sepia(45%) contrast(90%) brightness(105%) saturate(120%)';
+        else if (val === 'vaporwave') filterCSS = 'hue-rotate(260deg) saturate(220%) contrast(140%)';
+        else if (val === 'pastel') filterCSS = 'brightness(115%) saturate(85%) contrast(95%)';
+        else if (val === 'amber') filterCSS = 'sepia(100%) hue-rotate(-30deg) saturate(280%)';
         videoEl.style.filter = filterCSS;
     });
 
@@ -1063,6 +1068,66 @@ document.addEventListener('DOMContentLoaded', () => {
                     ctx.fill();
                 }
             }
+        } else if (filterType === 'tealorange') {
+            const imgData = ctx.getImageData(0, 0, width, height);
+            const data = imgData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                const lum = (data[i] * 0.299 + data[i+1] * 0.587 + data[i+2] * 0.114);
+                if (lum < 128) {
+                    data[i] = Math.max(0, data[i] - 30);
+                    data[i+1] = Math.min(255, data[i+1] + 20);
+                    data[i+2] = Math.min(255, data[i+2] + 45);
+                } else {
+                    data[i] = Math.min(255, data[i] + 45);
+                    data[i+1] = Math.min(255, data[i+1] + 20);
+                    data[i+2] = Math.max(0, data[i+2] - 35);
+                }
+            }
+            ctx.putImageData(imgData, 0, 0);
+        } else if (filterType === 'retro70s') {
+            const imgData = ctx.getImageData(0, 0, width, height);
+            const data = imgData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i], g = data[i+1], b = data[i+2];
+                const noise = (Math.random() - 0.5) * 18;
+                data[i] = Math.min(255, Math.max(0, (r * 0.393 + g * 0.769 + b * 0.189) * 0.8 + 40 + noise));
+                data[i+1] = Math.min(255, Math.max(0, (r * 0.349 + g * 0.686 + b * 0.168) * 0.8 + 20 + noise));
+                data[i+2] = Math.min(255, Math.max(0, (r * 0.272 + g * 0.534 + b * 0.131) * 0.8 + noise));
+            }
+            ctx.putImageData(imgData, 0, 0);
+        } else if (filterType === 'vaporwave') {
+            const imgData = ctx.getImageData(0, 0, width, height);
+            const data = imgData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                const lum = (data[i] + data[i+1] + data[i+2]) / 3;
+                data[i] = Math.min(255, Math.round(lum * 0.8 + 80));   // Hot Pink / Magenta
+                data[i+1] = Math.round(lum * 0.3);
+                data[i+2] = Math.min(255, Math.round(lum * 0.9 + 70)); // Electric Purple/Blue
+            }
+            ctx.putImageData(imgData, 0, 0);
+            ctx.fillStyle = 'rgba(236, 72, 153, 0.08)';
+            for (let y = 0; y < height; y += 4) {
+                ctx.fillRect(0, y, width, 1);
+            }
+        } else if (filterType === 'pastel') {
+            const imgData = ctx.getImageData(0, 0, width, height);
+            const data = imgData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                data[i] = Math.min(255, Math.round(data[i] * 0.7 + 75));
+                data[i+1] = Math.min(255, Math.round(data[i+1] * 0.7 + 70));
+                data[i+2] = Math.min(255, Math.round(data[i+2] * 0.7 + 90));
+            }
+            ctx.putImageData(imgData, 0, 0);
+        } else if (filterType === 'amber') {
+            const imgData = ctx.getImageData(0, 0, width, height);
+            const data = imgData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                const lum = (data[i] * 0.299 + data[i+1] * 0.587 + data[i+2] * 0.114) / 255;
+                data[i] = Math.min(255, Math.round(lum * 255 + 40));
+                data[i+1] = Math.min(255, Math.round(lum * 180));
+                data[i+2] = Math.min(255, Math.round(lum * 30));
+            }
+            ctx.putImageData(imgData, 0, 0);
         }
     }
 
