@@ -2273,6 +2273,40 @@ document.addEventListener('DOMContentLoaded', () => {
         peekGhostBtn.addEventListener('click', triggerSpeedPeek);
     }
 
+    let isFogModeActive = false;
+    const toggleFogBtn = document.getElementById('toggleFogBtn');
+    const spotlightOverlay = document.getElementById('spotlightOverlay');
+    const puzzleWrapperEl = document.getElementById('puzzleWrapper');
+
+    if (toggleFogBtn && spotlightOverlay) {
+        toggleFogBtn.addEventListener('click', () => {
+            isFogModeActive = !isFogModeActive;
+            spotlightOverlay.style.display = isFogModeActive ? 'block' : 'none';
+            toggleFogBtn.style.background = isFogModeActive ? 'rgba(16, 185, 129, 0.4)' : '';
+            playSound('click');
+            showToast(isFogModeActive ? '🔦 Fog of War Spotlight Active!' : '🔦 Spotlight Disabled');
+        });
+    }
+
+    if (puzzleWrapperEl && spotlightOverlay) {
+        const updateSpotlightPos = (e) => {
+            if (!isFogModeActive) return;
+            const rect = puzzleWrapperEl.getBoundingClientRect();
+            let clientX = e.clientX;
+            let clientY = e.clientY;
+            if (e.touches && e.touches[0]) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            }
+            const x = clientX - rect.left;
+            const y = clientY - rect.top;
+            spotlightOverlay.style.setProperty('--mouse-x', `${x}px`);
+            spotlightOverlay.style.setProperty('--mouse-y', `${y}px`);
+        };
+        puzzleWrapperEl.addEventListener('mousemove', updateSpotlightPos);
+        puzzleWrapperEl.addEventListener('touchmove', updateSpotlightPos, { passive: true });
+    }
+
     if (toggleNumbersBtn) {
         toggleNumbersBtn.addEventListener('click', () => {
             showTileNumbers = !showTileNumbers;
