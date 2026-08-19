@@ -1300,6 +1300,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    let isTileRotationEnabled = false;
+    const toggleRotationBtn = document.getElementById('toggleRotationBtn');
+    if (toggleRotationBtn) {
+        toggleRotationBtn.addEventListener('click', () => {
+            isTileRotationEnabled = !isTileRotationEnabled;
+            toggleRotationBtn.classList.toggle('active', isTileRotationEnabled);
+            toggleRotationBtn.innerHTML = isTileRotationEnabled 
+                ? '<span class="mode-icon">🔄⚡</span> Tile Rotation Challenge: ON' 
+                : '<span class="mode-icon">🔄</span> Tile Rotation Challenge: Off';
+            playSound('click');
+        });
+    }
+
     // --- PUZZLE ENGINE & GAMEPLAY ---
     startPuzzleBtn.addEventListener('click', () => {
         configSection.style.display = 'none';
@@ -1505,11 +1518,14 @@ document.addEventListener('DOMContentLoaded', () => {
         tiles = [];
 
         for (let i = 0; i < totalTiles; i++) {
+            const isEmptyTile = (puzzleMode === 'sliding' && i === totalTiles - 1);
+            const initRotation = (isTileRotationEnabled && !isEmptyTile) ? [0, 90, 180, 270][Math.floor(Math.random() * 4)] : 0;
             tiles.push({
                 id: i,
                 correctPos: i,
                 currentPos: i,
-                isEmpty: (puzzleMode === 'sliding' && i === totalTiles - 1)
+                rotation: initRotation,
+                isEmpty: isEmptyTile
             });
         }
 
@@ -1610,6 +1626,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 tileDiv.style.backgroundPosition = `${percentX}% ${percentY}%`;
             }
 
+            if (tile.rotation) {
+                tileDiv.style.transform = `rotate(${tile.rotation}deg)`;
+            }
+
             if (showTileNumbers && !tile.isEmpty) {
                 const numBadge = document.createElement('span');
                 numBadge.classList.add('tile-number');
@@ -1619,6 +1639,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Click handling
             tileDiv.addEventListener('click', () => handleTileClick(tile));
+
+            // Tile Rotation right-click listener
+            if (isTileRotationEnabled && !tile.isEmpty) {
+                tileDiv.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    rotateTile(tile);
+                });
+            }
 
             // Drag and drop events for Jigsaw mode
             if (puzzleMode === 'jigsaw') {
@@ -1759,8 +1787,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function rotateTile(tile) {
+        if (!isGameActive || tile.isEmpty) return;
+        tile.rotation = ((tile.rotation || 0) + 90) % 360;
+        playSound('click');
+        renderTiles();
+        checkWinCondition();
+    }
+
     function checkWinCondition() {
-        const isSolved = tiles.every(t => t.currentPos === t.correctPos);
+        const isSolved = tiles.every(t => t.currentPos === t.correctPos && (!isTileRotationEnabled || (t.rotation || 0) % 360 === 0));
 
         if (isSolved) {
             isGameActive = false;
