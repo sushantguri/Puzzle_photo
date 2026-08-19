@@ -164,6 +164,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    let musicPitchScale = 1.0;
+    const musicPitchSlider = document.getElementById('musicPitchSlider');
+    if (musicPitchSlider) {
+        musicPitchSlider.addEventListener('input', (e) => {
+            musicPitchScale = parseFloat(e.target.value) / 100;
+        });
+    }
+
     function startAmbientMusic() {
         stopAmbientMusic();
         if (musicTrack === 'off') return;
@@ -190,11 +198,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 { notes: [659.25], duration: 0.2, type: 'square' },
                 { notes: [783.99], duration: 0.2, type: 'square' },
                 { notes: [1046.50], duration: 0.2, type: 'square' }
+            ],
+            space: [
+                { notes: [65.41, 130.81, 196.00], duration: 1.4, type: 'sine', filterCutoff: 350 },
+                { notes: [87.31, 174.61, 261.63], duration: 1.4, type: 'sine', filterCutoff: 400 },
+                { notes: [98.00, 196.00, 293.66], duration: 1.4, type: 'sine', filterCutoff: 380 }
+            ],
+            rain: [
+                { notes: [110.00, 164.81, 220.00], duration: 1.2, type: 'triangle', filterCutoff: 450 },
+                { notes: [130.81, 196.00, 261.63], duration: 1.2, type: 'triangle', filterCutoff: 500 },
+                { notes: [146.83, 220.00, 293.66], duration: 1.2, type: 'triangle', filterCutoff: 480 }
             ]
         };
 
         const currentSeq = tracks[musicTrack] || tracks.cyber;
-        const stepTime = musicTrack === 'arcade' ? 300 : 1200;
+        const stepTime = musicTrack === 'arcade' ? 300 : (musicTrack === 'space' || musicTrack === 'rain' ? 1400 : 1200);
 
         musicInterval = setInterval(() => {
             if (!soundEnabled || musicTrack === 'off') return;
@@ -207,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const now = audioCtx.currentTime;
                 const filter = audioCtx.createBiquadFilter();
                 filter.type = 'lowpass';
-                filter.frequency.setValueAtTime(step.filterCutoff || 800, now);
+                filter.frequency.setValueAtTime((step.filterCutoff || 800) * musicPitchScale, now);
 
                 const masterGain = audioCtx.createGain();
                 masterGain.gain.setValueAtTime(0.03 * masterVolume, now);
@@ -219,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 step.notes.forEach(freq => {
                     const osc = audioCtx.createOscillator();
                     osc.type = step.type || 'sine';
-                    osc.frequency.setValueAtTime(freq, now);
+                    osc.frequency.setValueAtTime(freq * musicPitchScale, now);
                     osc.connect(filter);
                     osc.start(now);
                     osc.stop(now + step.duration);

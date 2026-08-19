@@ -74,7 +74,13 @@
                     <option value="cyber">🎧 Cyber Synth</option>
                     <option value="lofi">🍵 Lo-Fi Chill</option>
                     <option value="arcade">🕹️ 8-Bit Chiptune</option>
+                    <option value="space">🌌 Deep Space Drone</option>
+                    <option value="rain">🌧️ Binaural Rain</option>
                 </select>
+                <div class="pitch-control-group" title="Music Pitch Modulation" style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.75rem; background: rgba(0,0,0,0.25); padding: 4px 8px; border-radius: 8px; border: 1px solid var(--border-color);">
+                    <span>🎵 Pitch:</span>
+                    <input type="range" id="musicPitchSlider" min="50" max="150" value="100" style="width: 50px; accent-color: var(--accent-primary); cursor: pointer;" title="Adjust Music Pitch Scale">
+                </div>
                 <button id="pwaInstallBtn" class="btn btn-icon pwa-install-btn" title="Install SnapPuzzle Offline Web App" style="display: none;">📲 Install App</button>
                 <button id="resetAppBtn" class="btn btn-secondary" style="display: none;">📷 New Snap</button>
             </div>
