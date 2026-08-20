@@ -1178,6 +1178,96 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const applyKaleidoscopeBtn = document.getElementById('applyKaleidoscopeBtn');
+    if (applyKaleidoscopeBtn) {
+        applyKaleidoscopeBtn.addEventListener('click', () => {
+            if (!rawPhotoDataUrl) return;
+            const img = new Image();
+            img.crossOrigin = 'Anonymous';
+            img.onload = () => {
+                const kCanvas = document.createElement('canvas');
+                kCanvas.width = 640;
+                kCanvas.height = 640;
+                const ctx = kCanvas.getContext('2d');
+
+                const halfW = 320;
+                const halfH = 320;
+
+                ctx.drawImage(img, 0, 0, img.width / 2, img.height / 2, 0, 0, halfW, halfH);
+
+                ctx.save();
+                ctx.translate(640, 0);
+                ctx.scale(-1, 1);
+                ctx.drawImage(img, 0, 0, img.width / 2, img.height / 2, 0, 0, halfW, halfH);
+                ctx.restore();
+
+                ctx.save();
+                ctx.translate(0, 640);
+                ctx.scale(1, -1);
+                ctx.drawImage(img, 0, 0, img.width / 2, img.height / 2, 0, 0, halfW, halfH);
+                ctx.restore();
+
+                ctx.save();
+                ctx.translate(640, 640);
+                ctx.scale(-1, -1);
+                ctx.drawImage(img, 0, 0, img.width / 2, img.height / 2, 0, 0, halfW, halfH);
+                ctx.restore();
+
+                rawPhotoDataUrl = kCanvas.toDataURL('image/jpeg', 0.95);
+                currentPhotoDataUrl = rawPhotoDataUrl;
+                photoPreviewImg.src = currentPhotoDataUrl;
+                ghostImg.src = currentPhotoDataUrl;
+                playSound('snap');
+                showToast('🪞 Symmetrical Kaleidoscope pattern generated!', 'Kaleidoscope Studio');
+            };
+            img.src = currentPhotoDataUrl || rawPhotoDataUrl;
+        });
+    }
+
+    const applyMosaicBtn = document.getElementById('applyMosaicBtn');
+    if (applyMosaicBtn) {
+        applyMosaicBtn.addEventListener('click', () => {
+            if (!rawPhotoDataUrl) return;
+            const img = new Image();
+            img.crossOrigin = 'Anonymous';
+            img.onload = () => {
+                const mCanvas = document.createElement('canvas');
+                mCanvas.width = 640;
+                mCanvas.height = 640;
+                const ctx = mCanvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, 640, 640);
+
+                const size = 16;
+                const imgData = ctx.getImageData(0, 0, 640, 640);
+                const data = imgData.data;
+
+                for (let y = 0; y < 640; y += size) {
+                    for (let x = 0; x < 640; x += size) {
+                        const pixelIndex = (y * 640 + x) * 4;
+                        const r = data[pixelIndex];
+                        const g = data[pixelIndex + 1];
+                        const b = data[pixelIndex + 2];
+
+                        ctx.fillStyle = `rgb(${r},${g},${b})`;
+                        ctx.fillRect(x, y, size, size);
+
+                        ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+                        ctx.lineWidth = 1;
+                        ctx.strokeRect(x, y, size, size);
+                    }
+                }
+
+                rawPhotoDataUrl = mCanvas.toDataURL('image/jpeg', 0.95);
+                currentPhotoDataUrl = rawPhotoDataUrl;
+                photoPreviewImg.src = currentPhotoDataUrl;
+                ghostImg.src = currentPhotoDataUrl;
+                playSound('snap');
+                showToast('🧩 Geometric Mosaic Art generated!', 'Mosaic Studio');
+            };
+            img.src = currentPhotoDataUrl || rawPhotoDataUrl;
+        });
+    }
+
     // Sticker Button Listeners
     document.querySelectorAll('.sticker-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
