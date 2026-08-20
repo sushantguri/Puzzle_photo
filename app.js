@@ -3309,6 +3309,109 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillText(val, x + 14, y + 60);
     }
 
+    const showAnalyticsBtn = document.getElementById('showAnalyticsBtn');
+    const analyticsModal = document.getElementById('analyticsModal');
+    const closeAnalyticsBtn = document.getElementById('closeAnalyticsBtn');
+    const closeAnalyticsFooterBtn = document.getElementById('closeAnalyticsFooterBtn');
+    const heatmapCanvas = document.getElementById('heatmapCanvas');
+
+    if (showAnalyticsBtn && analyticsModal) {
+        showAnalyticsBtn.addEventListener('click', () => {
+            renderHeatmapAnalytics();
+            analyticsModal.style.display = 'flex';
+            playSound('click');
+        });
+
+        [closeAnalyticsBtn, closeAnalyticsFooterBtn].forEach(btn => {
+            if (btn) btn.addEventListener('click', () => {
+                analyticsModal.style.display = 'none';
+                playSound('click');
+            });
+        });
+    }
+
+    function renderHeatmapAnalytics() {
+        if (!heatmapCanvas) return;
+        const ctx = heatmapCanvas.getContext('2d');
+        const w = heatmapCanvas.width;
+        const h = heatmapCanvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(0, 0, w, h);
+
+        const size = selectedGridSize;
+        const totalTiles = size * size;
+        const moveCounts = {};
+        for (let i = 0; i < totalTiles; i++) moveCounts[i] = 0;
+
+        fullRecordedMoves.forEach(m => {
+            if (m.tileAId !== undefined) moveCounts[m.tileAId] = (moveCounts[m.tileAId] || 0) + 1;
+            if (m.tileBId !== undefined) moveCounts[m.tileBId] = (moveCounts[m.tileBId] || 0) + 1;
+        });
+
+        let maxSwaps = 1;
+        let hotspotTileId = 0;
+        Object.keys(moveCounts).forEach(id => {
+            if (moveCounts[id] > maxSwaps) {
+                maxSwaps = moveCounts[id];
+                hotspotTileId = parseInt(id);
+            }
+        });
+
+        const margin = 20;
+        const gridW = w - margin * 2;
+        const gridH = h - margin * 2;
+        const cellW = gridW / size;
+        const cellH = gridH / size;
+
+        for (let r = 0; r < size; r++) {
+            for (let c = 0; c < size; c++) {
+                const tileId = r * size + c;
+                const swaps = moveCounts[tileId] || 0;
+                const ratio = Math.min(1, swaps / Math.max(1, maxSwaps));
+
+                const x = margin + c * cellW;
+                const y = margin + r * cellH;
+
+                let cellColor = '#06b6d4';
+                if (ratio > 0.6) cellColor = '#ef4444';
+                else if (ratio > 0.3) cellColor = '#f59e0b';
+
+                ctx.fillStyle = cellColor;
+                ctx.globalAlpha = 0.25 + ratio * 0.65;
+                ctx.fillRect(x + 2, y + 2, cellW - 4, cellH - 4);
+
+                ctx.strokeStyle = cellColor;
+                ctx.globalAlpha = 0.8;
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x + 2, y + 2, cellW - 4, cellH - 4);
+
+                ctx.fillStyle = '#ffffff';
+                ctx.globalAlpha = 1;
+                ctx.font = 'bold 16px "Outfit", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(`Tile #${tileId + 1}`, x + cellW / 2, y + cellH / 2 - 4);
+
+                ctx.fillStyle = '#cbd5e1';
+                ctx.font = '12px "Inter", sans-serif';
+                ctx.fillText(`${swaps} swaps`, x + cellW / 2, y + cellH / 2 + 16);
+            }
+        }
+
+        const minPossibleMoves = size * size;
+        const efficiencyPct = Math.max(50, Math.min(100, Math.round((minPossibleMoves / Math.max(1, movesCount)) * 100)));
+        const avgPaceSec = movesCount > 0 ? (secondsElapsed / movesCount).toFixed(1) : '0.0';
+
+        const analyticsEfficiencyVal = document.getElementById('analyticsEfficiencyVal');
+        const analyticsHotspotVal = document.getElementById('analyticsHotspotVal');
+        const analyticsPaceVal = document.getElementById('analyticsPaceVal');
+
+        if (analyticsEfficiencyVal) analyticsEfficiencyVal.textContent = `${efficiencyPct}%`;
+        if (analyticsHotspotVal) analyticsHotspotVal.textContent = `Tile #${hotspotTileId + 1} (${maxSwaps} swaps)`;
+        if (analyticsPaceVal) analyticsPaceVal.textContent = `${avgPaceSec}s / move`;
+    }
+
     if (themeSelect) {
         themeSelect.addEventListener('change', (e) => {
             applyTheme(e.target.value);

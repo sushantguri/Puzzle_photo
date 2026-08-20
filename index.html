@@ -811,8 +811,40 @@
                     <button id="replayMovesBtn" class="btn btn-secondary">▶️ Replay Moves</button>
                     <button id="downloadScoreCardBtn" class="btn btn-secondary">📥 Save Score</button>
                     <button id="exportBadgeCardBtn" class="btn btn-secondary" style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: none;">🎴 Export Badge Card</button>
+                    <button id="showAnalyticsBtn" class="btn btn-secondary" style="background: linear-gradient(135deg, #8b5cf6, #6366f1); color: #fff; border: none;">📊 Heatmap</button>
                     <button id="playAgainBtn" class="btn btn-secondary">Re-shuffle</button>
                     <button id="newPhotoBtn" class="btn btn-primary">New Snap</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- HEATMAP & ANALYTICS MODAL -->
+        <div id="analyticsModal" class="modal-backdrop" style="display: none;">
+            <div class="modal-card analytics-modal-card" style="max-width: 600px; text-align: center;">
+                <div class="modal-header">
+                    <h2>📊 Gameplay Move Heatmap & Analytics</h2>
+                    <button id="closeAnalyticsBtn" class="btn-close">&times;</button>
+                </div>
+                <p class="modal-subtitle">Visual tile swap frequency heatmap and efficiency breakdown.</p>
+                <div class="heatmap-container" style="margin: 12px 0; background: #020617; border-radius: 12px; padding: 12px; border: 1px solid var(--border-color);">
+                    <canvas id="heatmapCanvas" width="480" height="340" style="max-width: 100%; height: auto; border-radius: 8px; display: block; margin: 0 auto;"></canvas>
+                </div>
+                <div id="analyticsStatsGrid" class="victory-stats" style="margin-top: 10px;">
+                    <div class="victory-stat-item">
+                        <span class="v-label">Efficiency Index</span>
+                        <span class="v-val" id="analyticsEfficiencyVal" style="color: #34d399;">92%</span>
+                    </div>
+                    <div class="victory-stat-item">
+                        <span class="v-label">Hotspot Tile</span>
+                        <span class="v-val" id="analyticsHotspotVal" style="color: #f59e0b;">Tile #4</span>
+                    </div>
+                    <div class="victory-stat-item">
+                        <span class="v-label">Avg Pace</span>
+                        <span class="v-val" id="analyticsPaceVal" style="color: #a5b4fc;">1.4s / move</span>
+                    </div>
+                </div>
+                <div class="modal-footer" style="justify-content: flex-end; margin-top: 14px;">
+                    <button id="closeAnalyticsFooterBtn" class="btn btn-secondary">Close Analytics</button>
                 </div>
             </div>
         </div>
