@@ -2172,6 +2172,54 @@ document.addEventListener('DOMContentLoaded', () => {
                 triggerVisualizerWaveform(soundType);
             });
         });
+
+        const adsrAttack = document.getElementById('adsrAttack');
+        const adsrDecay = document.getElementById('adsrDecay');
+        const adsrPitch = document.getElementById('adsrPitch');
+        const adsrAttackVal = document.getElementById('adsrAttackVal');
+        const adsrDecayVal = document.getElementById('adsrDecayVal');
+        const adsrPitchVal = document.getElementById('adsrPitchVal');
+        const synthWaveformSelect = document.getElementById('synthWaveformSelect');
+        const playCustomSynthBtn = document.getElementById('playCustomSynthBtn');
+
+        if (adsrAttack && adsrAttackVal) adsrAttack.addEventListener('input', () => adsrAttackVal.textContent = adsrAttack.value + 'ms');
+        if (adsrDecay && adsrDecayVal) adsrDecay.addEventListener('input', () => adsrDecayVal.textContent = adsrDecay.value + 'ms');
+        if (adsrPitch && adsrPitchVal) adsrPitch.addEventListener('input', () => adsrPitchVal.textContent = adsrPitch.value + 'Hz');
+
+        if (playCustomSynthBtn) {
+            playCustomSynthBtn.addEventListener('click', () => {
+                try {
+                    const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+                    if (!audioCtx) audioCtx = new AudioCtxClass();
+                    if (audioCtx.state === 'suspended') audioCtx.resume();
+
+                    const now = audioCtx.currentTime;
+                    const waveType = synthWaveformSelect ? synthWaveformSelect.value : 'triangle';
+                    const attack = adsrAttack ? parseInt(adsrAttack.value) / 1000 : 0.01;
+                    const decay = adsrDecay ? parseInt(adsrDecay.value) / 1000 : 0.15;
+                    const pitch = adsrPitch ? parseInt(adsrPitch.value) : 520;
+
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+
+                    osc.type = waveType;
+                    osc.frequency.setValueAtTime(pitch, now);
+
+                    const vol = masterVolume * 0.4;
+                    gain.gain.setValueAtTime(0.001, now);
+                    gain.gain.linearRampToValueAtTime(vol, now + attack);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + attack + decay);
+
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+
+                    osc.start(now);
+                    osc.stop(now + attack + decay);
+
+                    triggerVisualizerWaveform('zen');
+                } catch (e) {}
+            });
+        }
     }
 
     function drawIdleSoundWaveform() {

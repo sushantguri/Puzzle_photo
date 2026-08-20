@@ -624,6 +624,24 @@
                     <button class="btn btn-secondary sound-key-btn" data-sound="arcade">🕹️ 8-Bit Jump</button>
                 </div>
 
+                <div class="adsr-editor-section" style="margin-top: 14px; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); text-align: left;">
+                    <div style="font-size: 0.85rem; font-weight: 600; color: #a5b4fc; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                        <span>⚡ ADSR Synth Envelope & Waveform:</span>
+                        <select id="synthWaveformSelect" class="form-select" style="width: auto; padding: 2px 6px; font-size: 0.8rem;">
+                            <option value="sine">Sine Wave</option>
+                            <option value="triangle" selected>Triangle Wave</option>
+                            <option value="sawtooth">Sawtooth Wave</option>
+                            <option value="square">Square Wave</option>
+                        </select>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 0.8rem; color: #cbd5e1; align-items: center;">
+                        <label style="display:flex; align-items:center; gap:4px;">Attack: <input type="range" id="adsrAttack" min="1" max="100" value="10" style="width: 60px;"> <span id="adsrAttackVal">10ms</span></label>
+                        <label style="display:flex; align-items:center; gap:4px;">Decay: <input type="range" id="adsrDecay" min="10" max="500" value="150" style="width: 60px;"> <span id="adsrDecayVal">150ms</span></label>
+                        <label style="display:flex; align-items:center; gap:4px;">Pitch: <input type="range" id="adsrPitch" min="100" max="2000" value="520" style="width: 60px;"> <span id="adsrPitchVal">520Hz</span></label>
+                        <button id="playCustomSynthBtn" type="button" class="btn btn-primary btn-sm" style="padding: 4px 10px;">🎹 Test Custom Synth</button>
+                    </div>
+                </div>
+
                 <div class="modal-footer" style="justify-content: flex-end; margin-top: 18px;">
                     <button id="closeSoundboardFooterBtn" class="btn btn-secondary">Close Sound Lab</button>
                 </div>
