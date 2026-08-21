@@ -452,7 +452,85 @@ document.addEventListener('DOMContentLoaded', () => {
 
         rawPhotoDataUrl = canvasEl.toDataURL('image/jpeg', 0.95);
         currentPhotoDataUrl = rawPhotoDataUrl;
+        motionFrames = [];
         showConfigSection();
+    }
+
+    let motionFrames = [];
+    let isMotionRecording = false;
+    let motionFrameInterval = null;
+    let livingTileAnimInterval = null;
+
+    const recordMotionBtn = document.getElementById('recordMotionBtn');
+    if (recordMotionBtn) {
+        recordMotionBtn.addEventListener('click', () => {
+            if (isMotionRecording) return;
+            isMotionRecording = true;
+            recordMotionBtn.style.background = '#ef4444';
+            recordMotionBtn.textContent = '⏺️ Recording (2.5s)...';
+            playSound('click');
+
+            motionFrames = [];
+            let count = 0;
+            const maxFrames = 10;
+
+            motionFrameInterval = setInterval(() => {
+                captureFrameToMotionArray();
+                count++;
+                if (count >= maxFrames) {
+                    clearInterval(motionFrameInterval);
+                    isMotionRecording = false;
+                    recordMotionBtn.style.background = '';
+                    recordMotionBtn.textContent = '🎥 Living Motion Snap';
+                    if (motionFrames.length > 0) {
+                        rawPhotoDataUrl = motionFrames[0];
+                        currentPhotoDataUrl = rawPhotoDataUrl;
+                        showConfigSection();
+                        playSound('snap');
+                        showToast('🎥 10-Frame Living Motion Loop Captured!', 'Motion Studio');
+                    }
+                }
+            }, 250);
+        });
+    }
+
+    function captureFrameToMotionArray() {
+        if (!videoEl || !canvasEl) return;
+        const ctx = canvasEl.getContext('2d');
+        canvasEl.width = videoEl.videoWidth || 640;
+        canvasEl.height = videoEl.videoHeight || 480;
+        ctx.filter = getComputedStyle(videoEl).filter;
+        if (isMirrored) {
+            ctx.translate(canvasEl.width, 0);
+            ctx.scale(-1, 1);
+        }
+        ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
+        motionFrames.push(canvasEl.toDataURL('image/jpeg', 0.9));
+    }
+
+    function startLivingTileMotionLoop() {
+        stopLivingTileMotionLoop();
+        if (!motionFrames || motionFrames.length === 0) return;
+
+        let frameIdx = 0;
+        livingTileAnimInterval = setInterval(() => {
+            if (!isGameActive) return;
+            frameIdx = (frameIdx + 1) % motionFrames.length;
+            currentPhotoDataUrl = motionFrames[frameIdx];
+
+            document.querySelectorAll('.puzzle-tile').forEach(tileDiv => {
+                if (!tileDiv.classList.contains('empty-tile')) {
+                    tileDiv.style.backgroundImage = `url(${currentPhotoDataUrl})`;
+                }
+            });
+        }, 220);
+    }
+
+    function stopLivingTileMotionLoop() {
+        if (livingTileAnimInterval) {
+            clearInterval(livingTileAnimInterval);
+            livingTileAnimInterval = null;
+        }
     }
 
     // --- UPLOAD & SAMPLE PHOTO HANDLING ---
@@ -1627,6 +1705,8 @@ document.addEventListener('DOMContentLoaded', () => {
         recordedInitialTilesState = JSON.parse(JSON.stringify(tiles));
         fullRecordedMoves = [];
         if (replayToolbarBtn) replayToolbarBtn.style.display = 'none';
+
+        startLivingTileMotionLoop();
     }
 
 
