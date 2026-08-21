@@ -146,6 +146,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    let voiceAnnouncerEnabled = localStorage.getItem('snappuzzle_voice_announcer') !== 'false';
+    const toggleVoiceAnnouncerBtn = document.getElementById('toggleVoiceAnnouncerBtn');
+    if (toggleVoiceAnnouncerBtn) {
+        toggleVoiceAnnouncerBtn.textContent = voiceAnnouncerEnabled ? '🎙️ Voice: ON' : '🎙️ Voice: Off';
+        toggleVoiceAnnouncerBtn.addEventListener('click', () => {
+            voiceAnnouncerEnabled = !voiceAnnouncerEnabled;
+            localStorage.setItem('snappuzzle_voice_announcer', voiceAnnouncerEnabled);
+            toggleVoiceAnnouncerBtn.textContent = voiceAnnouncerEnabled ? '🎙️ Voice: ON' : '🎙️ Voice: Off';
+            playSound('click');
+            if (voiceAnnouncerEnabled) speakVoiceAnnouncements('Voice Coach Enabled!');
+        });
+    }
+
+    function speakVoiceAnnouncements(text) {
+        if (!voiceAnnouncerEnabled || !('speechSynthesis' in window)) return;
+        try {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 1.15;
+            utterance.pitch = 1.1;
+            utterance.volume = Math.min(1, masterVolume * 0.9);
+            window.speechSynthesis.speak(utterance);
+        } catch(e) {}
+    }
+
     // --- AMBIENT MUSIC ENGINE ---
     let musicTrack = localStorage.getItem('snappuzzle_music_track') || 'off';
     let musicInterval = null;
@@ -1888,6 +1913,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     comboPtsText.textContent = `+${pts} bonus pts`;
                     comboHud.style.display = 'flex';
                     playComboSynthTone(comboStreak);
+                    if (comboStreak >= 3) speakVoiceAnnouncements(`${comboStreak}X Combo Streak!`);
 
                     clearTimeout(comboTimer);
                     comboTimer = setTimeout(() => {
@@ -1988,6 +2014,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function triggerVictory() {
         stopAutoSolve();
         clearInterval(aiRivalTimer);
+        speakVoiceAnnouncements('Puzzle Solved! Victory!');
         finalTime.textContent = timerDisplay.textContent;
         finalMoves.textContent = movesCount;
 
