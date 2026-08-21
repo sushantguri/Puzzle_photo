@@ -3519,10 +3519,66 @@ document.addEventListener('DOMContentLoaded', () => {
         if (analyticsPaceVal) analyticsPaceVal.textContent = `${avgPaceSec}s / move`;
     }
 
+    const themeStudioModal = document.getElementById('themeStudioModal');
+    const closeThemeStudioBtn = document.getElementById('closeThemeStudioBtn');
+    const applyCustomThemeBtn = document.getElementById('applyCustomThemeBtn');
+    const exportThemeJsonBtn = document.getElementById('exportThemeJsonBtn');
+    const themeAccentColor = document.getElementById('themeAccentColor');
+    const themeBgStartColor = document.getElementById('themeBgStartColor');
+    const themeBgEndColor = document.getElementById('themeBgEndColor');
+    const themeBlurSlider = document.getElementById('themeBlurSlider');
+
     if (themeSelect) {
         themeSelect.addEventListener('change', (e) => {
-            applyTheme(e.target.value);
+            if (e.target.value === 'custom') {
+                if (themeStudioModal) themeStudioModal.style.display = 'flex';
+            } else {
+                applyTheme(e.target.value);
+            }
             unlockAchievement('palette_explorer');
+            playSound('click');
+        });
+    }
+
+    if (closeThemeStudioBtn) {
+        closeThemeStudioBtn.addEventListener('click', () => {
+            if (themeStudioModal) themeStudioModal.style.display = 'none';
+            playSound('click');
+        });
+    }
+
+    if (applyCustomThemeBtn) {
+        applyCustomThemeBtn.addEventListener('click', () => {
+            const accent = themeAccentColor ? themeAccentColor.value : '#6366f1';
+            const bgStart = themeBgStartColor ? themeBgStartColor.value : '#0f172a';
+            const bgEnd = themeBgEndColor ? themeBgEndColor.value : '#1e1b4b';
+
+            document.documentElement.style.setProperty('--accent-primary', accent);
+            document.documentElement.style.setProperty('--bg-gradient-start', bgStart);
+            document.documentElement.style.setProperty('--bg-gradient-end', bgEnd);
+
+            const customThemeObj = { accent, bgStart, bgEnd };
+            localStorage.setItem('snappuzzle_custom_theme', JSON.stringify(customThemeObj));
+
+            if (themeStudioModal) themeStudioModal.style.display = 'none';
+            playSound('snap');
+            showToast('🎨 Custom Theme Studio Palette Applied!', 'Theme Studio');
+        });
+    }
+
+    if (exportThemeJsonBtn) {
+        exportThemeJsonBtn.addEventListener('click', () => {
+            const accent = themeAccentColor ? themeAccentColor.value : '#6366f1';
+            const bgStart = themeBgStartColor ? themeBgStartColor.value : '#0f172a';
+            const bgEnd = themeBgEndColor ? themeBgEndColor.value : '#1e1b4b';
+
+            const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify({ name: "Custom Palette", accent, bgStart, bgEnd }, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute('href', dataStr);
+            downloadAnchor.setAttribute('download', 'SnapPuzzle_CustomTheme.json');
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
             playSound('click');
         });
     }

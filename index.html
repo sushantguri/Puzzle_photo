@@ -47,6 +47,7 @@
                     <option value="volcano">🌋 Volcanic Ruby</option>
                     <option value="sakura">🌸 Sakura Blossom</option>
                     <option value="neon">⚡ Neon Cyberpunk</option>
+                    <option value="custom">🎨 Custom Studio Theme</option>
                 </select>
                 <select id="ambientBgSelect" class="form-select theme-select" title="Background Ambient Effect">
                     <option value="starfield">✨ Starfield Dust</option>
@@ -847,6 +848,41 @@
                 </div>
                 <div class="modal-footer" style="justify-content: flex-end; margin-top: 14px;">
                     <button id="closeAnalyticsFooterBtn" class="btn btn-secondary">Close Analytics</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CUSTOM THEME STUDIO MODAL -->
+        <div id="themeStudioModal" class="modal-backdrop" style="display: none;">
+            <div class="modal-card theme-studio-card" style="max-width: 520px; text-align: center;">
+                <div class="modal-header">
+                    <h2>🎨 Custom Theme Palette Studio</h2>
+                    <button id="closeThemeStudioBtn" class="btn-close">&times;</button>
+                </div>
+                <p class="modal-subtitle">Design your custom color theme and UI backdrop styles.</p>
+
+                <div class="theme-picker-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 14px 0; text-align: left; background: rgba(0,0,0,0.3); padding: 14px; border-radius: 12px; border: 1px solid var(--border-color);">
+                    <label style="display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; font-weight: 600; color: #cbd5e1;">
+                        <span>Primary Accent Color:</span>
+                        <input type="color" id="themeAccentColor" value="#6366f1" style="height: 36px; width: 100%; border: none; border-radius: 6px; cursor: pointer;">
+                    </label>
+                    <label style="display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; font-weight: 600; color: #cbd5e1;">
+                        <span>Background Gradient Start:</span>
+                        <input type="color" id="themeBgStartColor" value="#0f172a" style="height: 36px; width: 100%; border: none; border-radius: 6px; cursor: pointer;">
+                    </label>
+                    <label style="display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; font-weight: 600; color: #cbd5e1;">
+                        <span>Background Gradient End:</span>
+                        <input type="color" id="themeBgEndColor" value="#1e1b4b" style="height: 36px; width: 100%; border: none; border-radius: 6px; cursor: pointer;">
+                    </label>
+                    <label style="display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; font-weight: 600; color: #cbd5e1;">
+                        <span>Card Blur Strength:</span>
+                        <input type="range" id="themeBlurSlider" min="0" max="30" value="16" style="margin-top: 8px;">
+                    </label>
+                </div>
+
+                <div class="modal-footer" style="justify-content: space-between; margin-top: 14px;">
+                    <button id="exportThemeJsonBtn" class="btn btn-secondary btn-sm">📥 Export Theme JSON</button>
+                    <button id="applyCustomThemeBtn" class="btn btn-primary">💾 Save & Apply Theme</button>
                 </div>
             </div>
         </div>
