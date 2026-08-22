@@ -262,6 +262,9 @@
                             <button class="mode-btn" data-mode="zen">
                                 <span class="mode-icon">🧘</span> Zen Meditation
                             </button>
+                            <button class="mode-btn" data-mode="versus">
+                                <span class="mode-icon">⚔️</span> 2P Versus Duel
+                            </button>
                         </div>
                     </div>
 
@@ -431,6 +434,13 @@
                     <div class="ai-rival-progress-bg">
                         <div id="aiRivalProgressBar" class="ai-rival-progress-fill" style="width: 0%;"></div>
                     </div>
+                </div>
+
+                <!-- 2-Player Versus Duel HUD -->
+                <div id="versusHud" class="versus-hud" style="display: none; align-items: center; justify-content: space-around; width: 100%; max-width: 640px; margin: 6px auto 10px; background: rgba(0,0,0,0.35); padding: 8px 16px; border-radius: 12px; border: 1px solid var(--border-color);">
+                    <div id="p1StatBadge" class="p1-badge" style="font-weight: 700; color: #38bdf8;">👤 P1 (Left): <span id="p1ScoreVal">0 Moves</span></div>
+                    <div style="font-size: 1.1rem; font-weight: 800; color: #f59e0b;">⚔️ VS ⚔️</div>
+                    <div id="p2StatBadge" class="p2-badge" style="font-weight: 700; color: #f43f5e;">👥 P2 (Right): <span id="p2ScoreVal">0 Moves</span></div>
                 </div>
 
                 <!-- Time Attack Countdown Bar -->

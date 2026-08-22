@@ -1627,6 +1627,41 @@ document.addEventListener('DOMContentLoaded', () => {
         victoryModal.style.display = 'flex';
     }
 
+    let p1VersusMoves = 0;
+    let p2VersusMoves = 0;
+    let currentVersusTurn = 1;
+
+    function updateVersusHud() {
+        const versusHud = document.getElementById('versusHud');
+        const p1ScoreVal = document.getElementById('p1ScoreVal');
+        const p2ScoreVal = document.getElementById('p2ScoreVal');
+        const p1StatBadge = document.getElementById('p1StatBadge');
+        const p2StatBadge = document.getElementById('p2StatBadge');
+
+        if (!versusHud) return;
+        if (puzzleMode === 'versus') {
+            versusHud.style.display = 'flex';
+            if (p1ScoreVal) p1ScoreVal.textContent = `${p1VersusMoves} Moves`;
+            if (p2ScoreVal) p2ScoreVal.textContent = `${p2VersusMoves} Moves`;
+
+            if (p1StatBadge && p2StatBadge) {
+                if (currentVersusTurn === 1) {
+                    p1StatBadge.style.opacity = '1';
+                    p1StatBadge.style.transform = 'scale(1.08)';
+                    p2StatBadge.style.opacity = '0.5';
+                    p2StatBadge.style.transform = 'scale(1)';
+                } else {
+                    p1StatBadge.style.opacity = '0.5';
+                    p1StatBadge.style.transform = 'scale(1)';
+                    p2StatBadge.style.opacity = '1';
+                    p2StatBadge.style.transform = 'scale(1.08)';
+                }
+            }
+        } else {
+            versusHud.style.display = 'none';
+        }
+    }
+
     function initPuzzle() {
         stopAutoSolve();
         movesCount = 0;
@@ -1650,6 +1685,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (zenHud) zenHud.style.display = 'none';
             stopZenMeditationSound();
         }
+
+        p1VersusMoves = 0;
+        p2VersusMoves = 0;
+        currentVersusTurn = 1;
+        updateVersusHud();
 
         if (timerMode === 'countdown' || timerMode === 'speedrun') {
             const timeAttackMap = { 3: 60, 4: 90, 5: 120, 6: 180, 8: 300 };
@@ -1870,6 +1910,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isUndo) {
             moveHistory.push({ tileAId: tileA.id, tileBId: tileB.id });
             movesCount++;
+
+            if (puzzleMode === 'versus') {
+                if (currentVersusTurn === 1) {
+                    p1VersusMoves++;
+                    currentVersusTurn = 2;
+                } else {
+                    p2VersusMoves++;
+                    currentVersusTurn = 1;
+                }
+                updateVersusHud();
+            }
         } else {
             movesCount = Math.max(0, movesCount - 1);
         }
@@ -2020,7 +2071,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const victoryHeader = victoryModal.querySelector('.victory-header');
         if (victoryHeader) {
-            if (timerMode === 'countdown') {
+            if (puzzleMode === 'versus') {
+                if (p1VersusMoves < p2VersusMoves) {
+                    victoryHeader.querySelector('.victory-icon').textContent = '👑';
+                    victoryHeader.querySelector('h2').textContent = '👑 Player 1 Victory!';
+                    victoryHeader.querySelector('p').textContent = `Player 1 won with ${p1VersusMoves} moves vs Player 2's ${p2VersusMoves} moves!`;
+                } else if (p2VersusMoves < p1VersusMoves) {
+                    victoryHeader.querySelector('.victory-icon').textContent = '👑';
+                    victoryHeader.querySelector('h2').textContent = '👑 Player 2 Victory!';
+                    victoryHeader.querySelector('p').textContent = `Player 2 won with ${p2VersusMoves} moves vs Player 1's ${p1VersusMoves} moves!`;
+                } else {
+                    victoryHeader.querySelector('.victory-icon').textContent = '🤝';
+                    victoryHeader.querySelector('h2').textContent = '🤝 It\'s a Tie!';
+                    victoryHeader.querySelector('p').textContent = `Both players completed the puzzle in ${p1VersusMoves} moves!`;
+                }
+            } else if (timerMode === 'countdown') {
                 victoryHeader.querySelector('h2').textContent = '⚡ Time Attack Cleared!';
                 victoryHeader.querySelector('p').textContent = 'Awesome job! You beat the countdown clock!';
             } else if (timerMode === 'zen') {
