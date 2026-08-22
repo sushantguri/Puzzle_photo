@@ -2854,6 +2854,42 @@ document.addEventListener('DOMContentLoaded', () => {
         playSound('click');
     });
 
+    function calculateOptimalDistance() {
+        const size = selectedGridSize;
+        let distance = 0;
+        tiles.forEach(tile => {
+            if (tile.isEmpty) return;
+            const curR = Math.floor(tile.currentPos / size);
+            const curC = tile.currentPos % size;
+            const corR = Math.floor(tile.correctPos / size);
+            const corC = tile.correctPos % size;
+            distance += Math.abs(curR - corR) + Math.abs(curC - corC);
+        });
+        return Math.ceil(distance / 2);
+    }
+
+    const hintPathBtn = document.getElementById('hintPathBtn');
+    if (hintPathBtn) {
+        hintPathBtn.addEventListener('click', () => {
+            if (!isGameActive) return;
+            const estMoves = calculateOptimalDistance();
+            playSound('hint');
+
+            document.querySelectorAll('.puzzle-tile').forEach(tileDiv => {
+                const id = parseInt(tileDiv.dataset.id);
+                const tile = tiles.find(t => t.id === id);
+                if (tile && tile.currentPos !== tile.correctPos && !tile.isEmpty) {
+                    tileDiv.style.boxShadow = '0 0 18px #34d399, inset 0 0 10px #34d399';
+                    setTimeout(() => {
+                        tileDiv.style.boxShadow = '';
+                    }, 2400);
+                }
+            });
+
+            showToast(`💡 Optimal Solution Distance: ~${estMoves} moves remaining!`, 'Path Assistant');
+        });
+    }
+
     shuffleBtn.addEventListener('click', () => {
         initPuzzle();
         playSound('click');
