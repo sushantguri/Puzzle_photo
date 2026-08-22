@@ -295,8 +295,18 @@ document.addEventListener('DOMContentLoaded', () => {
         return 'sine'; // synth
     }
 
+    let customMicAudioUrl = localStorage.getItem('snappuzzle_custom_mic_audio') || null;
+
     function playSound(type) {
         if (!soundEnabled || masterVolume <= 0) return;
+        if (type === 'snap' && customMicAudioUrl) {
+            try {
+                const customAudio = new Audio(customMicAudioUrl);
+                customAudio.volume = masterVolume;
+                customAudio.play();
+                return;
+            } catch(e) {}
+        }
         try {
             if (!audioCtx) audioCtx = new AudioCtx();
             if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -2390,6 +2400,87 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     triggerVisualizerWaveform('zen');
                 } catch (e) {}
+            });
+        }
+
+        let micMediaRecorder = null;
+        let micAudioChunks = [];
+        const recordMicAudioBtn = document.getElementById('recordMicAudioBtn');
+        const playMicAudioBtn = document.getElementById('playMicAudioBtn');
+        const clearMicAudioBtn = document.getElementById('clearMicAudioBtn');
+
+        if (customMicAudioUrl) {
+            if (playMicAudioBtn) playMicAudioBtn.style.display = 'inline-block';
+            if (clearMicAudioBtn) clearMicAudioBtn.style.display = 'inline-block';
+        }
+
+        if (recordMicAudioBtn) {
+            recordMicAudioBtn.addEventListener('click', async () => {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    showToast('⚠️ Microphone access not supported on this browser.');
+                    return;
+                }
+                try {
+                    recordMicAudioBtn.style.background = '#ef4444';
+                    recordMicAudioBtn.textContent = '⏺️ Recording (1.5s)...';
+                    micAudioChunks = [];
+
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    micMediaRecorder = new MediaRecorder(stream);
+
+                    micMediaRecorder.ondataavailable = (e) => {
+                        if (e.data.size > 0) micAudioChunks.push(e.data);
+                    };
+
+                    micMediaRecorder.onstop = () => {
+                        stream.getTracks().forEach(track => track.stop());
+                        const blob = new Blob(micAudioChunks, { type: 'audio/webm' });
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                            customMicAudioUrl = reader.result;
+                            localStorage.setItem('snappuzzle_custom_mic_audio', customMicAudioUrl);
+                            recordMicAudioBtn.style.background = '';
+                            recordMicAudioBtn.textContent = '🎙️ Record 1s Snap';
+                            if (playMicAudioBtn) playMicAudioBtn.style.display = 'inline-block';
+                            if (clearMicAudioBtn) clearMicAudioBtn.style.display = 'inline-block';
+                            playSound('snap');
+                            showToast('🎙️ Custom voice snap sound recorded!', 'Audio Studio');
+                        };
+                        reader.readAsDataURL(blob);
+                    };
+
+                    micMediaRecorder.start();
+                    setTimeout(() => {
+                        if (micMediaRecorder && micMediaRecorder.state === 'recording') {
+                            micMediaRecorder.stop();
+                        }
+                    }, 1500);
+                } catch(err) {
+                    recordMicAudioBtn.style.background = '';
+                    recordMicAudioBtn.textContent = '🎙️ Record 1s Snap';
+                    showToast('⚠️ Microphone access denied.');
+                }
+            });
+        }
+
+        if (playMicAudioBtn) {
+            playMicAudioBtn.addEventListener('click', () => {
+                if (customMicAudioUrl) {
+                    const audio = new Audio(customMicAudioUrl);
+                    audio.volume = masterVolume;
+                    audio.play();
+                }
+            });
+        }
+
+        if (clearMicAudioBtn) {
+            clearMicAudioBtn.addEventListener('click', () => {
+                customMicAudioUrl = null;
+                localStorage.removeItem('snappuzzle_custom_mic_audio');
+                if (playMicAudioBtn) playMicAudioBtn.style.display = 'none';
+                if (clearMicAudioBtn) clearMicAudioBtn.style.display = 'none';
+                playSound('click');
+                showToast('🗑️ Custom voice snap reset.');
             });
         }
     }
