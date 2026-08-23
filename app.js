@@ -2890,6 +2890,47 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    let is3dTiltActive = false;
+    const toggle3dTiltBtn = document.getElementById('toggle3dTiltBtn');
+    const puzzleWrapper = document.querySelector('.puzzle-wrapper');
+
+    if (toggle3dTiltBtn) {
+        toggle3dTiltBtn.addEventListener('click', () => {
+            is3dTiltActive = !is3dTiltActive;
+            toggle3dTiltBtn.classList.toggle('active', is3dTiltActive);
+            toggle3dTiltBtn.textContent = is3dTiltActive ? '🧊 3D Tilt: ON (T)' : '🧊 3D Tilt (T)';
+
+            if (puzzleWrapper) puzzleWrapper.classList.toggle('tilt-3d', is3dTiltActive);
+            if (puzzleBoard) puzzleBoard.classList.toggle('tilt-3d', is3dTiltActive);
+            document.querySelectorAll('.puzzle-tile').forEach(t => t.classList.toggle('tilt-3d', is3dTiltActive));
+
+            if (!is3dTiltActive && puzzleBoard) {
+                puzzleBoard.style.transform = '';
+            }
+            playSound('click');
+        });
+    }
+
+    if (puzzleWrapper) {
+        puzzleWrapper.addEventListener('mousemove', (e) => {
+            if (!is3dTiltActive || !puzzleBoard) return;
+            const rect = puzzleWrapper.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width;
+            const y = (e.clientY - rect.top) / rect.height;
+
+            const rotY = (x - 0.5) * 32;
+            const rotX = (0.5 - y) * 32;
+
+            puzzleBoard.style.transform = `rotateX(${rotX.toFixed(1)}deg) rotateY(${rotY.toFixed(1)}deg)`;
+        });
+
+        puzzleWrapper.addEventListener('mouseleave', () => {
+            if (is3dTiltActive && puzzleBoard) {
+                puzzleBoard.style.transform = 'rotateX(0deg) rotateY(0deg)';
+            }
+        });
+    }
+
     shuffleBtn.addEventListener('click', () => {
         initPuzzle();
         playSound('click');
