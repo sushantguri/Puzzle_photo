@@ -70,6 +70,7 @@
                     <input type="range" id="masterVolumeSlider" min="0" max="100" value="80" class="volume-slider" title="Master Sound Volume">
                 </div>
                 <button id="soundboardBtn" class="btn btn-icon" title="Open Web Audio Sound Lab & Synthesizer Modal">🎹 Sound Lab</button>
+                <button id="openFxStudioBtn" class="btn btn-icon" title="Customize Tile Placement Particle Explosion FX">💥 FX Studio</button>
                 <button id="toggleVoiceAnnouncerBtn" class="btn btn-icon theme-select" title="Toggle Web Speech Voice Announcer" style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.8rem;">🎙️ Voice: ON</button>
                 <select id="musicTrackSelect" class="form-select theme-select" title="Procedural Ambient Music Track">
                     <option value="off">🔇 Music Off</option>
@@ -901,6 +902,38 @@
                 <div class="modal-footer" style="justify-content: space-between; margin-top: 14px;">
                     <button id="exportThemeJsonBtn" class="btn btn-secondary btn-sm">📥 Export Theme JSON</button>
                     <button id="applyCustomThemeBtn" class="btn btn-primary">💾 Save & Apply Theme</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PARTICLE FX PHYSICS STUDIO MODAL -->
+        <div id="fxStudioModal" class="modal-backdrop" style="display: none;">
+            <div class="modal-card fx-studio-card" style="max-width: 520px; text-align: center;">
+                <div class="modal-header">
+                    <h2>💥 Particle Explosion Physics Studio</h2>
+                    <button id="closeFxStudioBtn" class="btn-close">&times;</button>
+                </div>
+                <p class="modal-subtitle">Customize tile snap particle burst shapes, explosion velocity, and count.</p>
+
+                <div class="fx-picker-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 14px 0; text-align: left; background: rgba(0,0,0,0.3); padding: 14px; border-radius: 12px; border: 1px solid var(--border-color);">
+                    <label style="display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; font-weight: 600; color: #cbd5e1;">
+                        <span>Burst Particle Shape:</span>
+                        <select id="fxParticleShapeSelect" class="form-select">
+                            <option value="star">⭐ Cosmic Stars</option>
+                            <option value="heart">💖 Glowing Hearts</option>
+                            <option value="flame">🔥 Fire & Sparks</option>
+                            <option value="coin">🪙 Gold Coins</option>
+                            <option value="snow">❄️ Crystal Snow</option>
+                        </select>
+                    </label>
+                    <label style="display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; font-weight: 600; color: #cbd5e1;">
+                        <span>Particle Count:</span>
+                        <input type="range" id="fxParticleCountSlider" min="10" max="60" value="28" style="margin-top: 6px;">
+                    </label>
+                </div>
+
+                <div class="modal-footer" style="justify-content: flex-end; margin-top: 14px;">
+                    <button id="closeFxStudioFooterBtn" class="btn btn-secondary">Close Studio</button>
                 </div>
             </div>
         </div>

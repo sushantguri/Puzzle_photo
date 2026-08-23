@@ -4403,6 +4403,27 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const openFxStudioBtn = document.getElementById('openFxStudioBtn');
+    const fxStudioModal = document.getElementById('fxStudioModal');
+    const closeFxStudioBtn = document.getElementById('closeFxStudioBtn');
+    const closeFxStudioFooterBtn = document.getElementById('closeFxStudioFooterBtn');
+    const fxParticleShapeSelect = document.getElementById('fxParticleShapeSelect');
+    const fxParticleCountSlider = document.getElementById('fxParticleCountSlider');
+
+    if (openFxStudioBtn && fxStudioModal) {
+        openFxStudioBtn.addEventListener('click', () => {
+            fxStudioModal.style.display = 'flex';
+            playSound('click');
+        });
+
+        [closeFxStudioBtn, closeFxStudioFooterBtn].forEach(btn => {
+            if (btn) btn.addEventListener('click', () => {
+                fxStudioModal.style.display = 'none';
+                playSound('click');
+            });
+        });
+    }
+
     // ----------------------------------------------------
     // DYNAMIC TILE SNAP SPARKLE & SHOCKWAVE PARTICLE FX
     // ----------------------------------------------------
@@ -4425,6 +4446,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const tileW = tileFxCanvas.width / size;
         const tileH = tileFxCanvas.height / size;
 
+        const chosenShape = fxParticleShapeSelect ? fxParticleShapeSelect.value : 'star';
+        const userParticleCount = fxParticleCountSlider ? parseInt(fxParticleCountSlider.value) : 28;
+
         const tilesToFx = [tileA, tileB].filter(Boolean);
         tilesToFx.forEach(tile => {
             if (!tile) return;
@@ -4434,7 +4458,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const centerY = (row + 0.5) * tileH;
 
             const isCorrect = tile.currentPos === tile.correctPos;
-            const count = isCorrect ? 24 : 12;
+            const count = isCorrect ? userParticleCount : Math.floor(userParticleCount / 2);
             const colors = isCorrect 
                 ? ['#10b981', '#34d399', '#6ee7b7', '#f59e0b', '#fbbf24', '#ffffff'] 
                 : ['#6366f1', '#818cf8', '#a5b4fc', '#e0e7ff', '#ffffff'];
@@ -4453,7 +4477,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     decay: 0.025 + Math.random() * 0.02,
                     rotation: Math.random() * Math.PI,
                     rotSpeed: (Math.random() - 0.5) * 0.2,
-                    shape: Math.random() > 0.35 ? 'star' : 'circle'
+                    shape: chosenShape
                 });
             }
 
@@ -4520,7 +4544,19 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.globalAlpha = Math.max(0, p.alpha);
             ctx.fillStyle = p.color;
 
-            if (p.shape === 'star') {
+            if (p.shape === 'heart') {
+                ctx.font = `${Math.max(10, p.size * 2.2)}px sans-serif`;
+                ctx.fillText('💖', 0, 0);
+            } else if (p.shape === 'flame') {
+                ctx.font = `${Math.max(10, p.size * 2.2)}px sans-serif`;
+                ctx.fillText('🔥', 0, 0);
+            } else if (p.shape === 'coin') {
+                ctx.font = `${Math.max(10, p.size * 2.2)}px sans-serif`;
+                ctx.fillText('🪙', 0, 0);
+            } else if (p.shape === 'snow') {
+                ctx.font = `${Math.max(10, p.size * 2.2)}px sans-serif`;
+                ctx.fillText('❄️', 0, 0);
+            } else if (p.shape === 'star') {
                 drawStarFx(ctx, 0, 0, 4, p.size, p.size / 2);
             } else {
                 ctx.beginPath();
