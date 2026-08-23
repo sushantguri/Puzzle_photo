@@ -2139,6 +2139,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         victoryModal.style.display = 'flex';
+        addPlayerXp(100, 'Puzzle Cleared');
         startConfetti();
 
         // Save recorded moves & make Replay available
@@ -2231,6 +2232,55 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast('🔥 Daily Seeded Challenge Started! Grid: 4x4');
         });
     }
+
+    let playerXp = parseInt(localStorage.getItem('snappuzzle_player_xp')) || 0;
+    let playerLevel = Math.floor(playerXp / 300) + 1;
+
+    const questsBtn = document.getElementById('questsBtn');
+    const questsModal = document.getElementById('questsModal');
+    const closeQuestsBtn = document.getElementById('closeQuestsBtn');
+    const closeQuestsFooterBtn = document.getElementById('closeQuestsFooterBtn');
+
+    function updateQuestsUI() {
+        playerLevel = Math.floor(playerXp / 300) + 1;
+        const levelTitles = ['Novice Solver', 'Grid Explorer', 'Puzzle Master', 'Grand Architect', 'Cosmic Legend'];
+        const levelTitle = levelTitles[Math.min(playerLevel - 1, levelTitles.length - 1)];
+
+        const playerLevelTitle = document.getElementById('playerLevelTitle');
+        const playerXpText = document.getElementById('playerXpText');
+        const playerXpBar = document.getElementById('playerXpBar');
+
+        const curLevelXp = playerXp % 300;
+        const pct = Math.min(100, Math.round((curLevelXp / 300) * 100));
+
+        if (playerLevelTitle) playerLevelTitle.textContent = `Level ${playerLevel}: ${levelTitle}`;
+        if (playerXpText) playerXpText.textContent = `${curLevelXp} / 300 XP`;
+        if (playerXpBar) playerXpBar.style.width = `${pct}%`;
+    }
+
+    function addPlayerXp(amount, reason) {
+        playerXp += amount;
+        localStorage.setItem('snappuzzle_player_xp', playerXp);
+        updateQuestsUI();
+        showToast(`✨ +${amount} XP Earned (${reason})!`, 'Level Progression');
+    }
+
+    if (questsBtn && questsModal) {
+        questsBtn.addEventListener('click', () => {
+            updateQuestsUI();
+            questsModal.style.display = 'flex';
+            playSound('click');
+        });
+
+        [closeQuestsBtn, closeQuestsFooterBtn].forEach(btn => {
+            if (btn) btn.addEventListener('click', () => {
+                questsModal.style.display = 'none';
+                playSound('click');
+            });
+        });
+    }
+
+    updateQuestsUI();
 
     // Initial streak load on boot
     updateDailyStreakUI();

@@ -57,6 +57,7 @@
                     <option value="off">🚫 FX Off</option>
                 </select>
                 <button id="dailyChallengeBtn" class="btn btn-icon daily-btn" title="Daily Seeded Challenge & Streak Tracker">📅 <span id="dailyStreakBadge" class="badge-count">🔥 0</span></button>
+                <button id="questsBtn" class="btn btn-icon daily-btn" title="Daily Quests & Level XP Bounties">📜 <span id="questsBadge" class="badge-count">0/3</span></button>
                 <button id="achievementsBtn" class="btn btn-icon achievements-btn" title="View Achievements & Badges">🎖️ <span id="achievementsBadge" class="badge-count">0/12</span></button>
                 <button id="leaderboardBtn" class="btn btn-icon" title="View Best Records / High Scores">🏆</button>
                 <button id="saveLoadModalBtn" class="btn btn-icon" title="Save & Load Game Slots">💾</button>
@@ -935,6 +936,53 @@
 
                 <div class="modal-footer" style="justify-content: flex-end; margin-top: 14px;">
                     <button id="closeFxStudioFooterBtn" class="btn btn-secondary">Close Studio</button>
+                </div>
+            </div>
+        <!-- DAILY QUESTS & LEVEL XP MODAL -->
+        <div id="questsModal" class="modal-backdrop" style="display: none;">
+            <div class="modal-card quests-modal-card" style="max-width: 540px; text-align: center;">
+                <div class="modal-header">
+                    <h2>📜 Daily Quests & Level XP Bounties</h2>
+                    <button id="closeQuestsBtn" class="btn-close">&times;</button>
+                </div>
+                <p class="modal-subtitle">Complete daily puzzle challenges to earn XP and level up!</p>
+
+                <div class="level-progress-wrapper" style="margin: 12px 0; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); text-align: left;">
+                    <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 0.9rem; color: #a5b4fc; margin-bottom: 6px;">
+                        <span id="playerLevelTitle">Level 1: Novice Solver</span>
+                        <span id="playerXpText">0 / 300 XP</span>
+                    </div>
+                    <div style="height: 10px; background: rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden;">
+                        <div id="playerXpBar" style="height: 100%; width: 0%; background: linear-gradient(90deg, #6366f1, #a855f7); transition: width 0.3s ease;"></div>
+                    </div>
+                </div>
+
+                <div id="questsList" class="quests-list" style="display: flex; flex-direction: column; gap: 8px; margin: 12px 0; text-align: left;">
+                    <div class="quest-card" style="padding: 10px; background: rgba(255,255,255,0.04); border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 600; font-size: 0.88rem; color: #f8fafc;">🧩 Grid Master</div>
+                            <div style="font-size: 0.78rem; color: #94a3b8;">Complete a 4x4 or larger puzzle</div>
+                        </div>
+                        <span style="font-weight: 700; color: #34d399; font-size: 0.85rem;">+100 XP</span>
+                    </div>
+                    <div class="quest-card" style="padding: 10px; background: rgba(255,255,255,0.04); border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 600; font-size: 0.88rem; color: #f8fafc;">🔥 Combo Fiend</div>
+                            <div style="font-size: 0.78rem; color: #94a3b8;">Trigger a 3x Combo Streak</div>
+                        </div>
+                        <span style="font-weight: 700; color: #34d399; font-size: 0.85rem;">+150 XP</span>
+                    </div>
+                    <div class="quest-card" style="padding: 10px; background: rgba(255,255,255,0.04); border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 600; font-size: 0.88rem; color: #f8fafc;">🔦 Spotlight Explorer</div>
+                            <div style="font-size: 0.78rem; color: #94a3b8;">Play a game in Spotlight Mode</div>
+                        </div>
+                        <span style="font-weight: 700; color: #34d399; font-size: 0.85rem;">+200 XP</span>
+                    </div>
+                </div>
+
+                <div class="modal-footer" style="justify-content: flex-end; margin-top: 14px;">
+                    <button id="closeQuestsFooterBtn" class="btn btn-secondary">Close Quests</button>
                 </div>
             </div>
         </div>
