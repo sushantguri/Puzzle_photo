@@ -2981,6 +2981,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    let isCrtFxActive = false;
+    const toggleCrtFxBtn = document.getElementById('toggleCrtFxBtn');
+    const crtOverlay = document.getElementById('crtOverlay');
+
+    if (toggleCrtFxBtn) {
+        toggleCrtFxBtn.addEventListener('click', () => {
+            isCrtFxActive = !isCrtFxActive;
+            toggleCrtFxBtn.classList.toggle('active', isCrtFxActive);
+            toggleCrtFxBtn.textContent = isCrtFxActive ? '📺 CRT & Shake: ON' : '📺 CRT & Shake (C)';
+
+            if (crtOverlay) crtOverlay.style.display = isCrtFxActive ? 'block' : 'none';
+            playSound('click');
+        });
+    }
+
     shuffleBtn.addEventListener('click', () => {
         initPuzzle();
         playSound('click');
@@ -4531,6 +4546,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (tileFxCanvas.width !== Math.floor(rect.width) || tileFxCanvas.height !== Math.floor(rect.height)) {
             tileFxCanvas.width = Math.floor(rect.width);
             tileFxCanvas.height = Math.floor(rect.height);
+        }
+
+        if (puzzleWrapper) {
+            puzzleWrapper.classList.remove('shake-impact');
+            void puzzleWrapper.offsetWidth;
+            puzzleWrapper.classList.add('shake-impact');
+            setTimeout(() => {
+                puzzleWrapper.classList.remove('shake-impact');
+            }, 150);
         }
 
         const size = selectedGridSize || 3;
