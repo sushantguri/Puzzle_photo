@@ -2282,6 +2282,75 @@ document.addEventListener('DOMContentLoaded', () => {
 
     updateQuestsUI();
 
+    const openPhotoVaultBtn = document.getElementById('openPhotoVaultBtn');
+    const photoVaultModal = document.getElementById('photoVaultModal');
+    const closePhotoVaultBtn = document.getElementById('closePhotoVaultBtn');
+    const closePhotoVaultFooterBtn = document.getElementById('closePhotoVaultFooterBtn');
+
+    if (openPhotoVaultBtn && photoVaultModal) {
+        openPhotoVaultBtn.addEventListener('click', () => {
+            photoVaultModal.style.display = 'flex';
+            playSound('click');
+        });
+
+        [closePhotoVaultBtn, closePhotoVaultFooterBtn].forEach(btn => {
+            if (btn) btn.addEventListener('click', () => {
+                photoVaultModal.style.display = 'none';
+                playSound('click');
+            });
+        });
+
+        document.querySelectorAll('.vault-item-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                const vaultType = e.currentTarget.getAttribute('data-vault');
+                loadVaultArtwork(vaultType);
+                photoVaultModal.style.display = 'none';
+            });
+        });
+    }
+
+    function loadVaultArtwork(type) {
+        const vCanvas = document.createElement('canvas');
+        vCanvas.width = 640;
+        vCanvas.height = 640;
+        const ctx = vCanvas.getContext('2d');
+
+        const grad = ctx.createLinearGradient(0, 0, 640, 640);
+        if (type === 'neon') {
+            grad.addColorStop(0, '#0f172a'); grad.addColorStop(0.5, '#6366f1'); grad.addColorStop(1, '#ec4899');
+        } else if (type === 'space') {
+            grad.addColorStop(0, '#020617'); grad.addColorStop(0.5, '#1e1b4b'); grad.addColorStop(1, '#3b82f6');
+        } else if (type === 'sunset') {
+            grad.addColorStop(0, '#f97316'); grad.addColorStop(0.5, '#d946ef'); grad.addColorStop(1, '#4c1d95');
+        } else if (type === 'nature') {
+            grad.addColorStop(0, '#065f46'); grad.addColorStop(0.5, '#0d9488'); grad.addColorStop(1, '#38bdf8');
+        } else if (type === 'pet') {
+            grad.addColorStop(0, '#f472b6'); grad.addColorStop(0.5, '#fb7185'); grad.addColorStop(1, '#fde047');
+        } else if (type === 'geo') {
+            grad.addColorStop(0, '#1e293b'); grad.addColorStop(0.5, '#0284c7'); grad.addColorStop(1, '#10b981');
+        } else if (type === 'sakura') {
+            grad.addColorStop(0, '#f43f5e'); grad.addColorStop(0.5, '#f472b6'); grad.addColorStop(1, '#fef08a');
+        } else {
+            grad.addColorStop(0, '#991b1b'); grad.addColorStop(0.5, '#ef4444'); grad.addColorStop(1, '#eab308');
+        }
+
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 640, 640);
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+        for (let i = 0; i < 18; i++) {
+            ctx.beginPath();
+            ctx.arc(Math.random() * 640, Math.random() * 640, 20 + Math.random() * 80, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        rawPhotoDataUrl = vCanvas.toDataURL('image/jpeg', 0.95);
+        currentPhotoDataUrl = rawPhotoDataUrl;
+        showConfigSection();
+        playSound('snap');
+        showToast(`🖼️ Vault Artwork "${type.toUpperCase()}" loaded into puzzle!`, 'Photo Vault');
+    }
+
     // Initial streak load on boot
     updateDailyStreakUI();
 
