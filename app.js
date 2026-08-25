@@ -3408,6 +3408,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     hintBtn.click();
                 } else if (key === 'a' && autoSolveBtn) {
                     autoSolveBtn.click();
+                } else if (key === 't' && toggle3dTiltBtn) {
+                    toggle3dTiltBtn.click();
+                } else if (key === 'c' && toggleCrtFxBtn) {
+                    toggleCrtFxBtn.click();
                 } else if (key === 'r') {
                     shuffleBtn.click();
                 } else if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key) && puzzleMode === 'sliding') {
