@@ -159,13 +159,45 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const openVoiceStudioBtn = document.getElementById('openVoiceStudioBtn');
+    const voiceStudioModal = document.getElementById('voiceStudioModal');
+    const closeVoiceStudioBtn = document.getElementById('closeVoiceStudioBtn');
+    const closeVoiceStudioFooterBtn = document.getElementById('closeVoiceStudioFooterBtn');
+    const testVoiceAnnouncerBtn = document.getElementById('testVoiceAnnouncerBtn');
+    const voiceProfileSelect = document.getElementById('voiceProfileSelect');
+    const voicePitchSlider = document.getElementById('voicePitchSlider');
+    const voiceRateSlider = document.getElementById('voiceRateSlider');
+
+    if (openVoiceStudioBtn && voiceStudioModal) {
+        openVoiceStudioBtn.addEventListener('click', () => {
+            voiceStudioModal.style.display = 'flex';
+            playSound('click');
+        });
+
+        [closeVoiceStudioBtn, closeVoiceStudioFooterBtn].forEach(btn => {
+            if (btn) btn.addEventListener('click', () => {
+                voiceStudioModal.style.display = 'none';
+                playSound('click');
+            });
+        });
+
+        if (testVoiceAnnouncerBtn) {
+            testVoiceAnnouncerBtn.addEventListener('click', () => {
+                speakVoiceAnnouncements('Combo Streak! Triple Snap Combo!');
+            });
+        }
+    }
+
     function speakVoiceAnnouncements(text) {
         if (!voiceAnnouncerEnabled || !('speechSynthesis' in window)) return;
         try {
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 1.15;
-            utterance.pitch = 1.1;
+            const pitchVal = voicePitchSlider ? parseFloat(voicePitchSlider.value) / 100 : 1.1;
+            const rateVal = voiceRateSlider ? parseFloat(voiceRateSlider.value) / 100 : 1.15;
+
+            utterance.rate = rateVal;
+            utterance.pitch = pitchVal;
             utterance.volume = Math.min(1, masterVolume * 0.9);
             window.speechSynthesis.speak(utterance);
         } catch(e) {}

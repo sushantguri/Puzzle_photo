@@ -73,6 +73,7 @@
                 <button id="soundboardBtn" class="btn btn-icon" title="Open Web Audio Sound Lab & Synthesizer Modal">🎹 Sound Lab</button>
                 <button id="openFxStudioBtn" class="btn btn-icon" title="Customize Tile Placement Particle Explosion FX">💥 FX Studio</button>
                 <button id="toggleVoiceAnnouncerBtn" class="btn btn-icon theme-select" title="Toggle Web Speech Voice Announcer" style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.8rem;">🎙️ Voice: ON</button>
+                <button id="openVoiceStudioBtn" class="btn btn-icon" title="Customize Web Speech Combo Voice Announcer Studio">🎙️ Voice Studio</button>
                 <select id="musicTrackSelect" class="form-select theme-select" title="Procedural Ambient Music Track">
                     <option value="off">🔇 Music Off</option>
                     <option value="cyber">🎧 Cyber Synth</option>
@@ -1045,6 +1046,40 @@
 
                 <div class="modal-footer" style="justify-content: flex-end; margin-top: 14px;">
                     <button id="closePhotoVaultFooterBtn" class="btn btn-secondary">Close Vault</button>
+                </div>
+            </div>
+        <!-- VOICE ANNOUNCER STUDIO MODAL -->
+        <div id="voiceStudioModal" class="modal-backdrop" style="display: none;">
+            <div class="modal-card voice-studio-card" style="max-width: 520px; text-align: center;">
+                <div class="modal-header">
+                    <h2>🎙️ Combo Voice Announcer Studio</h2>
+                    <button id="closeVoiceStudioBtn" class="btn-close">&times;</button>
+                </div>
+                <p class="modal-subtitle">Customize speech synthesis announcer voice profiles, pitch, and speed.</p>
+
+                <div class="voice-picker-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 14px 0; text-align: left; background: rgba(0,0,0,0.3); padding: 14px; border-radius: 12px; border: 1px solid var(--border-color);">
+                    <label style="display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; font-weight: 600; color: #cbd5e1;">
+                        <span>Voice Personality:</span>
+                        <select id="voiceProfileSelect" class="form-select">
+                            <option value="arcade">🕹️ Retro Arcade (Energetic)</option>
+                            <option value="robot">🤖 Sci-Fi Robot Synth</option>
+                            <option value="chibi">🌸 Anime Chibi (High Pitch)</option>
+                            <option value="zen">🌌 Cosmic Zen Whisper</option>
+                        </select>
+                    </label>
+                    <label style="display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; font-weight: 600; color: #cbd5e1;">
+                        <span>Speech Pitch Scale:</span>
+                        <input type="range" id="voicePitchSlider" min="50" max="200" value="110" style="margin-top: 6px;">
+                    </label>
+                    <label style="display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; font-weight: 600; color: #cbd5e1; grid-column: span 2;">
+                        <span>Speech Rate / Speed:</span>
+                        <input type="range" id="voiceRateSlider" min="70" max="160" value="110" style="margin-top: 6px;">
+                    </label>
+                </div>
+
+                <div class="modal-footer" style="justify-content: space-between; margin-top: 14px;">
+                    <button id="testVoiceAnnouncerBtn" class="btn btn-secondary btn-sm">🔊 Test Voice Profile</button>
+                    <button id="closeVoiceStudioFooterBtn" class="btn btn-secondary">Close Studio</button>
                 </div>
             </div>
         </div>
