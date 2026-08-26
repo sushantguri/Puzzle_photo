@@ -3718,6 +3718,110 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.textAlign = 'left';
             ctx.fillText('🧩 SNAPPUZZLE MASTER BADGE', 45, 60);
 
+    const exportCertificateBtn = document.getElementById('exportCertificateBtn');
+    if (exportCertificateBtn) {
+        exportCertificateBtn.addEventListener('click', () => {
+            exportVictoryCertificate();
+        });
+    }
+
+    function exportVictoryCertificate() {
+        const certCanvas = document.createElement('canvas');
+        certCanvas.width = 800;
+        certCanvas.height = 600;
+        const ctx = certCanvas.getContext('2d');
+
+        // Dark Luxury Gold Gradient Background
+        const bgGrad = ctx.createLinearGradient(0, 0, 800, 600);
+        bgGrad.addColorStop(0, '#0f172a');
+        bgGrad.addColorStop(0.5, '#1e1b4b');
+        bgGrad.addColorStop(1, '#020617');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, 800, 600);
+
+        // Gold Foil Border Lines
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 8;
+        ctx.strokeRect(20, 20, 760, 560);
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(30, 30, 740, 540);
+
+        // Header Title
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = 'bold 28px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('🏆 CERTIFICATE OF PUZZLE MASTERY 🏆', 400, 80);
+
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '16px sans-serif';
+        ctx.fillText('THIS CERTIFIES THAT THE MASTER SOLVER HAS SUCCESSFULLY COMPLETED', 400, 115);
+
+        // Solved Photo Thumbnail
+        if (currentPhotoDataUrl) {
+            const img = new Image();
+            img.onload = () => {
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(400, 240, 80, 0, Math.PI * 2);
+                ctx.clip();
+                ctx.drawImage(img, 320, 160, 160, 160);
+                ctx.restore();
+
+                ctx.strokeStyle = '#f59e0b';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.arc(400, 240, 82, 0, Math.PI * 2);
+                ctx.stroke();
+
+                finishCertificateDraw(certCanvas, ctx);
+            };
+            img.src = currentPhotoDataUrl;
+        } else {
+            finishCertificateDraw(certCanvas, ctx);
+        }
+    }
+
+    function finishCertificateDraw(certCanvas, ctx) {
+        // Stats Details
+        const finalTime = document.getElementById('finalTime')?.textContent || '00:45';
+        const finalMoves = document.getElementById('finalMoves')?.textContent || '24';
+        const finalStars = document.getElementById('finalStars')?.textContent || '⭐⭐⭐';
+
+        ctx.fillStyle = '#f8fafc';
+        ctx.font = 'bold 22px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`Grid Challenge: ${selectedGridSize}x${selectedGridSize} (${puzzleMode.toUpperCase()})`, 400, 370);
+
+        ctx.font = '18px sans-serif';
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillText(`⏱️ Time: ${finalTime}  |  🧩 Moves: ${finalMoves}  |  Rating: ${finalStars}`, 400, 410);
+
+        // Date & Seal
+        const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        ctx.font = '14px sans-serif';
+        ctx.fillStyle = '#64748b';
+        ctx.fillText(`Awarded on ${dateStr} • Verified by SnapPuzzle Engine`, 400, 450);
+
+        // Golden Emblem Stamp
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.arc(680, 480, 40, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#78350f';
+        ctx.font = 'bold 13px sans-serif';
+        ctx.fillText('OFFICIAL', 680, 476);
+        ctx.fillText('SEAL', 680, 492);
+
+        // Download Trigger
+        const link = document.createElement('a');
+        link.download = `SnapPuzzle_Victory_Certificate.png`;
+        link.href = certCanvas.toDataURL('image/png');
+        link.click();
+        playSound('win');
+        showToast('📜 HD Victory Certificate Downloaded!', 'Certificate Exporter');
+    }
+
             ctx.fillStyle = '#94a3b8';
             ctx.font = '500 14px "Inter", sans-serif';
             ctx.fillText('OFFICIAL COMPLETION CERTIFICATE & STATS CARD', 45, 82);
