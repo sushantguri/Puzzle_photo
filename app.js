@@ -3969,6 +3969,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const glassBorderStyleSelect = document.getElementById('glassBorderStyleSelect');
+    if (glassBorderStyleSelect) {
+        glassBorderStyleSelect.addEventListener('change', (e) => {
+            const styleName = e.target.value;
+            document.querySelectorAll('.puzzle-tile').forEach(tile => {
+                tile.classList.remove('glass-crystal', 'glass-frosted', 'glass-cyber', 'glass-rainbow');
+                if (styleName !== 'none') {
+                    tile.classList.add(`glass-${styleName}`);
+                }
+            });
+            playSound('click');
+        });
+    }
+
     if (exportThemeJsonBtn) {
         exportThemeJsonBtn.addEventListener('click', () => {
             const accent = themeAccentColor ? themeAccentColor.value : '#6366f1';
