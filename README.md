@@ -1,7 +1,7 @@
 # 🧩 SnapPuzzle — Interactive Camera Photo puzz
 
 > **Capture your moment. Shatter it into pieces. Solve the puzzle.**  
-> *A state-of-the-art Web App that turns live webcam captures and photos into interactive, high-fidelity jigsaw and sliding tile puzzles.*
+> *A state-of-the-art Web App that turns live webcam captures and photos into interactive, high-fidelity jigsaw and sliding tile puzzles.
 
 ---
 
