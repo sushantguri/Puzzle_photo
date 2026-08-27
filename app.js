@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let showTileNumbers = false;
     let moveHistory = [];
     let speedrunSplitsReached = { 25: false, 50: false, 75: false };
+    let tileSwapCounts = {};
 
     // Replay State
     let recordedInitialTilesState = [];
@@ -1711,6 +1712,7 @@ document.addEventListener('DOMContentLoaded', () => {
         secondsElapsed = 0;
         isGameActive = true;
         speedrunSplitsReached = { 25: false, 50: false, 75: false };
+        tileSwapCounts = {};
         const splitBadge = document.getElementById('splitBadge');
         if (splitBadge) splitBadge.style.display = 'none';
         updateUndoButtonState();
@@ -1955,6 +1957,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isUndo) {
             moveHistory.push({ tileAId: tileA.id, tileBId: tileB.id });
             movesCount++;
+            if (tileA && tileA.id !== undefined) tileSwapCounts[tileA.id] = (tileSwapCounts[tileA.id] || 0) + 1;
+            if (tileB && tileB.id !== undefined) tileSwapCounts[tileB.id] = (tileSwapCounts[tileB.id] || 0) + 1;
 
             if (puzzleMode === 'versus') {
                 if (currentVersusTurn === 1) {
@@ -3956,25 +3960,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const showAnalyticsBtn = document.getElementById('showAnalyticsBtn');
+    const headerAnalyticsBtn = document.getElementById('headerAnalyticsBtn');
     const analyticsModal = document.getElementById('analyticsModal');
     const closeAnalyticsBtn = document.getElementById('closeAnalyticsBtn');
     const closeAnalyticsFooterBtn = document.getElementById('closeAnalyticsFooterBtn');
     const heatmapCanvas = document.getElementById('heatmapCanvas');
 
-    if (showAnalyticsBtn && analyticsModal) {
-        showAnalyticsBtn.addEventListener('click', () => {
-            renderHeatmapAnalytics();
-            analyticsModal.style.display = 'flex';
-            playSound('click');
-        });
+    [showAnalyticsBtn, headerAnalyticsBtn].forEach(btn => {
+        if (btn && analyticsModal) {
+            btn.addEventListener('click', () => {
+                renderHeatmapAnalytics();
+                analyticsModal.style.display = 'flex';
+                playSound('click');
+            });
+        }
+    });
 
-        [closeAnalyticsBtn, closeAnalyticsFooterBtn].forEach(btn => {
-            if (btn) btn.addEventListener('click', () => {
+    [closeAnalyticsBtn, closeAnalyticsFooterBtn].forEach(btn => {
+        if (btn && analyticsModal) {
+            btn.addEventListener('click', () => {
                 analyticsModal.style.display = 'none';
                 playSound('click');
             });
-        });
-    }
+        }
+    });
 
     function renderHeatmapAnalytics() {
         if (!heatmapCanvas) return;
