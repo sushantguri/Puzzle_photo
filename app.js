@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isGameActive = false;
     let showTileNumbers = false;
     let moveHistory = [];
+    let speedrunSplitsReached = { 25: false, 50: false, 75: false };
 
     // Replay State
     let recordedInitialTilesState = [];
@@ -1709,7 +1710,9 @@ document.addEventListener('DOMContentLoaded', () => {
         movesCount = 0;
         secondsElapsed = 0;
         isGameActive = true;
-        moveHistory = [];
+        speedrunSplitsReached = { 25: false, 50: false, 75: false };
+        const splitBadge = document.getElementById('splitBadge');
+        if (splitBadge) splitBadge.style.display = 'none';
         updateUndoButtonState();
         moveDisplay.textContent = '0 Moves';
 
@@ -2084,7 +2087,36 @@ document.addEventListener('DOMContentLoaded', () => {
         checkWinCondition();
     }
 
+    function checkSpeedrunSplits() {
+        if (!isGameActive || tiles.length === 0) return;
+        const correctCount = tiles.filter(t => t.currentPos === t.correctPos && (!isTileRotationEnabled || (t.rotation || 0) % 360 === 0)).length;
+        const pct = Math.floor((correctCount / tiles.length) * 100);
+        
+        const milestones = [25, 50, 75];
+        const splitBadge = document.getElementById('splitBadge');
+        const splitDisplay = document.getElementById('splitDisplay');
+
+        milestones.forEach(m => {
+            if (pct >= m && !speedrunSplitsReached[m]) {
+                speedrunSplitsReached[m] = true;
+                const splitTime = secondsElapsed;
+                const benchmarkMap = { 3: { 25: 8, 50: 15, 75: 25 }, 4: { 25: 15, 50: 30, 75: 50 }, 5: { 25: 25, 50: 55, 75: 90 }, 6: { 25: 40, 50: 85, 75: 135 }, 8: { 25: 75, 50: 160, 75: 240 } };
+                const targetTime = benchmarkMap[selectedGridSize] ? benchmarkMap[selectedGridSize][m] : m;
+                const diff = splitTime - targetTime;
+                const diffStr = diff <= 0 ? `-${Math.abs(diff)}s 🟢` : `+${diff}s 🔴`;
+                
+                if (splitBadge && splitDisplay) {
+                    splitBadge.style.display = 'inline-flex';
+                    splitDisplay.textContent = `Split ${m}%: ${formatTime(splitTime)} (${diffStr})`;
+                }
+                playSound('chime');
+                showToast(`🚩 Speedrun Split ${m}% Checkpoint: ${formatTime(splitTime)} (${diffStr})`, 'Split Pace');
+            }
+        });
+    }
+
     function checkWinCondition() {
+        checkSpeedrunSplits();
         const isSolved = tiles.every(t => t.currentPos === t.correctPos && (!isTileRotationEnabled || (t.rotation || 0) % 360 === 0));
 
         if (isSolved) {
@@ -4476,6 +4508,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             playSound('snap');
             showToast('✂️ Photo Cropped & Framed!', 'Achievement Unlocked');
+        });
+    }
+
     // --- HOTKEYS GUIDE MODAL ENGINE ---
     const openHotkeysBtn = document.getElementById('openHotkeysBtn');
     const hotkeysModal = document.getElementById('hotkeysModal');
