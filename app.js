@@ -267,11 +267,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 { notes: [110.00, 164.81, 220.00], duration: 1.2, type: 'triangle', filterCutoff: 450 },
                 { notes: [130.81, 196.00, 261.63], duration: 1.2, type: 'triangle', filterCutoff: 500 },
                 { notes: [146.83, 220.00, 293.66], duration: 1.2, type: 'triangle', filterCutoff: 480 }
+            ],
+            zenbell: [
+                { notes: [528.00, 792.00], duration: 1.8, type: 'sine', filterCutoff: 1200 },
+                { notes: [432.00, 648.00], duration: 1.8, type: 'sine', filterCutoff: 1000 },
+                { notes: [639.00, 958.50], duration: 1.8, type: 'sine', filterCutoff: 1100 }
+            ],
+            synthwave: [
+                { notes: [110.00, 220.00], duration: 0.35, type: 'sawtooth', filterCutoff: 850 },
+                { notes: [130.81, 261.63], duration: 0.35, type: 'sawtooth', filterCutoff: 950 },
+                { notes: [164.81, 329.63], duration: 0.35, type: 'sawtooth', filterCutoff: 900 },
+                { notes: [146.83, 293.66], duration: 0.35, type: 'sawtooth', filterCutoff: 1000 }
+            ],
+            cyberwind: [
+                { notes: [55.00, 110.00, 165.00], duration: 2.2, type: 'triangle', filterCutoff: 300 },
+                { notes: [65.41, 130.81, 196.22], duration: 2.2, type: 'triangle', filterCutoff: 380 },
+                { notes: [73.42, 146.83, 220.24], duration: 2.2, type: 'triangle', filterCutoff: 340 }
             ]
         };
 
         const currentSeq = tracks[musicTrack] || tracks.cyber;
-        const stepTime = musicTrack === 'arcade' ? 300 : (musicTrack === 'space' || musicTrack === 'rain' ? 1400 : 1200);
+        const stepTimeMap = { arcade: 300, synthwave: 500, zenbell: 1800, cyberwind: 2200, space: 1400, rain: 1400 };
+        const stepTime = stepTimeMap[musicTrack] || 1200;
 
         musicInterval = setInterval(() => {
             if (!soundEnabled || musicTrack === 'off') return;
