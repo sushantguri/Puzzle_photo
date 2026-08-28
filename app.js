@@ -2336,21 +2336,46 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeQuestsBtn = document.getElementById('closeQuestsBtn');
     const closeQuestsFooterBtn = document.getElementById('closeQuestsFooterBtn');
 
+    let equippedTitle = localStorage.getItem('snappuzzle_equipped_title') || '🧩 Novice Solver';
+
     function updateQuestsUI() {
         playerLevel = Math.floor(playerXp / 300) + 1;
-        const levelTitles = ['Novice Solver', 'Grid Explorer', 'Puzzle Master', 'Grand Architect', 'Cosmic Legend'];
-        const levelTitle = levelTitles[Math.min(playerLevel - 1, levelTitles.length - 1)];
+        const levelTitles = ['Novice Solver', 'Grid Explorer', 'Speed Slicer', 'Jigsaw Tactician', 'Grand Architect', 'Cosmic Legend'];
+        const defaultLevelTitle = levelTitles[Math.min(playerLevel - 1, levelTitles.length - 1)];
 
         const playerLevelTitle = document.getElementById('playerLevelTitle');
         const playerXpText = document.getElementById('playerXpText');
         const playerXpBar = document.getElementById('playerXpBar');
+        const headerTitleBadge = document.getElementById('headerTitleBadge');
+        const playerTitleSelect = document.getElementById('playerTitleSelect');
 
         const curLevelXp = playerXp % 300;
         const pct = Math.min(100, Math.round((curLevelXp / 300) * 100));
 
-        if (playerLevelTitle) playerLevelTitle.textContent = `Level ${playerLevel}: ${levelTitle}`;
+        if (playerLevelTitle) playerLevelTitle.textContent = `Level ${playerLevel}: ${defaultLevelTitle}`;
         if (playerXpText) playerXpText.textContent = `${curLevelXp} / 300 XP`;
         if (playerXpBar) playerXpBar.style.width = `${pct}%`;
+        if (headerTitleBadge) headerTitleBadge.textContent = equippedTitle;
+
+        if (playerTitleSelect) {
+            playerTitleSelect.value = equippedTitle;
+            Array.from(playerTitleSelect.options).forEach((opt, idx) => {
+                const reqLevel = idx + 1;
+                opt.disabled = reqLevel > playerLevel;
+            });
+        }
+    }
+
+    const playerTitleSelect = document.getElementById('playerTitleSelect');
+    if (playerTitleSelect) {
+        playerTitleSelect.addEventListener('change', (e) => {
+            equippedTitle = e.target.value;
+            localStorage.setItem('snappuzzle_equipped_title', equippedTitle);
+            const headerTitleBadge = document.getElementById('headerTitleBadge');
+            if (headerTitleBadge) headerTitleBadge.textContent = equippedTitle;
+            showToast(`👑 Title equipped: ${equippedTitle}`, 'Title Unlocker');
+            playSound('click');
+        });
     }
 
     function addPlayerXp(amount, reason) {

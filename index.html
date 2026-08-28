@@ -27,6 +27,7 @@
             <div class="logo">
                 <span class="logo-icon">🧩</span>
                 <span class="logo-text">Snap<span class="highlight">Puzzle</span></span>
+                <span id="headerTitleBadge" class="title-badge" style="margin-left: 8px; padding: 3px 10px; background: rgba(99, 102, 241, 0.15); border: 1px solid var(--accent-primary); border-radius: 12px; font-size: 0.75rem; font-weight: 600; color: #a5b4fc;" title="Active Player Title (Unlocked via Level XP)">🧩 Novice Solver</span>
             </div>
             <div class="header-stats" id="headerStats" style="display: none;">
                 <div class="stat-badge">
@@ -990,6 +991,18 @@
                     <div style="height: 10px; background: rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden;">
                         <div id="playerXpBar" style="height: 100%; width: 0%; background: linear-gradient(90deg, #6366f1, #a855f7); transition: width 0.3s ease;"></div>
                     </div>
+                </div>
+
+                <div class="player-title-selector" style="margin: 12px 0; padding: 12px; background: rgba(0, 0, 0, 0.25); border-radius: 12px; border: 1px solid var(--border-color); text-align: left; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                    <label for="playerTitleSelect" style="font-size: 0.85rem; font-weight: 600; color: #a5b4fc;">👑 Equipped Title:</label>
+                    <select id="playerTitleSelect" class="form-select" style="width: auto; padding: 4px 10px; font-size: 0.85rem;">
+                        <option value="🧩 Novice Solver">🧩 Novice Solver (Lvl 1)</option>
+                        <option value="🔍 Grid Explorer">🔍 Grid Explorer (Lvl 2)</option>
+                        <option value="⚡ Speed Slicer">⚡ Speed Slicer (Lvl 3)</option>
+                        <option value="🧩 Jigsaw Tactician">🧩 Jigsaw Tactician (Lvl 4)</option>
+                        <option value="👑 Grand Architect">👑 Grand Architect (Lvl 5)</option>
+                        <option value="🌌 Cosmic Legend">🌌 Cosmic Legend (Lvl 6+)</option>
+                    </select>
                 </div>
 
                 <div id="questsList" class="quests-list" style="display: flex; flex-direction: column; gap: 8px; margin: 12px 0; text-align: left;">
