@@ -624,12 +624,16 @@
                 <div class="replay-board-wrapper">
                     <div id="replayBoard" class="puzzle-board replay-board"></div>
                 </div>
-                <div class="replay-controls">
+                <div class="replay-controls" style="flex-wrap: wrap; gap: 6px; justify-content: center;">
                     <button id="replayStepBackBtn" class="btn btn-secondary btn-sm" title="Previous Move (Left Arrow)">⏮️ Back</button>
                     <button id="replayTogglePlayBtn" class="btn btn-primary btn-sm" title="Play / Pause (Space)">▶️ Play</button>
                     <button id="replayStepForwardBtn" class="btn btn-secondary btn-sm" title="Next Move (Right Arrow)">⏭️ Forward</button>
                     <button id="replaySpeedBtn" class="btn btn-secondary btn-sm" title="Playback Speed">⚡ 1x</button>
                     <button id="replayResetBtn" class="btn btn-secondary btn-sm" title="Reset Playback">🔄 Reset</button>
+                    <button id="replayJump25Btn" class="btn btn-secondary btn-sm" title="Jump to 25% Split">🚩 25%</button>
+                    <button id="replayJump50Btn" class="btn btn-secondary btn-sm" title="Jump to 50% Split">🚩 50%</button>
+                    <button id="replayJump75Btn" class="btn btn-secondary btn-sm" title="Jump to 75% Split">🚩 75%</button>
+                    <button id="exportReplayFrameBtn" class="btn btn-secondary btn-sm" style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: none;" title="Export Current Replay Frame Snapshot as PNG Image">🎞️ Export Frame</button>
                 </div>
             </div>
         </div>

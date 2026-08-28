@@ -3373,6 +3373,55 @@ document.addEventListener('DOMContentLoaded', () => {
     if (replaySpeedBtn) replaySpeedBtn.addEventListener('click', cycleReplaySpeed);
     if (replayResetBtn) replayResetBtn.addEventListener('click', resetReplay);
 
+    const exportReplayFrameBtn = document.getElementById('exportReplayFrameBtn');
+    if (exportReplayFrameBtn) {
+        exportReplayFrameBtn.addEventListener('click', () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = 600;
+            canvas.height = 660;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, 600, 660);
+
+            ctx.fillStyle = '#6366f1';
+            ctx.font = 'bold 22px "Outfit", sans-serif';
+            ctx.fillText('SnapPuzzle • Move Replay Snapshot', 30, 42);
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '14px "Inter", sans-serif';
+            ctx.fillText(`Move ${replayCurrentStep} of ${fullRecordedMoves.length}`, 30, 64);
+
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                ctx.drawImage(img, 30, 80, 540, 540);
+
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+                ctx.fillRect(30, 580, 540, 40);
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 14px "Outfit", sans-serif';
+                ctx.fillText(`Step ${replayCurrentStep} / ${fullRecordedMoves.length} • SnapPuzzle Timelapse`, 45, 605);
+
+                const link = document.createElement('a');
+                link.download = `SnapPuzzle_Replay_Step_${replayCurrentStep}_${Date.now()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                showToast('🎞️ Replay Frame Snapshot exported!', 'Timelapse Export');
+            };
+            img.src = currentPhotoDataUrl || '';
+        });
+    }
+
+    const replayJump25Btn = document.getElementById('replayJump25Btn');
+    const replayJump50Btn = document.getElementById('replayJump50Btn');
+    const replayJump75Btn = document.getElementById('replayJump75Btn');
+
+    if (replayJump25Btn) replayJump25Btn.addEventListener('click', () => { stopReplayPlayback(); renderReplayStep(Math.floor(fullRecordedMoves.length * 0.25)); });
+    if (replayJump50Btn) replayJump50Btn.addEventListener('click', () => { stopReplayPlayback(); renderReplayStep(Math.floor(fullRecordedMoves.length * 0.50)); });
+    if (replayJump75Btn) replayJump75Btn.addEventListener('click', () => { stopReplayPlayback(); renderReplayStep(Math.floor(fullRecordedMoves.length * 0.75)); });
+
     if (replayScrubber) {
         replayScrubber.addEventListener('input', (e) => {
             stopReplayPlayback();
