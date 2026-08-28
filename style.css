@@ -760,6 +760,28 @@ body {
     transform: scale(0.95);
     z-index: 5;
 }
+
+/* Colorblind & High Contrast Mode */
+.colorblind-badge {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: #000000;
+    color: #ffffff;
+    font-size: clamp(0.7rem, 1.5vw, 0.95rem);
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 6px;
+    border: 2px solid #facc15;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+    pointer-events: none;
+    z-index: 6;
+}
+.puzzle-tile.high-contrast-tile {
+    outline: 2px solid #ffffff !important;
+    outline-offset: -2px;
+    box-shadow: inset 0 0 0 3px #000000 !important;
+}
 .puzzle-tile.jigsaw-tile {
     border-radius: 8px;
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25), 0 4px 10px rgba(0, 0, 0, 0.3);

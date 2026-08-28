@@ -46,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let moveHistory = [];
     let speedrunSplitsReached = { 25: false, 50: false, 75: false };
     let tileSwapCounts = {};
+    let isColorblindModeEnabled = false;
 
     // Replay State
     let recordedInitialTilesState = [];
@@ -1934,6 +1935,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 numBadge.classList.add('tile-number');
                 numBadge.textContent = tile.id + 1;
                 tileDiv.appendChild(numBadge);
+            }
+
+            if (isColorblindModeEnabled && !tile.isEmpty) {
+                tileDiv.classList.add('high-contrast-tile');
+                const cbSymbols = ['▲', '◆', '★', '●', '■', '▼', '✚', '✖', '♦', '♣', '♠', '♥'];
+                const cbBadge = document.createElement('span');
+                cbBadge.classList.add('colorblind-badge');
+                cbBadge.textContent = cbSymbols[tile.id % cbSymbols.length];
+                tileDiv.appendChild(cbBadge);
             }
 
             // Click handling
@@ -5070,6 +5080,17 @@ document.addEventListener('DOMContentLoaded', () => {
             try { zenAudioCtx.close(); } catch (e) {}
             zenAudioCtx = null;
         }
+    }
+
+    const toggleColorblindBtn = document.getElementById('toggleColorblindBtn');
+    if (toggleColorblindBtn) {
+        toggleColorblindBtn.addEventListener('click', () => {
+            isColorblindModeEnabled = !isColorblindModeEnabled;
+            toggleColorblindBtn.classList.toggle('active', isColorblindModeEnabled);
+            showToast(isColorblindModeEnabled ? '👁️ High-Contrast Colorblind Mode ON' : '👁️ High-Contrast Colorblind Mode OFF', 'Accessibility');
+            playSound('click');
+            renderTiles();
+        });
     }
 
     // Auto-start webcam initially
