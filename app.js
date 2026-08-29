@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Cutout Shape & AI Rival State
     let selectedShape = 'square'; // 'square', 'rounded', 'hexagon', 'diamond', 'cyber'
+    let selectedMask = 'none'; // 'none', 'circle', 'diamond', 'shield', 'heart'
     let isAiRivalActive = false;
     let aiRivalLevel = 'medium'; // 'easy', 'medium', 'hard'
     let aiRivalProgress = 0;
@@ -1559,11 +1560,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- TILE SHAPE SELECTOR LISTENERS ---
-    document.querySelectorAll('.shape-btn').forEach(btn => {
+    document.querySelectorAll('.shape-selector .shape-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            document.querySelectorAll('.shape-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.shape-selector .shape-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             selectedShape = btn.dataset.shape;
+            playSound('click');
+        });
+    });
+
+    // --- BOARD SILHOUETTE MASK LISTENERS ---
+    document.querySelectorAll('.mask-selector .mask-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.mask-selector .mask-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedMask = btn.dataset.mask;
             playSound('click');
         });
     });
@@ -1843,6 +1854,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function buildPuzzleGrid() {
         puzzleBoard.innerHTML = '';
+        puzzleBoard.className = 'puzzle-board';
+        if (selectedMask && selectedMask !== 'none') {
+            puzzleBoard.classList.add('mask-' + selectedMask);
+        }
         puzzleBoard.style.gridTemplateColumns = `repeat(${selectedGridSize}, 1fr)`;
         puzzleBoard.style.gridTemplateRows = `repeat(${selectedGridSize}, 1fr)`;
 

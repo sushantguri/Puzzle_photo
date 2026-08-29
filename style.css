@@ -1474,6 +1474,21 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
+/* Board Silhouette Masks */
+.puzzle-board.mask-circle {
+    clip-path: circle(49% at 50% 50%);
+    border-radius: 50% !important;
+}
+.puzzle-board.mask-diamond {
+    clip-path: polygon(50% 2%, 98% 50%, 50% 98%, 2% 50%);
+}
+.puzzle-board.mask-shield {
+    clip-path: polygon(3% 3%, 97% 3%, 97% 65%, 50% 98%, 3% 65%);
+}
+.puzzle-board.mask-heart {
+    clip-path: polygon(50% 15%, 62% 3%, 78% 3%, 92% 15%, 97% 32%, 92% 52%, 75% 72%, 50% 97%, 25% 72%, 8% 52%, 3% 32%, 8% 15%, 22% 3%, 38% 3%);
+}
+
 /* AI Rival Speedrun HUD */
 .ai-rival-hud {
     background: rgba(15, 23, 42, 0.75);
