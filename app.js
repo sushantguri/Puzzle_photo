@@ -1079,7 +1079,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Apply advanced canvas FX filters if selected
             const selectedFilter = filterSelect ? filterSelect.value : 'none';
-            if (['pixel', 'glitch', 'sketch', 'thermal', 'vortex', 'kaleidoscope', 'matrix', 'comic'].includes(selectedFilter)) {
+            if (['pixel', 'glitch', 'sketch', 'thermal', 'vortex', 'kaleidoscope', 'matrix', 'comic', 'tealorange', 'retro70s', 'vaporwave', 'pastel', 'amber', 'duotone_cyber', 'duotone_sunset', 'duotone_emerald'].includes(selectedFilter)) {
                 applyAdvancedCanvasFX(ctx, canvasEl.width, canvasEl.height, selectedFilter);
                 unlockAchievement('pixel_artist');
             }
@@ -1309,6 +1309,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 data[i] = Math.min(255, Math.round(lum * 255 + 40));
                 data[i+1] = Math.min(255, Math.round(lum * 180));
                 data[i+2] = Math.min(255, Math.round(lum * 30));
+            }
+            ctx.putImageData(imgData, 0, 0);
+        } else if (filterType === 'duotone_cyber') {
+            const imgData = ctx.getImageData(0, 0, width, height);
+            const data = imgData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                const lum = (data[i] * 0.299 + data[i+1] * 0.587 + data[i+2] * 0.114) / 255;
+                // Shadow: Cyan (0, 220, 240) -> Highlight: Neon Magenta (255, 30, 160)
+                data[i] = Math.round(0 * (1 - lum) + 255 * lum);
+                data[i+1] = Math.round(220 * (1 - lum) + 30 * lum);
+                data[i+2] = Math.round(240 * (1 - lum) + 160 * lum);
+            }
+            ctx.putImageData(imgData, 0, 0);
+        } else if (filterType === 'duotone_sunset') {
+            const imgData = ctx.getImageData(0, 0, width, height);
+            const data = imgData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                const lum = (data[i] * 0.299 + data[i+1] * 0.587 + data[i+2] * 0.114) / 255;
+                // Shadow: Indigo (45, 15, 80) -> Highlight: Gold/Amber (255, 190, 20)
+                data[i] = Math.round(45 * (1 - lum) + 255 * lum);
+                data[i+1] = Math.round(15 * (1 - lum) + 190 * lum);
+                data[i+2] = Math.round(80 * (1 - lum) + 20 * lum);
+            }
+            ctx.putImageData(imgData, 0, 0);
+        } else if (filterType === 'duotone_emerald') {
+            const imgData = ctx.getImageData(0, 0, width, height);
+            const data = imgData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                const lum = (data[i] * 0.299 + data[i+1] * 0.587 + data[i+2] * 0.114) / 255;
+                // Shadow: Deep Pine (8, 35, 25) -> Highlight: Mint Green (40, 255, 170)
+                data[i] = Math.round(8 * (1 - lum) + 40 * lum);
+                data[i+1] = Math.round(35 * (1 - lum) + 255 * lum);
+                data[i+2] = Math.round(25 * (1 - lum) + 170 * lum);
             }
             ctx.putImageData(imgData, 0, 0);
         }
