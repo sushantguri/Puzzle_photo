@@ -47,6 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let speedrunSplitsReached = { 25: false, 50: false, 75: false };
     let tileSwapCounts = {};
     let isColorblindModeEnabled = false;
+    let isSnapAssistEnabled = false;
 
     // Replay State
     let recordedInitialTilesState = [];
@@ -1944,6 +1945,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (selectedTile && selectedTile.id === tile.id) {
                 tileDiv.classList.add('selected-tile');
+            }
+
+            if (isSnapAssistEnabled && selectedTile && !tile.isEmpty && tile.currentPos === selectedTile.correctPos) {
+                tileDiv.classList.add('tile-target-destination');
             }
 
             if (tile.isEmpty) {
@@ -5195,6 +5200,17 @@ document.addEventListener('DOMContentLoaded', () => {
             isColorblindModeEnabled = !isColorblindModeEnabled;
             toggleColorblindBtn.classList.toggle('active', isColorblindModeEnabled);
             showToast(isColorblindModeEnabled ? '👁️ High-Contrast Colorblind Mode ON' : '👁️ High-Contrast Colorblind Mode OFF', 'Accessibility');
+            playSound('click');
+            renderTiles();
+        });
+    }
+
+    const snapAssistToggleBtn = document.getElementById('snapAssistToggleBtn');
+    if (snapAssistToggleBtn) {
+        snapAssistToggleBtn.addEventListener('click', () => {
+            isSnapAssistEnabled = !isSnapAssistEnabled;
+            snapAssistToggleBtn.classList.toggle('active', isSnapAssistEnabled);
+            showToast(isSnapAssistEnabled ? '🧲 Smart Snap Assist ON (Selected tile reveals target slot)' : '🧲 Smart Snap Assist OFF', 'Snap Assist');
             playSound('click');
             renderTiles();
         });

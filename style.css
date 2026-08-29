@@ -795,6 +795,19 @@ body {
     box-shadow: none;
 }
 
+/* Smart Snap Assist & Proximity Highlight */
+.puzzle-tile.tile-target-destination {
+    outline: 2px dashed #38bdf8 !important;
+    outline-offset: -2px;
+    box-shadow: 0 0 16px rgba(56, 189, 248, 0.7), inset 0 0 12px rgba(56, 189, 248, 0.4) !important;
+    animation: targetPulse 1.2s infinite ease-in-out;
+    z-index: 4;
+}
+@keyframes targetPulse {
+    0%, 100% { transform: scale(1); filter: brightness(1.1); }
+    50% { transform: scale(0.96); filter: brightness(1.35); }
+}
+
 .tile-number {
     position: absolute;
     top: 5px;
