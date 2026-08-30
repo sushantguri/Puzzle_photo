@@ -2695,6 +2695,119 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        const synthScaleSelect = document.getElementById('synthScaleSelect');
+        const synthKeypadGrid = document.getElementById('synthKeypadGrid');
+
+        const scalesMap = {
+            pentatonic: [
+                { note: 'C4', freq: 261.63 },
+                { note: 'D4', freq: 293.66 },
+                { note: 'E4', freq: 329.63 },
+                { note: 'G4', freq: 392.00 },
+                { note: 'A4', freq: 440.00 },
+                { note: 'C5', freq: 523.25 }
+            ],
+            major: [
+                { note: 'C4', freq: 261.63 },
+                { note: 'D4', freq: 293.66 },
+                { note: 'E4', freq: 329.63 },
+                { note: 'F4', freq: 349.23 },
+                { note: 'G4', freq: 392.00 },
+                { note: 'A4', freq: 440.00 },
+                { note: 'B4', freq: 493.88 },
+                { note: 'C5', freq: 523.25 }
+            ],
+            minor: [
+                { note: 'A3', freq: 220.00 },
+                { note: 'B3', freq: 246.94 },
+                { note: 'C4', freq: 261.63 },
+                { note: 'D4', freq: 293.66 },
+                { note: 'E4', freq: 329.63 },
+                { note: 'F4', freq: 349.23 },
+                { note: 'G#4', freq: 415.30 },
+                { note: 'A4', freq: 440.00 }
+            ],
+            solfeggio: [
+                { note: '174Hz', freq: 174 },
+                { note: '285Hz', freq: 285 },
+                { note: '396Hz', freq: 396 },
+                { note: '417Hz', freq: 417 },
+                { note: '528Hz', freq: 528 },
+                { note: '639Hz', freq: 639 },
+                { note: '741Hz', freq: 741 },
+                { note: '852Hz', freq: 852 },
+                { note: '963Hz', freq: 963 }
+            ],
+            insen: [
+                { note: 'D4', freq: 293.66 },
+                { note: 'Eb4', freq: 311.13 },
+                { note: 'G4', freq: 392.00 },
+                { note: 'A4', freq: 440.00 },
+                { note: 'C5', freq: 523.25 },
+                { note: 'D5', freq: 587.33 }
+            ]
+        };
+
+        function renderSynthKeypad() {
+            if (!synthKeypadGrid) return;
+            const currentScale = synthScaleSelect ? synthScaleSelect.value : 'pentatonic';
+            const notes = scalesMap[currentScale] || scalesMap.pentatonic;
+            synthKeypadGrid.innerHTML = '';
+
+            notes.forEach(n => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'btn btn-secondary synth-piano-key';
+                btn.style.flex = '1 1 auto';
+                btn.style.padding = '8px 6px';
+                btn.style.minWidth = '48px';
+                btn.style.fontSize = '0.75rem';
+                btn.style.fontWeight = 'bold';
+                btn.innerHTML = `<span style="display:block; font-size: 0.85rem;">🎹</span>${n.note}`;
+                btn.addEventListener('click', () => {
+                    playToneWithAdsr(n.freq);
+                    triggerVisualizerWaveform('zen');
+                });
+                synthKeypadGrid.appendChild(btn);
+            });
+        }
+
+        function playToneWithAdsr(frequency) {
+            try {
+                const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+                if (!audioCtx) audioCtx = new AudioCtxClass();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+
+                const now = audioCtx.currentTime;
+                const waveType = synthWaveformSelect ? synthWaveformSelect.value : 'triangle';
+                const attack = ((adsrAttack ? parseInt(adsrAttack.value) : 10) / 1000);
+                const decay = ((adsrDecay ? parseInt(adsrDecay.value) : 150) / 1000);
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.type = waveType;
+                osc.frequency.setValueAtTime(frequency, now);
+
+                gain.gain.setValueAtTime(0.001, now);
+                gain.gain.linearRampToValueAtTime(0.4 * masterVolume, now + attack);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + attack + decay);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start(now);
+                osc.stop(now + attack + decay + 0.05);
+            } catch (err) {
+                console.warn(err);
+            }
+        }
+
+        if (synthScaleSelect) {
+            synthScaleSelect.addEventListener('change', renderSynthKeypad);
+        }
+        renderSynthKeypad();
+
         let micMediaRecorder = null;
         let micAudioChunks = [];
         const recordMicAudioBtn = document.getElementById('recordMicAudioBtn');

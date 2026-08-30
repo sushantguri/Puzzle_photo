@@ -693,6 +693,25 @@
                         <label style="display:flex; align-items:center; gap:4px;">Pitch: <input type="range" id="adsrPitch" min="100" max="2000" value="520" style="width: 60px;"> <span id="adsrPitchVal">520Hz</span></label>
                         <button id="playCustomSynthBtn" type="button" class="btn btn-primary btn-sm" style="padding: 4px 10px;">🎹 Test Custom Synth</button>
                     </div>
+                </div>
+
+                <!-- Interactive Melodic Synth Scale Keyboard -->
+                <div class="melodic-synth-section" style="margin-top: 14px; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); text-align: left;">
+                    <div style="font-size: 0.85rem; font-weight: 600; color: #a5b4fc; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                        <span>🎹 Musical Scale Synth Keyboard:</span>
+                        <select id="synthScaleSelect" class="form-select" style="width: auto; padding: 2px 6px; font-size: 0.8rem;">
+                            <option value="pentatonic">Zen Pentatonic</option>
+                            <option value="major">Major Scale</option>
+                            <option value="minor">Harmonic Minor</option>
+                            <option value="solfeggio">Solfeggio Frequencies</option>
+                            <option value="insen">Japanese Insen</option>
+                        </select>
+                    </div>
+                    <div id="synthKeypadGrid" style="display: flex; gap: 6px; justify-content: space-between; flex-wrap: wrap;">
+                        <!-- Keys rendered dynamically -->
+                    </div>
+                </div>
+
                 <div class="mic-recorder-section" style="margin-top: 14px; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); text-align: left;">
                     <div style="font-size: 0.85rem; font-weight: 600; color: #a5b4fc; margin-bottom: 8px;">🎙️ Custom Microphone Voice Snap:</div>
                     <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
