@@ -1858,6 +1858,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (selectedMask && selectedMask !== 'none') {
             puzzleBoard.classList.add('mask-' + selectedMask);
         }
+        if (boardGlowPreset && boardGlowPreset !== 'none') {
+            puzzleBoard.classList.add('glow-' + boardGlowPreset);
+        }
         puzzleBoard.style.gridTemplateColumns = `repeat(${selectedGridSize}, 1fr)`;
         puzzleBoard.style.gridTemplateRows = `repeat(${selectedGridSize}, 1fr)`;
 
@@ -5341,6 +5344,25 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast(isSnapAssistEnabled ? '🧲 Smart Snap Assist ON (Selected tile reveals target slot)' : '🧲 Smart Snap Assist OFF', 'Snap Assist');
             playSound('click');
             renderTiles();
+        });
+    }
+
+    let boardGlowPreset = localStorage.getItem('snappuzzle_board_glow') || 'cyber';
+    const boardGlowSelect = document.getElementById('boardGlowSelect');
+    if (boardGlowSelect) {
+        boardGlowSelect.value = boardGlowPreset;
+        boardGlowSelect.addEventListener('change', (e) => {
+            boardGlowPreset = e.target.value;
+            localStorage.setItem('snappuzzle_board_glow', boardGlowPreset);
+            if (isGameActive) {
+                renderTiles();
+                if (puzzleBoard) {
+                    puzzleBoard.className = 'puzzle-board';
+                    if (selectedMask && selectedMask !== 'none') puzzleBoard.classList.add('mask-' + selectedMask);
+                    if (boardGlowPreset && boardGlowPreset !== 'none') puzzleBoard.classList.add('glow-' + boardGlowPreset);
+                }
+            }
+            playSound('click');
         });
     }
 
