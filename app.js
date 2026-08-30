@@ -3971,6 +3971,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     ctx.fillText(finalStars.textContent, 400, 555);
                 }
 
+                // Draw Instant Challenge QR Code Badge
+                drawQrCodeBadge(ctx, 665, 455, 80, 'SCAN TO PLAY');
+
                 // Trigger PNG Download
                 const link = document.createElement('a');
                 link.download = `SnapPuzzle_${frameStyle.toUpperCase()}_ScoreCard.png`;
@@ -3979,6 +3982,56 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             img.src = currentPhotoDataUrl;
         });
+    }
+
+    function drawQrCodeBadge(ctx, x, y, size, label) {
+        ctx.save();
+        ctx.fillStyle = '#ffffff';
+        ctx.strokeStyle = '#6366f1';
+        ctx.lineWidth = 2;
+        if (ctx.roundRect) ctx.roundRect(x, y, size, size, 8); else ctx.rect(x, y, size, size);
+        ctx.fill();
+        ctx.stroke();
+
+        const pad = 8;
+        const markerSize = Math.floor(size * 0.26);
+        const drawMarker = (mx, my) => {
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(mx, my, markerSize, markerSize);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(mx + 2, my + 2, markerSize - 4, markerSize - 4);
+            ctx.fillStyle = '#6366f1';
+            ctx.fillRect(mx + 4, my + 4, markerSize - 8, markerSize - 8);
+        };
+
+        drawMarker(x + pad, y + pad);
+        drawMarker(x + size - markerSize - pad, y + pad);
+        drawMarker(x + pad, y + size - markerSize - pad);
+
+        ctx.fillStyle = '#0f172a';
+        const gridSize = 14;
+        const cell = (size - pad * 2) / gridSize;
+        for (let r = 0; r < gridSize; r++) {
+            for (let c = 0; c < gridSize; c++) {
+                const inTopLeft = r < 5 && c < 5;
+                const inTopRight = r < 5 && c >= gridSize - 5;
+                const inBottomLeft = r >= gridSize - 5 && c < 5;
+                if (!inTopLeft && !inTopRight && !inBottomLeft) {
+                    const hash = (r * 31 + c * 17 + (selectedGridSize * 7) + (puzzleMode.length * 11)) % 100;
+                    if (hash > 45) {
+                        ctx.fillRect(Math.floor(x + pad + c * cell), Math.floor(y + pad + r * cell), Math.ceil(cell - 1), Math.ceil(cell - 1));
+                    }
+                }
+            }
+        }
+
+        if (label) {
+            ctx.fillStyle = '#a5b4fc';
+            ctx.font = 'bold 9px "Outfit", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x + size / 2, y + size + 11);
+        }
+        ctx.restore();
     }
 
     const exportBadgeCardBtn = document.getElementById('exportBadgeCardBtn');
