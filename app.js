@@ -1602,16 +1602,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let isTileRotationEnabled = false;
     const toggleRotationBtn = document.getElementById('toggleRotationBtn');
-    if (toggleRotationBtn) {
-        toggleRotationBtn.addEventListener('click', () => {
-            isTileRotationEnabled = !isTileRotationEnabled;
-            toggleRotationBtn.classList.toggle('active', isTileRotationEnabled);
-            toggleRotationBtn.innerHTML = isTileRotationEnabled 
-                ? '<span class="mode-icon">🔄⚡</span> Tile Rotation Challenge: ON' 
-                : '<span class="mode-icon">🔄</span> Tile Rotation Challenge: Off';
-            playSound('click');
-        });
-    }
+    const rotationModeToggleBtn = document.getElementById('rotationModeToggleBtn');
+
+    [toggleRotationBtn, rotationModeToggleBtn].forEach(btn => {
+        if (btn) {
+            btn.addEventListener('click', () => {
+                isTileRotationEnabled = !isTileRotationEnabled;
+                [toggleRotationBtn, rotationModeToggleBtn].forEach(b => {
+                    if (b) {
+                        b.classList.toggle('active', isTileRotationEnabled);
+                        if (b === rotationModeToggleBtn) {
+                            b.textContent = isTileRotationEnabled ? '🔄 Rotation: ON' : '🔄 Rotation: OFF';
+                        } else {
+                            b.innerHTML = isTileRotationEnabled 
+                                ? '<span class="mode-icon">🔄⚡</span> Tile Rotation Challenge: ON' 
+                                : '<span class="mode-icon">🔄</span> Tile Rotation Challenge: Off';
+                        }
+                    }
+                });
+                showToast(isTileRotationEnabled ? '🔄 Tile Rotation Challenge ON (Right-click or Shift+Click tile to rotate 90°)' : '🔄 Tile Rotation OFF', 'Rotation Challenge');
+                playSound('click');
+                if (isGameActive) renderTiles();
+            });
+        }
+    });
 
     // --- PUZZLE ENGINE & GAMEPLAY ---
     startPuzzleBtn.addEventListener('click', () => {
@@ -1984,6 +1998,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (tile.rotation) {
                 tileDiv.style.transform = `rotate(${tile.rotation}deg)`;
+            }
+
+            if (isTileRotationEnabled && !tile.isEmpty) {
+                const orientDot = document.createElement('span');
+                orientDot.classList.add('tile-orientation-indicator');
+                orientDot.title = `Top edge indicator (${tile.rotation || 0}°)`;
+                tileDiv.appendChild(orientDot);
             }
 
             if (showTileNumbers && !tile.isEmpty) {

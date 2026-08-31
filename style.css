@@ -867,6 +867,32 @@ body {
     display: none;
 }
 
+/* Piece Rotation Mode Orientation Indicator */
+.tile-orientation-indicator {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 10px;
+    height: 10px;
+    background: #00e5ff;
+    border-radius: 50%;
+    border: 1.5px solid #ffffff;
+    box-shadow: 0 0 8px #00e5ff, 0 0 12px rgba(0, 229, 255, 0.8);
+    pointer-events: none;
+    z-index: 6;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.puzzle-tile.rotated-90 {
+    transform: rotate(90deg);
+}
+.puzzle-tile.rotated-180 {
+    transform: rotate(180deg);
+}
+.puzzle-tile.rotated-270 {
+    transform: rotate(270deg);
+}
+
 .ghost-overlay {
     position: absolute;
     inset: 0;
