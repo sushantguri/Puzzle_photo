@@ -48,7 +48,9 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
 - **📥 Custom Victory Score Card & Polaroid Frame Generator:** Custom PNG exporter with 4 frame styles (Cyber Glass, Retro Polaroid, Neon Cyberpunk, Royal Gold) and editable photo caption!
 - **🔊 Web Audio Sound FX & Ambient Music Generator:** Switchable sound wave synthesis (8-Bit Arcade, Synthwave, Glass Chime) plus procedural background ambient music tracks (Cyber Synth, Lo-Fi Chill, 8-Bit Chiptune).
 - **📅 Daily Seeded Challenge & Streak Tracker:** Daily mission generator with 7-day calendar checkmark tracking, streak flame counter (`🔥`), and daily completion awards.
-- **🏆 Local Leaderboard & Hall of Fame:** LocalStorage best times and minimum move tracker.
+- **🎆 Victory Celebration & Particle Fireworks Studio:** Interactive victory particle canvas renderer with 6 customizable celebration styles (Falling Confetti, Fireworks Explosion, Floating Gold Stars, Hearts Burst, Gold Coins Splash, Cyber Sparks) and live Test FX previewer.
+- **📊 Speedrun Pace & Split Analytics Studio:** Interactive performance dashboard modal rendering live Canvas move pacing velocity curves, 25%/50%/75%/100% split checkpoints, personal best deltas, and tile swap frequency heatmaps.
+- **🔄 90° Piece Rotation Challenge Mode:** Spatial memory modifier where tiles spawn in random 90° orientation states with top edge dot indicators. Players right-click or Shift-click to rotate tiles clockwise before placement!
 - **📱 PWA Offline Support:** Built with Web App Manifest (`manifest.json`) and Service Worker (`sw.js`) for 100% offline gameplay.
 
 ---
