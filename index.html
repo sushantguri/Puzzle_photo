@@ -932,15 +932,44 @@
 
         <!-- HEATMAP & ANALYTICS MODAL -->
         <div id="analyticsModal" class="modal-backdrop" style="display: none;">
-            <div class="modal-card analytics-modal-card" style="max-width: 600px; text-align: center;">
+            <div class="modal-card analytics-modal-card" style="max-width: 640px; text-align: center;">
                 <div class="modal-header">
-                    <h2>📊 Gameplay Move Heatmap & Analytics</h2>
+                    <h2>📊 Speedrun Pace & Heatmap Analytics Studio</h2>
                     <button id="closeAnalyticsBtn" class="btn-close">&times;</button>
                 </div>
-                <p class="modal-subtitle">Visual tile swap frequency heatmap and efficiency breakdown.</p>
-                <div class="heatmap-container" style="margin: 12px 0; background: #020617; border-radius: 12px; padding: 12px; border: 1px solid var(--border-color);">
+                <p class="modal-subtitle">Analyze move velocity, tile swap heatmaps, and speedrun pace split curves.</p>
+                
+                <div class="analytics-tabs" style="display: flex; justify-content: center; gap: 8px; margin: 12px 0 8px;">
+                    <button id="analyticsTabHeatmap" class="btn btn-secondary active" style="padding: 6px 14px; font-size: 0.85rem;">🔥 Tile Heatmap</button>
+                    <button id="analyticsTabSpeedrun" class="btn btn-secondary" style="padding: 6px 14px; font-size: 0.85rem;">📈 Speedrun Pace Curve</button>
+                </div>
+
+                <div id="heatmapViewContainer" class="heatmap-container" style="margin: 8px 0; background: #020617; border-radius: 12px; padding: 12px; border: 1px solid var(--border-color);">
                     <canvas id="heatmapCanvas" width="480" height="340" style="max-width: 100%; height: auto; border-radius: 8px; display: block; margin: 0 auto;"></canvas>
                 </div>
+
+                <div id="speedrunViewContainer" class="speedrun-container" style="margin: 8px 0; background: #020617; border-radius: 12px; padding: 12px; border: 1px solid var(--border-color); display: none;">
+                    <canvas id="paceCurveCanvas" width="480" height="240" style="max-width: 100%; height: auto; border-radius: 8px; display: block; margin: 0 auto;"></canvas>
+                    <div id="splitsTableContainer" style="margin-top: 10px; font-size: 0.8rem; color: #cbd5e1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
+                        <div style="background: rgba(255,255,255,0.05); padding: 6px; border-radius: 6px;">
+                            <div style="color: #94a3b8; font-weight: 600;">25% Split</div>
+                            <div id="split25Val" style="font-weight: 700; color: #60a5fa;">--</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.05); padding: 6px; border-radius: 6px;">
+                            <div style="color: #94a3b8; font-weight: 600;">50% Split</div>
+                            <div id="split50Val" style="font-weight: 700; color: #a78bfa;">--</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.05); padding: 6px; border-radius: 6px;">
+                            <div style="color: #94a3b8; font-weight: 600;">75% Split</div>
+                            <div id="split75Val" style="font-weight: 700; color: #f472b6;">--</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.05); padding: 6px; border-radius: 6px;">
+                            <div style="color: #94a3b8; font-weight: 600;">100% Finish</div>
+                            <div id="split100Val" style="font-weight: 700; color: #34d399;">--</div>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="analyticsStatsGrid" class="victory-stats" style="margin-top: 10px;">
                     <div class="victory-stat-item">
                         <span class="v-label">Efficiency Index</span>

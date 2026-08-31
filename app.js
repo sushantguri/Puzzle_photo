@@ -4630,6 +4630,135 @@ document.addEventListener('DOMContentLoaded', () => {
         if (analyticsPaceVal) analyticsPaceVal.textContent = `${avgPaceSec}s / move`;
     }
 
+    function renderPaceCurveAnalytics() {
+        const paceCurveCanvas = document.getElementById('paceCurveCanvas');
+        if (!paceCurveCanvas) return;
+        const ctx = paceCurveCanvas.getContext('2d');
+        const w = paceCurveCanvas.width;
+        const h = paceCurveCanvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        ctx.fillStyle = '#090d16';
+        ctx.fillRect(0, 0, w, h);
+
+        const moves = fullRecordedMoves || [];
+        const totalMoves = moves.length;
+
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+        ctx.lineWidth = 1;
+        for (let y = 30; y < h - 30; y += 40) {
+            ctx.beginPath();
+            ctx.moveTo(30, y);
+            ctx.lineTo(w - 20, y);
+            ctx.stroke();
+        }
+
+        if (totalMoves < 2) {
+            ctx.fillStyle = '#64748b';
+            ctx.font = '600 14px "Inter", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Make moves during gameplay to populate pace curve!', w / 2, h / 2);
+            return;
+        }
+
+        const deltas = [];
+        for (let i = 0; i < moves.length; i++) {
+            if (i === 0) deltas.push(moves[0].timeElapsed || 1);
+            else deltas.push(Math.max(0.2, (moves[i].timeElapsed || 0) - (moves[i - 1].timeElapsed || 0)));
+        }
+
+        const maxDelta = Math.max(...deltas, 4);
+
+        const marginX = 40;
+        const marginY = 30;
+        const chartW = w - marginX - 20;
+        const chartH = h - marginY * 2;
+
+        const points = deltas.map((d, idx) => {
+            const x = marginX + (idx / (totalMoves - 1)) * chartW;
+            const y = h - marginY - (d / maxDelta) * chartH;
+            return { x, y, d, moveNum: idx + 1 };
+        });
+
+        const grad = ctx.createLinearGradient(0, marginY, 0, h - marginY);
+        grad.addColorStop(0, 'rgba(99, 102, 241, 0.45)');
+        grad.addColorStop(1, 'rgba(99, 102, 241, 0.0)');
+
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, h - marginY);
+        points.forEach(p => ctx.lineTo(p.x, p.y));
+        ctx.lineTo(points[points.length - 1].x, h - marginY);
+        ctx.closePath();
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.strokeStyle = '#6366f1';
+        ctx.lineWidth = 3;
+        points.forEach((p, idx) => {
+            if (idx === 0) ctx.moveTo(p.x, p.y);
+            else ctx.lineTo(p.x, p.y);
+        });
+        ctx.stroke();
+
+        const splitIndices = [
+            Math.floor(totalMoves * 0.25),
+            Math.floor(totalMoves * 0.50),
+            Math.floor(totalMoves * 0.75),
+            totalMoves - 1
+        ];
+        const colors = ['#60a5fa', '#a78bfa', '#f472b6', '#34d399'];
+
+        splitIndices.forEach((sIdx, i) => {
+            if (points[sIdx]) {
+                const p = points[sIdx];
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
+                ctx.fillStyle = colors[i];
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+        });
+
+        const split25Val = document.getElementById('split25Val');
+        const split50Val = document.getElementById('split50Val');
+        const split75Val = document.getElementById('split75Val');
+        const split100Val = document.getElementById('split100Val');
+
+        if (split25Val && moves[splitIndices[0]]) split25Val.textContent = `${moves[splitIndices[0]].timeElapsed || 0}s`;
+        if (split50Val && moves[splitIndices[1]]) split50Val.textContent = `${moves[splitIndices[1]].timeElapsed || 0}s`;
+        if (split75Val && moves[splitIndices[2]]) split75Val.textContent = `${moves[splitIndices[2]].timeElapsed || 0}s`;
+        if (split100Val && moves[splitIndices[3]]) split100Val.textContent = `${moves[splitIndices[3]].timeElapsed || 0}s`;
+    }
+
+    const analyticsTabHeatmap = document.getElementById('analyticsTabHeatmap');
+    const analyticsTabSpeedrun = document.getElementById('analyticsTabSpeedrun');
+    const heatmapViewContainer = document.getElementById('heatmapViewContainer');
+    const speedrunViewContainer = document.getElementById('speedrunViewContainer');
+
+    if (analyticsTabHeatmap && analyticsTabSpeedrun) {
+        analyticsTabHeatmap.addEventListener('click', () => {
+            analyticsTabHeatmap.classList.add('active');
+            analyticsTabSpeedrun.classList.remove('active');
+            heatmapViewContainer.style.display = 'block';
+            speedrunViewContainer.style.display = 'none';
+            renderHeatmapAnalytics();
+            playSound('click');
+        });
+
+        analyticsTabSpeedrun.addEventListener('click', () => {
+            analyticsTabSpeedrun.classList.add('active');
+            analyticsTabHeatmap.classList.remove('active');
+            heatmapViewContainer.style.display = 'none';
+            speedrunViewContainer.style.display = 'block';
+            renderPaceCurveAnalytics();
+            playSound('click');
+        });
+    }
+    }
+
     const themeStudioModal = document.getElementById('themeStudioModal');
     const closeThemeStudioBtn = document.getElementById('closeThemeStudioBtn');
     const applyCustomThemeBtn = document.getElementById('applyCustomThemeBtn');
