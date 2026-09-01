@@ -132,6 +132,7 @@
                     <button class="tab-btn" data-tab="upload">📁 Upload Image</button>
                     <button class="tab-btn" data-tab="sample">🖼️ Sample Photos</button>
                     <button class="tab-btn" data-tab="doodle">🎨 Draw & Paint</button>
+                    <button class="tab-btn" data-tab="livemotion">⚡ Live Motion Canvas</button>
                 </div>
 
                 <!-- Camera Tab Content -->
@@ -264,6 +265,26 @@
                         <div class="doodle-actions">
                             <button id="useDoodleBtn" class="btn btn-primary btn-lg">
                                 🚀 Create Puzzle from Drawing
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Motion Tab Content -->
+                <div id="livemotionTab" class="tab-content">
+                    <div class="livemotion-container" style="display: flex; flex-direction: column; gap: 14px; align-items: center; width: 100%;">
+                        <div class="motion-preset-selector" style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
+                            <button type="button" class="motion-preset-btn active btn btn-secondary" data-motion="plasma">🌌 Cyber Plasma</button>
+                            <button type="button" class="motion-preset-btn btn btn-secondary" data-motion="matrix">🟢 Matrix Rain</button>
+                            <button type="button" class="motion-preset-btn btn btn-secondary" data-motion="starfield">✨ Starfield Warp</button>
+                            <button type="button" class="motion-preset-btn btn btn-secondary" data-motion="waves">🌊 Neon Waves</button>
+                        </div>
+                        <div class="motion-canvas-wrapper" style="position: relative; width: 100%; max-width: 640px; height: 360px; background: #000; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+                            <canvas id="motionPreviewCanvas" width="640" height="480" style="width: 100%; height: 100%; object-fit: cover; display: block;"></canvas>
+                        </div>
+                        <div class="motion-actions">
+                            <button id="useMotionPuzzleBtn" type="button" class="btn btn-primary btn-lg">
+                                🚀 Create Puzzle from Motion Texture
                             </button>
                         </div>
                     </div>

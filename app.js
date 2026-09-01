@@ -1034,6 +1034,166 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- LIVE MOTION TEXTURE GENERATOR ENGINE ---
+    const motionPreviewCanvas = document.getElementById('motionPreviewCanvas');
+    const useMotionPuzzleBtn = document.getElementById('useMotionPuzzleBtn');
+    let activeMotionPreset = 'plasma';
+    let motionAnimFrame = null;
+    let motionTick = 0;
+
+    const matrixChars = '0123456789ABCDEF$#@%&*+=~';
+    const matrixColumns = Math.floor(640 / 16);
+    const matrixDrops = Array.from({ length: matrixColumns }, () => Math.floor(Math.random() * 30));
+
+    const starfieldStars = Array.from({ length: 140 }, () => ({
+        x: (Math.random() - 0.5) * 640,
+        y: (Math.random() - 0.5) * 480,
+        z: Math.random() * 640
+    }));
+
+    function renderMotionCanvas() {
+        if (!motionPreviewCanvas) return;
+        const ctx = motionPreviewCanvas.getContext('2d');
+        const w = motionPreviewCanvas.width;
+        const h = motionPreviewCanvas.height;
+        motionTick++;
+
+        if (activeMotionPreset === 'plasma') {
+            const imgData = ctx.createImageData(w, h);
+            const data = imgData.data;
+            const t = motionTick * 0.03;
+            for (let y = 0; y < h; y += 4) {
+                for (let x = 0; x < w; x += 4) {
+                    const v1 = Math.sin(x * 0.02 + t);
+                    const v2 = Math.sin(y * 0.02 + t);
+                    const v3 = Math.sin((x + y) * 0.02 + t);
+                    const cx = x + 0.5 * Math.sin(t / 5);
+                    const cy = y + 0.5 * Math.cos(t / 3);
+                    const v4 = Math.sin(Math.sqrt(cx * cx + cy * cy + 1) * 0.02 + t);
+                    const v = (v1 + v2 + v3 + v4) * 0.25;
+
+                    const r = Math.floor(Math.sin(v * Math.PI) * 127 + 128);
+                    const g = Math.floor(Math.cos(v * Math.PI) * 127 + 128);
+                    const b = Math.floor(Math.sin(v * Math.PI + 2) * 127 + 128);
+
+                    for (let dy = 0; dy < 4 && y + dy < h; dy++) {
+                        for (let dx = 0; dx < 4 && x + dx < w; dx++) {
+                            const idx = ((y + dy) * w + (x + dx)) * 4;
+                            data[idx] = r;
+                            data[idx + 1] = g;
+                            data[idx + 2] = b;
+                            data[idx + 3] = 255;
+                        }
+                    }
+                }
+            }
+            ctx.putImageData(imgData, 0, 0);
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+            ctx.lineWidth = 1;
+            for (let gx = 0; gx < w; gx += 40) {
+                ctx.beginPath();
+                ctx.moveTo(gx, 0);
+                ctx.lineTo(gx, h);
+                ctx.stroke();
+            }
+        } else if (activeMotionPreset === 'matrix') {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+            ctx.fillRect(0, 0, w, h);
+            ctx.fillStyle = '#22c55e';
+            ctx.font = '14px monospace';
+
+            for (let i = 0; i < matrixDrops.length; i++) {
+                const char = matrixChars[Math.floor(Math.random() * matrixChars.length)];
+                ctx.fillText(char, i * 16, matrixDrops[i] * 16);
+                if (matrixDrops[i] * 16 > h && Math.random() > 0.975) {
+                    matrixDrops[i] = 0;
+                }
+                matrixDrops[i]++;
+            }
+        } else if (activeMotionPreset === 'starfield') {
+            ctx.fillStyle = 'rgba(5, 5, 15, 0.4)';
+            ctx.fillRect(0, 0, w, h);
+            const cx = w / 2;
+            const cy = h / 2;
+
+            starfieldStars.forEach(s => {
+                s.z -= 4;
+                if (s.z <= 0) {
+                    s.z = 640;
+                    s.x = (Math.random() - 0.5) * w;
+                    s.y = (Math.random() - 0.5) * h;
+                }
+                const k = 250 / s.z;
+                const px = s.x * k + cx;
+                const py = s.y * k + cy;
+                if (px >= 0 && px < w && py >= 0 && py < h) {
+                    const size = Math.max(1, (1 - s.z / 640) * 4);
+                    const shade = Math.floor((1 - s.z / 640) * 255);
+                    ctx.fillStyle = `rgb(${shade}, ${shade}, 255)`;
+                    ctx.beginPath();
+                    ctx.arc(px, py, size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+        } else if (activeMotionPreset === 'waves') {
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, w, h);
+            const t = motionTick * 0.04;
+            const waveColors = ['#06b6d4', '#6366f1', '#ec4899', '#f59e0b'];
+
+            waveColors.forEach((col, idx) => {
+                ctx.beginPath();
+                ctx.moveTo(0, h);
+                for (let x = 0; x <= w; x += 10) {
+                    const y = Math.sin(x * 0.01 + t + idx) * 40 + Math.cos(x * 0.02 - t * 0.5) * 25 + h * 0.5 + idx * 30;
+                    ctx.lineTo(x, y);
+                }
+                ctx.lineTo(w, h);
+                ctx.closePath();
+                ctx.fillStyle = col;
+                ctx.globalAlpha = 0.35;
+                ctx.fill();
+            });
+            ctx.globalAlpha = 1.0;
+        }
+
+        const liveTab = document.getElementById('livemotionTab');
+        if (liveTab && liveTab.classList.contains('active')) {
+            motionAnimFrame = requestAnimationFrame(renderMotionCanvas);
+        }
+    }
+
+    document.querySelectorAll('.motion-preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.motion-preset-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            activeMotionPreset = btn.dataset.motion;
+            playSound('click');
+        });
+    });
+
+    if (useMotionPuzzleBtn) {
+        useMotionPuzzleBtn.addEventListener('click', () => {
+            if (!motionPreviewCanvas) return;
+            rawPhotoDataUrl = motionPreviewCanvas.toDataURL('image/png');
+            currentPhotoDataUrl = rawPhotoDataUrl;
+            showConfigSection();
+            showToast('⚡ Live Motion Texture Puzzle Prepared!', 'Motion Puzzle');
+            playSound('snap');
+        });
+    }
+
+    // Tab switcher trigger to start motion loop
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (btn.dataset.tab === 'livemotion') {
+                cancelAnimationFrame(motionAnimFrame);
+                renderMotionCanvas();
+            }
+        });
+    });
+
     // Slider & transform photo enhancement listeners
     const rotateCwBtn = document.getElementById('rotateCwBtn');
     const flipHorizBtn = document.getElementById('flipHorizBtn');
