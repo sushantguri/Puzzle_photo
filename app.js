@@ -350,8 +350,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let customMicAudioUrl = localStorage.getItem('snappuzzle_custom_mic_audio') || null;
+    let isSpatialAudioEnabled = localStorage.getItem('snappuzzle_spatial_audio') !== 'false';
 
-    function playSound(type) {
+    function playSound(type, panPosition = 0, pitchFactor = 1) {
         if (!soundEnabled || masterVolume <= 0) return;
         if (type === 'snap' && customMicAudioUrl) {
             try {
@@ -368,16 +369,32 @@ document.addEventListener('DOMContentLoaded', () => {
             const wave = getWaveType();
             const now = audioCtx.currentTime;
 
+            // Output node chain with optional StereoPannerNode
+            const masterGain = audioCtx.createGain();
+            masterGain.gain.setValueAtTime(masterVolume, now);
+
+            if (isSpatialAudioEnabled && audioCtx.createStereoPanner) {
+                const panner = audioCtx.createStereoPanner();
+                const panVal = Math.max(-1, Math.min(1, panPosition || 0));
+                panner.pan.setValueAtTime(panVal, now);
+                masterGain.connect(panner);
+                panner.connect(audioCtx.destination);
+            } else {
+                masterGain.connect(audioCtx.destination);
+            }
+
+            const pitch = Math.max(0.5, Math.min(2.5, pitchFactor || 1));
+
             if (type === 'click') {
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
                 osc.type = wave;
                 osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.frequency.setValueAtTime(300, now);
-                osc.frequency.exponentialRampToValueAtTime(150, now + 0.08);
-                gain.gain.setValueAtTime(0.15 * masterVolume, now);
-                gain.gain.linearRampToValueAtTime(0.01 * masterVolume, now + 0.08);
+                gain.connect(masterGain);
+                osc.frequency.setValueAtTime(300 * pitch, now);
+                osc.frequency.exponentialRampToValueAtTime(150 * pitch, now + 0.08);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
                 osc.start(now);
                 osc.stop(now + 0.08);
             } else if (type === 'snap') {
@@ -385,23 +402,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 const gain = audioCtx.createGain();
                 osc.type = timerMode === 'zen' ? 'sine' : wave;
                 osc.connect(gain);
-                gain.connect(audioCtx.destination);
+                gain.connect(masterGain);
 
                 if (timerMode === 'zen') {
                     // Solfeggio 528Hz Transformation & Miracle Tone for Zen mode
                     const zenTones = [432, 528, 639, 741];
-                    const freq = zenTones[Math.floor(Math.random() * zenTones.length)];
+                    const freq = zenTones[Math.floor(Math.random() * zenTones.length)] * pitch;
                     osc.frequency.setValueAtTime(freq, now);
                     osc.frequency.exponentialRampToValueAtTime(freq * 1.5, now + 0.35);
-                    gain.gain.setValueAtTime(0.12 * masterVolume, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001 * masterVolume, now + 0.35);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
                     osc.start(now);
                     osc.stop(now + 0.35);
                 } else {
-                    osc.frequency.setValueAtTime(523.25, now); // C5
-                    osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.12); // E5
-                    gain.gain.setValueAtTime(0.2 * masterVolume, now);
-                    gain.gain.linearRampToValueAtTime(0.01 * masterVolume, now + 0.12);
+                    osc.frequency.setValueAtTime(523.25 * pitch, now); // C5
+                    osc.frequency.exponentialRampToValueAtTime(659.25 * pitch, now + 0.12); // E5
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
                     osc.start(now);
                     osc.stop(now + 0.12);
                 }
@@ -412,10 +429,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     const g = audioCtx.createGain();
                     o.type = wave;
                     o.connect(g);
-                    g.connect(audioCtx.destination);
-                    o.frequency.setValueAtTime(freq, now + i * 0.1);
-                    g.gain.setValueAtTime(0.2 * masterVolume, now + i * 0.1);
-                    g.gain.linearRampToValueAtTime(0.01 * masterVolume, now + i * 0.1 + 0.4);
+                    g.connect(masterGain);
+                    o.frequency.setValueAtTime(freq * pitch, now + i * 0.1);
+                    g.gain.setValueAtTime(0.2, now + i * 0.1);
+                    g.gain.linearRampToValueAtTime(0.01, now + i * 0.1 + 0.4);
                     o.start(now + i * 0.1);
                     o.stop(now + i * 0.1 + 0.4);
                 });
@@ -426,8 +443,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     const g = audioCtx.createGain();
                     o.type = wave;
                     o.connect(g);
-                    g.connect(audioCtx.destination);
-                    o.frequency.setValueAtTime(freq, now + i * 0.07);
+                    g.connect(masterGain);
+                    o.frequency.setValueAtTime(freq * pitch, now + i * 0.07);
                     g.gain.setValueAtTime(0.2, now + i * 0.07);
                     g.gain.linearRampToValueAtTime(0.01, now + i * 0.07 + 0.3);
                     o.start(now + i * 0.07);
@@ -2084,7 +2101,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isUndo) {
             checkComboMultiplier(tileA, tileB);
         }
-        playSound('snap');
+        const size = selectedGridSize || 3;
+        const targetPos = tileA && tileA.currentPos !== undefined ? tileA.currentPos : 0;
+        const col = targetPos % size;
+        const pan = size > 1 ? (col / (size - 1)) * 1.6 - 0.8 : 0;
+        const comboPitch = 1.0 + Math.min(0.6, (comboStreak || 0) * 0.08);
+        playSound('snap', pan, comboPitch);
         if (!isUndo) {
             triggerTileSnapFx(tileA, tileB);
         }
@@ -5841,6 +5863,20 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast('🎆 Playing Victory Celebration FX Studio (' + selectedCelebrationFx.toUpperCase() + ')', 'Celebration Studio');
             playSound('victory');
             startVictoryCelebration(selectedCelebrationFx);
+        });
+    }
+
+    const spatialAudioToggleBtn = document.getElementById('spatialAudioToggleBtn');
+    if (spatialAudioToggleBtn) {
+        spatialAudioToggleBtn.classList.toggle('active', isSpatialAudioEnabled);
+        spatialAudioToggleBtn.textContent = isSpatialAudioEnabled ? '🎧 3D Audio: ON' : '🎧 3D Audio: OFF';
+        spatialAudioToggleBtn.addEventListener('click', () => {
+            isSpatialAudioEnabled = !isSpatialAudioEnabled;
+            localStorage.setItem('snappuzzle_spatial_audio', isSpatialAudioEnabled);
+            spatialAudioToggleBtn.classList.toggle('active', isSpatialAudioEnabled);
+            spatialAudioToggleBtn.textContent = isSpatialAudioEnabled ? '🎧 3D Audio: ON' : '🎧 3D Audio: OFF';
+            showToast(isSpatialAudioEnabled ? '🎧 3D Stereo Spatial Audio Panning ON' : '🎧 Spatial Audio Panning OFF', 'Audio Engine');
+            playSound('click', 0, 1.2);
         });
     }
 
