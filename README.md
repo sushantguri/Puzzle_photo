@@ -50,7 +50,9 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
 - **📅 Daily Seeded Challenge & Streak Tracker:** Daily mission generator with 7-day calendar checkmark tracking, streak flame counter (`🔥`), and daily completion awards.
 - **🎆 Victory Celebration & Particle Fireworks Studio:** Interactive victory particle canvas renderer with 6 customizable celebration styles (Falling Confetti, Fireworks Explosion, Floating Gold Stars, Hearts Burst, Gold Coins Splash, Cyber Sparks) and live Test FX previewer.
 - **📊 Speedrun Pace & Split Analytics Studio:** Interactive performance dashboard modal rendering live Canvas move pacing velocity curves, 25%/50%/75%/100% split checkpoints, personal best deltas, and tile swap frequency heatmaps.
-- **🔄 90° Piece Rotation Challenge Mode:** Spatial memory modifier where tiles spawn in random 90° orientation states with top edge dot indicators. Players right-click or Shift-click to rotate tiles clockwise before placement!
+- **🎧 Reactive 3D Spatial Stereo Audio & Velocity Pitch Synth:** Web Audio `StereoPannerNode` panning sounds dynamically based on tile screen coordinates and accelerating pitch scales with combo streaks!
+- **🔊 Audio Sonar Proximity Radar & Haptic Feedback:** Proximity radar that beeps higher frequencies as tiles near their target slots, alongside tactile device vibration feedback.
+- **⚡ Live Motion Canvas Textures Lab:** Generate puzzles from procedural real-time animated textures including Cyber Plasma, Matrix Rain, Starfield Warp, and Neon Synth Waves.
 - **📱 PWA Offline Support:** Built with Web App Manifest (`manifest.json`) and Service Worker (`sw.js`) for 100% offline gameplay.
 
 ---
