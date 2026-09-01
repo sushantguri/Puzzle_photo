@@ -351,6 +351,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let customMicAudioUrl = localStorage.getItem('snappuzzle_custom_mic_audio') || null;
     let isSpatialAudioEnabled = localStorage.getItem('snappuzzle_spatial_audio') !== 'false';
+    let isSonarRadarEnabled = false;
+    let isHapticsEnabled = localStorage.getItem('snappuzzle_haptics') !== 'false';
+
+    function triggerHaptic(pattern = [20]) {
+        if (!isHapticsEnabled) return;
+        try {
+            if ('vibrate' in navigator) {
+                navigator.vibrate(pattern);
+            }
+        } catch (e) {}
+    }
+
+    function playSonarPing(distRatio) {
+        if (!isSonarRadarEnabled || !soundEnabled || masterVolume <= 0) return;
+        try {
+            if (!audioCtx) audioCtx = new AudioCtx();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            const freq = 260 + (1 - Math.min(1, Math.max(0, distRatio))) * 960;
+            osc.frequency.setValueAtTime(freq, now);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            gain.gain.setValueAtTime(0.08 * masterVolume, now);
+            gain.gain.exponentialRampToValueAtTime(0.001 * masterVolume, now + 0.08);
+            osc.start(now);
+            osc.stop(now + 0.08);
+        } catch (e) {}
+    }
 
     function playSound(type, panPosition = 0, pitchFactor = 1) {
         if (!soundEnabled || masterVolume <= 0) return;
@@ -2043,6 +2074,20 @@ document.addEventListener('DOMContentLoaded', () => {
             // Click handling
             tileDiv.addEventListener('click', () => handleTileClick(tile));
 
+            // Sonar Proximity Radar hover listener
+            if (isSonarRadarEnabled && !tile.isEmpty) {
+                tileDiv.addEventListener('pointerenter', () => {
+                    const s = selectedGridSize;
+                    const currR = Math.floor(tile.currentPos / s);
+                    const currC = tile.currentPos % s;
+                    const targetR = Math.floor(tile.correctPos / s);
+                    const targetC = tile.correctPos % s;
+                    const maxDist = Math.hypot(s, s);
+                    const distRatio = Math.hypot(currR - targetR, currC - targetC) / maxDist;
+                    playSonarPing(distRatio);
+                });
+            }
+
             // Tile Rotation right-click listener
             if (isTileRotationEnabled && !tile.isEmpty) {
                 tileDiv.addEventListener('contextmenu', (e) => {
@@ -2107,6 +2152,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const pan = size > 1 ? (col / (size - 1)) * 1.6 - 0.8 : 0;
         const comboPitch = 1.0 + Math.min(0.6, (comboStreak || 0) * 0.08);
         playSound('snap', pan, comboPitch);
+        triggerHaptic([20]);
         if (!isUndo) {
             triggerTileSnapFx(tileA, tileB);
         }
@@ -2212,7 +2258,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function rotateTile(tile) {
         if (!isGameActive || tile.isEmpty) return;
         tile.rotation = ((tile.rotation || 0) + 90) % 360;
-        playSound('click');
+        playSound('click', 0, 1.15);
+        triggerHaptic([15]);
         renderTiles();
         checkWinCondition();
     }
@@ -5877,6 +5924,33 @@ document.addEventListener('DOMContentLoaded', () => {
             spatialAudioToggleBtn.textContent = isSpatialAudioEnabled ? '🎧 3D Audio: ON' : '🎧 3D Audio: OFF';
             showToast(isSpatialAudioEnabled ? '🎧 3D Stereo Spatial Audio Panning ON' : '🎧 Spatial Audio Panning OFF', 'Audio Engine');
             playSound('click', 0, 1.2);
+        });
+    }
+
+    const sonarRadarToggleBtn = document.getElementById('sonarRadarToggleBtn');
+    if (sonarRadarToggleBtn) {
+        sonarRadarToggleBtn.addEventListener('click', () => {
+            isSonarRadarEnabled = !isSonarRadarEnabled;
+            sonarRadarToggleBtn.classList.toggle('active', isSonarRadarEnabled);
+            sonarRadarToggleBtn.textContent = isSonarRadarEnabled ? '🔊 Sonar: ON' : '🔊 Sonar Radar';
+            showToast(isSonarRadarEnabled ? '🔊 Audio Sonar Radar ON (Hover tiles to hear proximity pitch)' : '🔊 Sonar Radar OFF', 'Accessibility');
+            playSound('click', 0, 1.4);
+            renderTiles();
+        });
+    }
+
+    const hapticFeedbackToggleBtn = document.getElementById('hapticFeedbackToggleBtn');
+    if (hapticFeedbackToggleBtn) {
+        hapticFeedbackToggleBtn.classList.toggle('active', isHapticsEnabled);
+        hapticFeedbackToggleBtn.textContent = isHapticsEnabled ? '📳 Haptics: ON' : '📳 Haptics: OFF';
+        hapticFeedbackToggleBtn.addEventListener('click', () => {
+            isHapticsEnabled = !isHapticsEnabled;
+            localStorage.setItem('snappuzzle_haptics', isHapticsEnabled);
+            hapticFeedbackToggleBtn.classList.toggle('active', isHapticsEnabled);
+            hapticFeedbackToggleBtn.textContent = isHapticsEnabled ? '📳 Haptics: ON' : '📳 Haptics: OFF';
+            if (isHapticsEnabled) triggerHaptic([30, 40, 30]);
+            showToast(isHapticsEnabled ? '📳 Tactile Haptic Vibration Feedback ON' : '📳 Haptic Vibration OFF', 'Tactile Feedback');
+            playSound('click');
         });
     }
 
