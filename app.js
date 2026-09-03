@@ -12,6 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let soundEnabled = true;
     let masterVolume = parseFloat(localStorage.getItem('snappuzzle_master_volume')) ?? 0.8;
     if (isNaN(masterVolume)) masterVolume = 0.8;
+    let selectedAmbientMusic = localStorage.getItem('snappuzzle_ambient_music') || 'off';
+    let ambientMusicVolume = parseFloat(localStorage.getItem('snappuzzle_ambient_music_vol')) || 0.4;
+    let ambientMusicOscillators = [];
+    let ambientMusicGainNode = null;
+    let ambientMusicTimer = null;
     let isMirrored = true;
     let rotationAngle = 0;
     let flipH = false;
@@ -3143,6 +3148,160 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- PROCEDURAL AMBIENT MUSIC ENGINE ---
+    function stopAmbientMusic() {
+        if (ambientMusicTimer) {
+            clearInterval(ambientMusicTimer);
+            ambientMusicTimer = null;
+        }
+        if (ambientMusicOscillators && ambientMusicOscillators.length > 0) {
+            ambientMusicOscillators.forEach(osc => {
+                try {
+                    osc.stop();
+                    osc.disconnect();
+                } catch(e) {}
+            });
+            ambientMusicOscillators = [];
+        }
+        if (ambientMusicGainNode) {
+            try {
+                ambientMusicGainNode.disconnect();
+            } catch(e) {}
+            ambientMusicGainNode = null;
+        }
+    }
+
+    function startAmbientMusic(preset) {
+        stopAmbientMusic();
+        if (preset === 'off' || !soundEnabled) return;
+        try {
+            const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+            if (!audioCtx) audioCtx = new AudioCtxClass();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            ambientMusicGainNode = audioCtx.createGain();
+            const targetVol = ambientMusicVolume * masterVolume * 0.25;
+            ambientMusicGainNode.gain.setValueAtTime(0.001, audioCtx.currentTime);
+            ambientMusicGainNode.gain.exponentialRampToValueAtTime(Math.max(0.001, targetVol), audioCtx.currentTime + 1.5);
+            ambientMusicGainNode.connect(audioCtx.destination);
+
+            if (preset === 'cyber') {
+                const chords = [
+                    [130.81, 164.81, 196.00, 246.94], // Cmaj7
+                    [110.00, 130.81, 164.81, 196.00], // Am7
+                    [87.31, 104.81, 130.81, 174.61],  // Fmaj7
+                    [98.00, 123.47, 146.83, 196.00]   // G7
+                ];
+                let chordIdx = 0;
+                const playChord = () => {
+                    if (selectedAmbientMusic !== 'cyber' || !ambientMusicGainNode) return;
+                    ambientMusicOscillators.forEach(o => { try{ o.stop(); }catch(e){} });
+                    ambientMusicOscillators = [];
+                    const currentChord = chords[chordIdx % chords.length];
+                    chordIdx++;
+                    currentChord.forEach((freq, i) => {
+                        const osc = audioCtx.createOscillator();
+                        osc.type = i % 2 === 0 ? 'sine' : 'triangle';
+                        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                        const panner = audioCtx.createStereoPanner ? audioCtx.createStereoPanner() : null;
+                        if (panner) {
+                            panner.pan.setValueAtTime((i - 1.5) * 0.4, audioCtx.currentTime);
+                            osc.connect(panner);
+                            panner.connect(ambientMusicGainNode);
+                        } else {
+                            osc.connect(ambientMusicGainNode);
+                        }
+                        osc.start();
+                        ambientMusicOscillators.push(osc);
+                    });
+                };
+                playChord();
+                ambientMusicTimer = setInterval(playChord, 4000);
+            } else if (preset === 'zen') {
+                [264, 528, 792].forEach((freq, i) => {
+                    const osc = audioCtx.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                    osc.connect(ambientMusicGainNode);
+                    osc.start();
+                    ambientMusicOscillators.push(osc);
+                });
+            } else if (preset === 'chiptune') {
+                const arpeggio = [261.63, 329.63, 392.00, 493.88, 523.25, 392.00, 329.63];
+                let step = 0;
+                const playStep = () => {
+                    if (selectedAmbientMusic !== 'chiptune' || !ambientMusicGainNode) return;
+                    const osc = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(arpeggio[step % arpeggio.length], audioCtx.currentTime);
+                    step++;
+                    g.gain.setValueAtTime(ambientMusicVolume * masterVolume * 0.08, audioCtx.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.18);
+                    osc.connect(g);
+                    g.connect(ambientMusicGainNode);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.18);
+                };
+                playStep();
+                ambientMusicTimer = setInterval(playStep, 220);
+            } else if (preset === 'space') {
+                [55.00, 110.00, 164.81].forEach((freq, i) => {
+                    const osc = audioCtx.createOscillator();
+                    osc.type = i === 0 ? 'sawtooth' : 'sine';
+                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                    const filter = audioCtx.createBiquadFilter();
+                    filter.type = 'lowpass';
+                    filter.frequency.value = 300;
+                    osc.connect(filter);
+                    filter.connect(ambientMusicGainNode);
+                    osc.start();
+                    ambientMusicOscillators.push(osc);
+                });
+            }
+        } catch (e) {
+            console.warn('Ambient music synthesizer error:', e);
+        }
+    }
+
+    const ambientMusicSelect = document.getElementById('ambientMusicSelect');
+    const modalAmbientMusicSelect = document.getElementById('modalAmbientMusicSelect');
+    const ambientMusicVolSlider = document.getElementById('ambientMusicVolSlider');
+    const ambientMusicVolVal = document.getElementById('ambientMusicVolVal');
+
+    const updateAmbientMusicState = (newPreset) => {
+        selectedAmbientMusic = newPreset;
+        localStorage.setItem('snappuzzle_ambient_music', selectedAmbientMusic);
+        if (ambientMusicSelect) ambientMusicSelect.value = selectedAmbientMusic;
+        if (modalAmbientMusicSelect) modalAmbientMusicSelect.value = selectedAmbientMusic;
+        startAmbientMusic(selectedAmbientMusic);
+        if (selectedAmbientMusic !== 'off') {
+            showToast('🎵 Ambient Soundscape: ' + selectedAmbientMusic.toUpperCase(), 'Audio Synthesizer');
+        }
+    };
+
+    if (ambientMusicSelect) {
+        ambientMusicSelect.value = selectedAmbientMusic;
+        ambientMusicSelect.addEventListener('change', (e) => updateAmbientMusicState(e.target.value));
+    }
+    if (modalAmbientMusicSelect) {
+        modalAmbientMusicSelect.value = selectedAmbientMusic;
+        modalAmbientMusicSelect.addEventListener('change', (e) => updateAmbientMusicState(e.target.value));
+    }
+    if (ambientMusicVolSlider && ambientMusicVolVal) {
+        ambientMusicVolSlider.value = Math.round(ambientMusicVolume * 100);
+        ambientMusicVolVal.textContent = Math.round(ambientMusicVolume * 100) + '%';
+        ambientMusicVolSlider.addEventListener('input', (e) => {
+            ambientMusicVolume = parseInt(e.target.value) / 100;
+            ambientMusicVolVal.textContent = e.target.value + '%';
+            localStorage.setItem('snappuzzle_ambient_music_vol', ambientMusicVolume);
+            if (ambientMusicGainNode && audioCtx) {
+                const targetVol = ambientMusicVolume * masterVolume * 0.25;
+                ambientMusicGainNode.gain.setValueAtTime(Math.max(0.001, targetVol), audioCtx.currentTime);
+            }
+        });
+    }
+
     function drawIdleSoundWaveform() {
         if (!soundVisualizerCtx || !soundVisualizerCanvas) return;
         const w = soundVisualizerCanvas.width;
@@ -5006,7 +5165,6 @@ document.addEventListener('DOMContentLoaded', () => {
             renderPaceCurveAnalytics();
             playSound('click');
         });
-    }
     }
 
     const themeStudioModal = document.getElementById('themeStudioModal');

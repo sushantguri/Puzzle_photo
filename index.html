@@ -85,6 +85,13 @@
                     <input type="range" id="masterVolumeSlider" min="0" max="100" value="80" class="volume-slider" title="Master Sound Volume">
                 </div>
                 <button id="spatialAudioToggleBtn" class="btn btn-icon theme-select" title="Toggle 3D Stereo Spatial Audio Panning">🎧 3D Audio: ON</button>
+                <select id="ambientMusicSelect" class="form-select theme-select" title="Background Procedural Music Soundscape">
+                    <option value="off" selected>🎵 Music: Off</option>
+                    <option value="cyber">🌌 Cyber Synthwave</option>
+                    <option value="zen">🧘 Zen Solfeggio</option>
+                    <option value="chiptune">🕹️ 8-Bit Chiptune</option>
+                    <option value="space">🚀 Deep Space Drone</option>
+                </select>
                 <button id="soundboardBtn" class="btn btn-icon" title="Open Web Audio Sound Lab & Synthesizer Modal">🎹 Sound Lab</button>
                 <button id="openFxStudioBtn" class="btn btn-icon" title="Customize Tile Placement Particle Explosion FX">💥 FX Studio</button>
                 <select id="celebrationFxSelect" class="form-select theme-select" title="Victory Celebration Particle FX Style">
@@ -759,6 +766,23 @@
                         <button id="recordMicAudioBtn" type="button" class="btn btn-secondary btn-sm">🎙️ Record 1s Snap</button>
                         <button id="playMicAudioBtn" type="button" class="btn btn-secondary btn-sm" style="display: none;">▶️ Test Custom Voice</button>
                         <button id="clearMicAudioBtn" type="button" class="btn btn-secondary btn-sm" style="display: none;">🗑️ Reset Voice</button>
+                    </div>
+                </div>
+
+                <div class="ambient-music-section" style="margin-top: 14px; padding: 12px; background: rgba(99, 102, 241, 0.08); border-radius: 10px; border: 1px solid rgba(99, 102, 241, 0.2); text-align: left;">
+                    <div style="font-size: 0.85rem; font-weight: 600; color: #a5b4fc; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                        <span>🎵 Procedural Ambient Soundscape:</span>
+                        <select id="modalAmbientMusicSelect" class="form-select" style="width: auto; padding: 2px 6px; font-size: 0.8rem;">
+                            <option value="off" selected>🎵 Music: Off</option>
+                            <option value="cyber">🌌 Cyber Synthwave</option>
+                            <option value="zen">🧘 Zen Solfeggio</option>
+                            <option value="chiptune">🕹️ 8-Bit Chiptune</option>
+                            <option value="space">🚀 Deep Space Drone</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 12px; align-items: center; font-size: 0.8rem; color: #cbd5e1;">
+                        <label style="display:flex; align-items:center; gap:6px; flex: 1;">Volume: <input type="range" id="ambientMusicVolSlider" min="0" max="100" value="40" class="volume-slider" style="flex:1;"></label>
+                        <span id="ambientMusicVolVal">40%</span>
                     </div>
                 </div>
 
