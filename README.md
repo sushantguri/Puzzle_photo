@@ -52,7 +52,8 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
 - **📊 Speedrun Pace & Split Analytics Studio:** Interactive performance dashboard modal rendering live Canvas move pacing velocity curves, 25%/50%/75%/100% split checkpoints, personal best deltas, and tile swap frequency heatmaps.
 - **🎧 Reactive 3D Spatial Stereo Audio & Velocity Pitch Synth:** Web Audio `StereoPannerNode` panning sounds dynamically based on tile screen coordinates and accelerating pitch scales with combo streaks!
 - **🔊 Audio Sonar Proximity Radar & Haptic Feedback:** Proximity radar that beeps higher frequencies as tiles near their target slots, alongside tactile device vibration feedback.
-- **⚡ Live Motion Canvas Textures Lab:** Generate puzzles from procedural real-time animated textures including Cyber Plasma, Matrix Rain, Starfield Warp, and Neon Synth Waves.
+- **🎨 Custom Photo Filter Matrix Shader Studio:** Interactive modal lab allowing players to fine-tune photo shader parameters (Hue Rotate, Brightness, Contrast, Saturation, Sepia, Invert), preview matrix effects live on canvas, and save custom filter presets to LocalStorage.
+- **🎵 Procedural Ambient Soundscape Synthesizer Studio:** Real-time Web Audio API procedural music generator with 4 atmosphere soundscape presets (Cyber Synthwave, Zen Solfeggio 528Hz, 8-Bit Chiptune, Deep Space Drone), stereo panning, LFO modulation, and volume slider controls in header and Sound Lab.
 - **📱 PWA Offline Support:** Built with Web App Manifest (`manifest.json`) and Service Worker (`sw.js`) for 100% offline gameplay.
 
 ---
