@@ -6272,6 +6272,194 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- CUSTOM PHOTO FILTER MATRIX LAB STUDIO ---
+    const openCustomFilterLabBtn = document.getElementById('openCustomFilterLabBtn');
+    const customFilterLabModal = document.getElementById('customFilterLabModal');
+    const closeCustomFilterLabBtn = document.getElementById('closeCustomFilterLabBtn');
+    const closeCustomFilterLabFooterBtn = document.getElementById('closeCustomFilterLabFooterBtn');
+    const customFilterPreviewCanvas = document.getElementById('customFilterPreviewCanvas');
+    const customFilterPreviewCtx = customFilterPreviewCanvas ? customFilterPreviewCanvas.getContext('2d') : null;
+
+    const customHueSlider = document.getElementById('customHueSlider');
+    const customBrightSlider = document.getElementById('customBrightSlider');
+    const customContrastSlider = document.getElementById('customContrastSlider');
+    const customSaturateSlider = document.getElementById('customSaturateSlider');
+    const customSepiaSlider = document.getElementById('customSepiaSlider');
+    const customInvertSlider = document.getElementById('customInvertSlider');
+
+    const customHueVal = document.getElementById('customHueVal');
+    const customBrightVal = document.getElementById('customBrightVal');
+    const customContrastVal = document.getElementById('customContrastVal');
+    const customSaturateVal = document.getElementById('customSaturateVal');
+    const customSepiaVal = document.getElementById('customSepiaVal');
+    const customInvertVal = document.getElementById('customInvertVal');
+
+    const presetNameInput = document.getElementById('presetNameInput');
+    const saveCustomPresetBtn = document.getElementById('saveCustomPresetBtn');
+    const resetCustomFilterBtn = document.getElementById('resetCustomFilterBtn');
+    const customPresetsList = document.getElementById('customPresetsList');
+    const applyCustomFilterToPhotoBtn = document.getElementById('applyCustomFilterToPhotoBtn');
+
+    let customFilterAnimFrame = null;
+    let customPresets = JSON.parse(localStorage.getItem('snappuzzle_custom_filter_presets') || '[]');
+
+    function getCustomFilterCss() {
+        const hue = customHueSlider ? customHueSlider.value : 0;
+        const bright = customBrightSlider ? customBrightSlider.value : 100;
+        const contrast = customContrastSlider ? customContrastSlider.value : 100;
+        const saturate = customSaturateSlider ? customSaturateSlider.value : 100;
+        const sepia = customSepiaSlider ? customSepiaSlider.value : 0;
+        const invert = customInvertSlider ? customInvertSlider.value : 0;
+        return `hue-rotate(${hue}deg) brightness(${bright}%) contrast(${contrast}%) saturate(${saturate}%) sepia(${sepia}%) invert(${invert}%)`;
+    }
+
+    function renderCustomFilterPreview() {
+        if (!customFilterPreviewCtx || !customFilterPreviewCanvas) return;
+        const w = customFilterPreviewCanvas.width;
+        const h = customFilterPreviewCanvas.height;
+
+        customFilterPreviewCtx.save();
+        customFilterPreviewCtx.clearRect(0, 0, w, h);
+        customFilterPreviewCtx.filter = getCustomFilterCss();
+
+        if (currentPhotoDataUrl) {
+            const img = new Image();
+            img.onload = () => {
+                customFilterPreviewCtx.drawImage(img, 0, 0, w, h);
+                customFilterPreviewCtx.restore();
+            };
+            img.src = currentPhotoDataUrl;
+        } else if (videoEl && videoEl.readyState >= 2) {
+            customFilterPreviewCtx.drawImage(videoEl, 0, 0, w, h);
+            customFilterPreviewCtx.restore();
+        } else {
+            const grad = customFilterPreviewCtx.createLinearGradient(0, 0, w, h);
+            grad.addColorStop(0, '#6366f1');
+            grad.addColorStop(0.5, '#ec4899');
+            grad.addColorStop(1, '#3b82f6');
+            customFilterPreviewCtx.fillStyle = grad;
+            customFilterPreviewCtx.fillRect(0, 0, w, h);
+            customFilterPreviewCtx.fillStyle = '#ffffff';
+            customFilterPreviewCtx.font = '600 16px Outfit, sans-serif';
+            customFilterPreviewCtx.textAlign = 'center';
+            customFilterPreviewCtx.fillText('SnapPhoto Preview Matrix', w / 2, h / 2);
+            customFilterPreviewCtx.restore();
+        }
+    }
+
+    function updateCustomSliderLabels() {
+        if (customHueVal && customHueSlider) customHueVal.textContent = customHueSlider.value + 'deg';
+        if (customBrightVal && customBrightSlider) customBrightVal.textContent = customBrightSlider.value + '%';
+        if (customContrastVal && customContrastSlider) customContrastVal.textContent = customContrastSlider.value + '%';
+        if (customSaturateVal && customSaturateSlider) customSaturateVal.textContent = customSaturateSlider.value + '%';
+        if (customSepiaVal && customSepiaSlider) customSepiaVal.textContent = customSepiaSlider.value + '%';
+        if (customInvertVal && customInvertSlider) customInvertVal.textContent = customInvertSlider.value + '%';
+        renderCustomFilterPreview();
+    }
+
+    function renderSavedCustomPresetsList() {
+        if (!customPresetsList) return;
+        customPresetsList.innerHTML = '';
+        customPresets.forEach((preset, index) => {
+            const badge = document.createElement('div');
+            badge.className = 'preset-badge';
+            badge.style.cssText = 'padding: 4px 10px; background: rgba(99, 102, 241, 0.2); border: 1px solid var(--accent-primary); border-radius: 12px; font-size: 0.75rem; color: #a5b4fc; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;';
+            badge.innerHTML = `<span>🎨 ${preset.name}</span><span class="delete-preset-btn" style="color: #ef4444; font-weight: bold; cursor: pointer;" title="Delete Preset">&times;</span>`;
+
+            badge.addEventListener('click', (e) => {
+                if (e.target.classList.contains('delete-preset-btn')) {
+                    e.stopPropagation();
+                    customPresets.splice(index, 1);
+                    localStorage.setItem('snappuzzle_custom_filter_presets', JSON.stringify(customPresets));
+                    renderSavedCustomPresetsList();
+                    showToast('🗑️ Filter preset deleted.');
+                } else {
+                    if (preset.values) {
+                        if (customHueSlider) customHueSlider.value = preset.values.hue || 0;
+                        if (customBrightSlider) customBrightSlider.value = preset.values.bright || 100;
+                        if (customContrastSlider) customContrastSlider.value = preset.values.contrast || 100;
+                        if (customSaturateSlider) customSaturateSlider.value = preset.values.saturate || 100;
+                        if (customSepiaSlider) customSepiaSlider.value = preset.values.sepia || 0;
+                        if (customInvertSlider) customInvertSlider.value = preset.values.invert || 0;
+                        updateCustomSliderLabels();
+                        showToast(`🎨 Preset "${preset.name}" loaded!`);
+                    }
+                }
+            });
+            customPresetsList.appendChild(badge);
+        });
+    }
+
+    if (openCustomFilterLabBtn && customFilterLabModal) {
+        openCustomFilterLabBtn.addEventListener('click', () => {
+            customFilterLabModal.style.display = 'flex';
+            renderSavedCustomPresetsList();
+            updateCustomSliderLabels();
+            playSound('click');
+        });
+
+        [closeCustomFilterLabBtn, closeCustomFilterLabFooterBtn].forEach(btn => {
+            if (btn) btn.addEventListener('click', () => {
+                customFilterLabModal.style.display = 'none';
+                playSound('click');
+            });
+        });
+
+        [customHueSlider, customBrightSlider, customContrastSlider, customSaturateSlider, customSepiaSlider, customInvertSlider].forEach(slider => {
+            if (slider) slider.addEventListener('input', updateCustomSliderLabels);
+        });
+
+        if (resetCustomFilterBtn) {
+            resetCustomFilterBtn.addEventListener('click', () => {
+                if (customHueSlider) customHueSlider.value = 0;
+                if (customBrightSlider) customBrightSlider.value = 100;
+                if (customContrastSlider) customContrastSlider.value = 100;
+                if (customSaturateSlider) customSaturateSlider.value = 100;
+                if (customSepiaSlider) customSepiaSlider.value = 0;
+                if (customInvertSlider) customInvertSlider.value = 0;
+                updateCustomSliderLabels();
+                playSound('click');
+                showToast('🔄 Filter sliders reset.');
+            });
+        }
+
+        if (saveCustomPresetBtn && presetNameInput) {
+            saveCustomPresetBtn.addEventListener('click', () => {
+                const name = presetNameInput.value.trim() || `Custom Preset ${customPresets.length + 1}`;
+                const newPreset = {
+                    id: Date.now(),
+                    name: name,
+                    filterCss: getCustomFilterCss(),
+                    values: {
+                        hue: customHueSlider ? parseInt(customHueSlider.value) : 0,
+                        bright: customBrightSlider ? parseInt(customBrightSlider.value) : 100,
+                        contrast: customContrastSlider ? parseInt(customContrastSlider.value) : 100,
+                        saturate: customSaturateSlider ? parseInt(customSaturateSlider.value) : 100,
+                        sepia: customSepiaSlider ? parseInt(customSepiaSlider.value) : 0,
+                        invert: customInvertSlider ? parseInt(customInvertSlider.value) : 0
+                    }
+                };
+                customPresets.push(newPreset);
+                localStorage.setItem('snappuzzle_custom_filter_presets', JSON.stringify(customPresets));
+                presetNameInput.value = '';
+                renderSavedCustomPresetsList();
+                playSound('win');
+                showToast(`💾 Filter Preset "${name}" saved!`, 'Custom Filter Lab');
+            });
+        }
+
+        if (applyCustomFilterToPhotoBtn) {
+            applyCustomFilterToPhotoBtn.addEventListener('click', () => {
+                const filterCss = getCustomFilterCss();
+                if (videoEl) videoEl.style.filter = filterCss;
+                if (photoPreviewImg) photoPreviewImg.style.filter = filterCss;
+                customFilterLabModal.style.display = 'none';
+                playSound('snap');
+                showToast('✨ Custom Filter applied to Camera Stream & Preview!');
+            });
+        }
+    }
+
     // Auto-start webcam initially
     startWebcam();
 });

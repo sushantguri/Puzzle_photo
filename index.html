@@ -177,6 +177,7 @@
                                 <option value="duotone_sunset">🌅 Duotone Sunset</option>
                                 <option value="duotone_emerald">🌿 Duotone Emerald</option>
                             </select>
+                            <button id="openCustomFilterLabBtn" type="button" class="btn btn-secondary" title="Open Custom Photo Filter Shader Studio" style="margin-left: 6px;">🎨 Custom Filter Lab</button>
                         </div>
                         <button id="mirrorToggleBtn" class="btn btn-secondary" title="Mirror Flip Stream">🪞 Flip Camera</button>
                         <button id="recordMotionBtn" class="btn btn-secondary" title="Capture 2.5-Second Living Motion Snap">🎥 Living Motion Snap</button>
@@ -1253,6 +1254,63 @@
                 <div class="modal-footer" style="justify-content: space-between; margin-top: 14px;">
                     <button id="testVoiceAnnouncerBtn" class="btn btn-secondary btn-sm">🔊 Test Voice Profile</button>
                     <button id="closeVoiceStudioFooterBtn" class="btn btn-secondary">Close Studio</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CUSTOM PHOTO FILTER MATRIX LAB MODAL -->
+        <div id="customFilterLabModal" class="modal-backdrop" style="display: none;">
+            <div class="modal-card custom-filter-card" style="max-width: 600px; text-align: center;">
+                <div class="modal-header">
+                    <h2>🎨 Custom Photo Filter Matrix Lab</h2>
+                    <button id="closeCustomFilterLabBtn" class="close-btn">&times;</button>
+                </div>
+                <p class="modal-subtitle">Fine-tune photo shader parameters, preview matrix effects in real time, and save custom filter presets.</p>
+
+                <div class="filter-lab-preview-wrapper" style="margin: 12px 0; background: rgba(0,0,0,0.4); border-radius: 12px; padding: 10px; border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: center;">
+                    <canvas id="customFilterPreviewCanvas" width="320" height="240" style="max-width: 100%; max-height: 220px; border-radius: 8px; object-fit: contain;"></canvas>
+                </div>
+
+                <div class="filter-controls-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; text-align: left; background: rgba(0,0,0,0.25); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); font-size: 0.8rem; color: #cbd5e1;">
+                    <label style="display: flex; flex-direction: column; gap: 2px;">
+                        <span>Hue Rotate: <span id="customHueVal">0deg</span></span>
+                        <input type="range" id="customHueSlider" min="0" max="360" value="0">
+                    </label>
+                    <label style="display: flex; flex-direction: column; gap: 2px;">
+                        <span>Brightness: <span id="customBrightVal">100%</span></span>
+                        <input type="range" id="customBrightSlider" min="20" max="250" value="100">
+                    </label>
+                    <label style="display: flex; flex-direction: column; gap: 2px;">
+                        <span>Contrast: <span id="customContrastVal">100%</span></span>
+                        <input type="range" id="customContrastSlider" min="20" max="250" value="100">
+                    </label>
+                    <label style="display: flex; flex-direction: column; gap: 2px;">
+                        <span>Saturation: <span id="customSaturateVal">100%</span></span>
+                        <input type="range" id="customSaturateSlider" min="0" max="300" value="100">
+                    </label>
+                    <label style="display: flex; flex-direction: column; gap: 2px;">
+                        <span>Sepia: <span id="customSepiaVal">0%</span></span>
+                        <input type="range" id="customSepiaSlider" min="0" max="100" value="0">
+                    </label>
+                    <label style="display: flex; flex-direction: column; gap: 2px;">
+                        <span>Invert: <span id="customInvertVal">0%</span></span>
+                        <input type="range" id="customInvertSlider" min="0" max="100" value="0">
+                    </label>
+                </div>
+
+                <div class="save-preset-row" style="margin-top: 12px; display: flex; gap: 8px; align-items: center;">
+                    <input type="text" id="presetNameInput" class="form-select" placeholder="Custom Preset Name (e.g. Neon Cyber)" style="flex: 1; padding: 6px 12px; font-size: 0.85rem;">
+                    <button id="saveCustomPresetBtn" type="button" class="btn btn-primary btn-sm">💾 Save Preset</button>
+                    <button id="resetCustomFilterBtn" type="button" class="btn btn-secondary btn-sm">🔄 Reset Sliders</button>
+                </div>
+
+                <div id="customPresetsList" style="margin-top: 12px; display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; max-height: 100px; overflow-y: auto;">
+                    <!-- Custom preset badges rendered dynamically -->
+                </div>
+
+                <div class="modal-footer" style="justify-content: space-between; margin-top: 14px;">
+                    <button id="applyCustomFilterToPhotoBtn" type="button" class="btn btn-primary btn-sm">✨ Apply to Camera Stream</button>
+                    <button id="closeCustomFilterLabFooterBtn" type="button" class="btn btn-secondary">Close Studio</button>
                 </div>
             </div>
         </div>
