@@ -31,7 +31,7 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
   - Guaranteed solvability validation.
 
 ### 🎚️ 3. Customizable Difficulty Levels
-- 🟢 **Easy:** 3 × 3 (9 pieces) — Perfect for quick fun.
+- 🟢 **Easy:** 3 × 3 (9 pieces) —> Perfect for quick fun.
 - 🟡 **Medium:** 4 × 4 (16 pieces) — Balanced challenge.
 - 🟠 **Hard:** 5 × 5 (25 pieces) — For seasoned puzzle solvers.
 - 🔴 **Master:** 6 × 6 (36 pieces) — Master test!
