@@ -2470,7 +2470,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isAiRivalActive && aiRivalLevel === 'hard') {
                 unlockAchievement('bot_slayer');
             }
-            if (['hexagon', 'diamond', 'wave', 'tabbed'].includes(selectedShape)) {
+            if (['hexagon', 'diamond', 'wave', 'tabbed', 'starburst', 'octagon'].includes(selectedShape)) {
                 unlockAchievement('shape_shifter');
             }
 

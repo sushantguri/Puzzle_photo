@@ -1536,6 +1536,16 @@ body {
     );
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
+.puzzle-tile.shape-starburst {
+    clip-path: polygon(50% 0%, 63% 25%, 91% 10%, 80% 38%, 100% 50%, 80% 62%, 91% 90%, 63% 75%, 50% 100%, 37% 75%, 9% 90%, 20% 62%, 0% 50%, 20% 38%, 9% 10%, 37% 25%);
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.45);
+    filter: drop-shadow(0 2px 6px rgba(245, 158, 11, 0.35));
+}
+.puzzle-tile.shape-octagon {
+    clip-path: polygon(29% 0%, 71% 0%, 100% 29%, 100% 71%, 71% 100%, 29% 100%, 0% 71%, 0% 29%);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.45));
+}
 
 /* Board Silhouette Masks */
 .puzzle-board.mask-circle {
