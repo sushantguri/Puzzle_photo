@@ -539,6 +539,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     osc.start(now);
                     osc.stop(now + 0.12);
                 }
+            } else if (type === 'cluster') {
+                // Ascending magnetic cluster lock chime arpeggio
+                const chord = [523.25, 659.25, 783.99, 1046.50];
+                chord.forEach((freq, i) => {
+                    const o = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    o.type = soundPreset === 'arcade' ? 'square' : (soundPreset === 'marimba' ? 'sine' : 'triangle');
+                    o.connect(g);
+                    g.connect(masterGain);
+                    o.frequency.setValueAtTime(freq * pitch, now + i * 0.05);
+                    o.frequency.exponentialRampToValueAtTime(freq * 1.15 * pitch, now + i * 0.05 + 0.16);
+                    g.gain.setValueAtTime(0.18, now + i * 0.05);
+                    g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.05 + 0.2);
+                    o.start(now + i * 0.05);
+                    o.stop(now + i * 0.05 + 0.2);
+                });
             } else if (type === 'win') {
                 // Play major chord fanfare
                 [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
@@ -2174,6 +2190,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const totalTiles = selectedGridSize * selectedGridSize;
         tiles = [];
+        maxClusterReached = 0;
 
         for (let i = 0; i < totalTiles; i++) {
             const isEmptyTile = (puzzleMode === 'sliding' && i === totalTiles - 1);
@@ -2245,10 +2262,79 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let selectedTile = null;
+    let maxClusterReached = 0;
+
+    function getClusterMap() {
+        const clusterMap = new Map();
+        if (puzzleMode !== 'jigsaw') return clusterMap;
+        const size = selectedGridSize || 3;
+        const correctTileIds = new Set(
+            tiles.filter(t => !t.isEmpty && t.currentPos === t.correctPos && (!isTileRotationEnabled || (t.rotation || 0) % 360 === 0)).map(t => t.id)
+        );
+
+        const visited = new Set();
+        correctTileIds.forEach(tId => {
+            if (!visited.has(tId)) {
+                const group = [];
+                const queue = [tId];
+                visited.add(tId);
+
+                while (queue.length > 0) {
+                    const curr = queue.shift();
+                    group.push(curr);
+                    const r = Math.floor(curr / size);
+                    const c = curr % size;
+
+                    const neighbors = [];
+                    if (r > 0) neighbors.push((r - 1) * size + c);
+                    if (r < size - 1) neighbors.push((r + 1) * size + c);
+                    if (c > 0) neighbors.push(r * size + (c - 1));
+                    if (c < size - 1) neighbors.push(r * size + (c + 1));
+
+                    neighbors.forEach(nId => {
+                        if (correctTileIds.has(nId) && !visited.has(nId)) {
+                            visited.add(nId);
+                            queue.push(nId);
+                        }
+                    });
+                }
+
+                if (group.length >= 2) {
+                    group.forEach(id => clusterMap.set(id, group.length));
+                }
+            }
+        });
+        return clusterMap;
+    }
+
+    function calculateMaxClusterSize() {
+        const clusterMap = getClusterMap();
+        let max = 0;
+        clusterMap.forEach(size => {
+            if (size > max) max = size;
+        });
+        return max;
+    }
+
+    function checkClusterFormation(tileA, tileB) {
+        if (puzzleMode !== 'jigsaw') return;
+        const currentMax = calculateMaxClusterSize();
+        if (currentMax > maxClusterReached && currentMax >= 2) {
+            maxClusterReached = currentMax;
+            const size = selectedGridSize || 3;
+            const targetPos = tileA && tileA.currentPos !== undefined ? tileA.currentPos : 0;
+            const col = targetPos % size;
+            const pan = size > 1 ? (col / (size - 1)) * 1.6 - 0.8 : 0;
+            playSound('cluster', pan, 1.0 + Math.min(0.5, currentMax * 0.05));
+            triggerHaptic([30, 40, 30]);
+            showToast(`🔗 Magnetic Cluster Locked! ${currentMax} Pieces Connected!`, 'Magnetic Snap');
+        }
+    }
 
     function renderTiles() {
         puzzleBoard.innerHTML = '';
         const size = selectedGridSize;
+        const clusterMap = getClusterMap();
 
         // Sort tiles by currentPos so they render in grid order
         const sortedTiles = [...tiles].sort((a, b) => a.currentPos - b.currentPos);
@@ -2266,6 +2352,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 tileDiv.classList.add('jigsaw-tile');
                 if (tile.currentPos === tile.correctPos) {
                     tileDiv.classList.add('correctly-placed');
+                    if (clusterMap.has(tile.id)) {
+                        tileDiv.classList.add('cluster-locked');
+                        tileDiv.dataset.clusterSize = clusterMap.get(tile.id);
+                    }
                 }
             }
 
@@ -2403,6 +2493,9 @@ document.addEventListener('DOMContentLoaded', () => {
             triggerTileSnapFx(tileA, tileB);
         }
         renderTiles();
+        if (!isUndo) {
+            checkClusterFormation(tileA, tileB);
+        }
         checkWinCondition();
     }
 
