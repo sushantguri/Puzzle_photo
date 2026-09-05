@@ -351,6 +351,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function getWaveType() {
         if (soundPreset === 'arcade') return 'square';
         if (soundPreset === 'chime') return 'triangle';
+        if (soundPreset === 'marimba') return 'sine';
+        if (soundPreset === 'crystal') return 'sine';
         return 'sine'; // synth
     }
 
@@ -422,25 +424,50 @@ document.addEventListener('DOMContentLoaded', () => {
             const pitch = Math.max(0.5, Math.min(2.5, pitchFactor || 1));
 
             if (type === 'click') {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = wave;
-                osc.connect(gain);
-                gain.connect(masterGain);
-                osc.frequency.setValueAtTime(300 * pitch, now);
-                osc.frequency.exponentialRampToValueAtTime(150 * pitch, now + 0.08);
-                gain.gain.setValueAtTime(0.15, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
-                osc.start(now);
-                osc.stop(now + 0.08);
+                if (soundPreset === 'marimba') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.connect(gain);
+                    gain.connect(masterGain);
+                    osc.frequency.setValueAtTime(560 * pitch, now);
+                    osc.frequency.exponentialRampToValueAtTime(280 * pitch, now + 0.06);
+                    gain.gain.setValueAtTime(0.24, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+                    osc.start(now);
+                    osc.stop(now + 0.06);
+                } else if (soundPreset === 'crystal') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.connect(gain);
+                    gain.connect(masterGain);
+                    osc.frequency.setValueAtTime(1320 * pitch, now);
+                    osc.frequency.exponentialRampToValueAtTime(880 * pitch, now + 0.07);
+                    gain.gain.setValueAtTime(0.18, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+                    osc.start(now);
+                    osc.stop(now + 0.07);
+                } else {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = wave;
+                    osc.connect(gain);
+                    gain.connect(masterGain);
+                    osc.frequency.setValueAtTime(300 * pitch, now);
+                    osc.frequency.exponentialRampToValueAtTime(150 * pitch, now + 0.08);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
+                }
             } else if (type === 'snap') {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = timerMode === 'zen' ? 'sine' : wave;
-                osc.connect(gain);
-                gain.connect(masterGain);
-
                 if (timerMode === 'zen') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.connect(gain);
+                    gain.connect(masterGain);
                     // Solfeggio 528Hz Transformation & Miracle Tone for Zen mode
                     const zenTones = [432, 528, 639, 741];
                     const freq = zenTones[Math.floor(Math.random() * zenTones.length)] * pitch;
@@ -450,7 +477,61 @@ document.addEventListener('DOMContentLoaded', () => {
                     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
                     osc.start(now);
                     osc.stop(now + 0.35);
+                } else if (soundPreset === 'marimba') {
+                    // Resonant wooden marimba bar with overtone
+                    const osc1 = audioCtx.createOscillator();
+                    const gain1 = audioCtx.createGain();
+                    osc1.type = 'sine';
+                    osc1.frequency.setValueAtTime(440 * pitch, now);
+                    osc1.frequency.exponentialRampToValueAtTime(330 * pitch, now + 0.18);
+                    gain1.gain.setValueAtTime(0.35, now);
+                    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+                    osc1.connect(gain1);
+                    gain1.connect(masterGain);
+                    osc1.start(now);
+                    osc1.stop(now + 0.18);
+
+                    const osc2 = audioCtx.createOscillator();
+                    const gain2 = audioCtx.createGain();
+                    osc2.type = 'triangle';
+                    osc2.frequency.setValueAtTime(440 * 3.9 * pitch, now);
+                    gain2.gain.setValueAtTime(0.12, now);
+                    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+                    osc2.connect(gain2);
+                    gain2.connect(masterGain);
+                    osc2.start(now);
+                    osc2.stop(now + 0.06);
+                } else if (soundPreset === 'crystal') {
+                    // Shimmering crystalline FM bell chime
+                    const carrier = audioCtx.createOscillator();
+                    const mod = audioCtx.createOscillator();
+                    const modGain = audioCtx.createGain();
+                    const carrierGain = audioCtx.createGain();
+
+                    carrier.type = 'sine';
+                    mod.type = 'sine';
+                    carrier.frequency.setValueAtTime(880 * pitch, now);
+                    mod.frequency.setValueAtTime(880 * 2.76 * pitch, now);
+                    modGain.gain.setValueAtTime(450 * pitch, now);
+                    modGain.gain.exponentialRampToValueAtTime(1, now + 0.3);
+
+                    mod.connect(carrier.frequency);
+                    carrierGain.gain.setValueAtTime(0.24, now);
+                    carrierGain.gain.exponentialRampToValueAtTime(0.001, now + 0.36);
+
+                    carrier.connect(carrierGain);
+                    carrierGain.connect(masterGain);
+
+                    mod.start(now);
+                    carrier.start(now);
+                    mod.stop(now + 0.36);
+                    carrier.stop(now + 0.36);
                 } else {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = wave;
+                    osc.connect(gain);
+                    gain.connect(masterGain);
                     osc.frequency.setValueAtTime(523.25 * pitch, now); // C5
                     osc.frequency.exponentialRampToValueAtTime(659.25 * pitch, now + 0.12); // E5
                     gain.gain.setValueAtTime(0.2, now);
