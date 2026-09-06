@@ -35,7 +35,7 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
 - 🟡 **Medium:** 4 × 4 (16 pieces) — Balanced challenge.
 - 🟠 **Hard:** 5 × 5 (25 pieces) — For seasoned puzzle solvers.
 - 🔴 **Master:** 6 × 6 (36 pieces) — Master test!
-- ⚡ **Expert:** 8 × 8 (64 pieces) — Ultimate spatial memory test!
+- ⚡ **Expert:** 8 × 8 (64 pieces) — Ultimate spatial memory test
 
 - **▶️ Animated Move Playback & Replay:** Step-by-step interactive move replay system (`P` key) with 1x/2x/4x speed controls, timeline scrubber, move highlights, and Web Audio step sound FX.
 - **🎖️ Achievements & Badges System:** 9 unlockable trophies with animated toast notifications, sound fanfares, progress bar tracking, and dedicated modal card.
