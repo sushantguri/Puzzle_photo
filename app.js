@@ -3121,6 +3121,73 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    const DAILY_BADGES = [
+        { id: 'streak_3', icon: '🥉', name: 'Streak Pioneer', req: '3 Days', type: 'streak', target: 3, achId: 'streak_pioneer' },
+        { id: 'streak_7', icon: '🥈', name: 'Week Warrior', req: '7 Days', type: 'streak', target: 7, achId: 'week_warrior' },
+        { id: 'streak_14', icon: '🥇', name: 'Fortnight Master', req: '14 Days', type: 'streak', target: 14, achId: 'fortnight_master' },
+        { id: 'streak_30', icon: '💎', name: 'Monthly Legend', req: '30 Days', type: 'streak', target: 30, achId: 'monthly_legend' },
+        { id: 'archive_5', icon: '🧭', name: 'Archive Explorer', req: '5 Solves', type: 'archive', target: 5, achId: 'archive_explorer' }
+    ];
+
+    function renderDailyMilestoneBadges() {
+        const container = document.getElementById('dailyBadgesContainer');
+        const countEl = document.getElementById('dailyBadgesCount');
+        if (!container) return;
+
+        const streakInfo = computeDailyStreakInfo();
+        const history = loadDailyHistory();
+        const archiveSolvedCount = Object.values(history).filter(h => h.isArchive).length;
+
+        let unlockedCount = 0;
+        let html = '';
+
+        DAILY_BADGES.forEach(badge => {
+            let isUnlocked = false;
+            if (badge.type === 'streak') {
+                isUnlocked = (streakInfo.bestStreak >= badge.target || streakInfo.streak >= badge.target);
+            } else if (badge.type === 'archive') {
+                isUnlocked = (archiveSolvedCount >= badge.target);
+            }
+
+            if (isUnlocked) unlockedCount++;
+
+            html += `
+                <div class="daily-badge-card ${isUnlocked ? 'unlocked' : 'locked'}" title="${badge.name}: ${badge.req}">
+                    <div class="daily-badge-icon">${badge.icon}</div>
+                    <div class="daily-badge-name">${badge.name}</div>
+                    <div class="daily-badge-req">${badge.req} ${isUnlocked ? '✓' : ''}</div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+        if (countEl) countEl.textContent = `${unlockedCount} / ${DAILY_BADGES.length} Unlocked`;
+    }
+
+    function checkDailyMilestoneBadges() {
+        const streakInfo = computeDailyStreakInfo();
+        const history = loadDailyHistory();
+        const archiveSolvedCount = Object.values(history).filter(h => h.isArchive).length;
+        const totalDailySolved = Object.keys(history).length;
+
+        if (totalDailySolved >= 1) unlockAchievement('daily_initiate');
+
+        DAILY_BADGES.forEach(badge => {
+            let isUnlocked = false;
+            if (badge.type === 'streak') {
+                isUnlocked = (streakInfo.bestStreak >= badge.target || streakInfo.streak >= badge.target);
+            } else if (badge.type === 'archive') {
+                isUnlocked = (archiveSolvedCount >= badge.target);
+            }
+
+            if (isUnlocked && badge.achId) {
+                unlockAchievement(badge.achId);
+            }
+        });
+
+        renderDailyMilestoneBadges();
+    }
+
     function updateDailyStreakUI() {
         const streakInfo = computeDailyStreakInfo();
 
@@ -3136,6 +3203,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         renderDailyCalendar();
         updateSelectedChallengeCard(selectedCalendarDateStr);
+        renderDailyMilestoneBadges();
     }
 
     // Modal navigation & action buttons
@@ -3965,7 +4033,13 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'hall_of_fame', icon: '🏆', title: 'Record Holder', desc: 'Record a high score in the Hall of Fame.' },
         { id: 'bot_slayer', icon: '🤖', title: 'Bot Destroyer', desc: 'Defeat the Grandmaster AI Bot in Speedrun Mode.' },
         { id: 'shape_shifter', icon: '🐝', title: 'Shape Shifter', desc: 'Solve a puzzle using Hexagon or Diamond tile shapes.' },
-        { id: 'pixel_artist', icon: '👾', title: 'Pixel Artist', desc: 'Create a puzzle using 8-Bit Pixel Art or Neon Sketch FX.' }
+        { id: 'pixel_artist', icon: '👾', title: 'Pixel Artist', desc: 'Create a puzzle using 8-Bit Pixel Art or Neon Sketch FX.' },
+        { id: 'daily_initiate', icon: '📅', title: 'Daily Initiate', desc: 'Solve your first daily seeded challenge puzzle.' },
+        { id: 'streak_pioneer', icon: '🥉', title: 'Streak Pioneer', desc: 'Achieve a 3-day daily challenge solving streak.' },
+        { id: 'week_warrior', icon: '🥈', title: 'Week Warrior', desc: 'Achieve a 7-day daily challenge solving streak.' },
+        { id: 'fortnight_master', icon: '🥇', title: 'Fortnight Master', desc: 'Achieve a 14-day daily challenge solving streak.' },
+        { id: 'monthly_legend', icon: '💎', title: 'Monthly Legend', desc: 'Achieve a 30-day daily challenge solving streak.' },
+        { id: 'archive_explorer', icon: '🧭', title: 'Archive Explorer', desc: 'Solve 5 past daily challenges from the archive calendar.' }
     ];
 
     let unlockedAchievements = [];
