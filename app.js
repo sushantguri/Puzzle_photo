@@ -2703,17 +2703,38 @@ document.addEventListener('DOMContentLoaded', () => {
         if (timerMode === 'countdown') unlockAchievement('time_survivor');
         if (stars === '⭐⭐⭐') unlockAchievement('three_stars');
 
-        // Daily Challenge streak update
+        // Daily Challenge streak update & history logging
         if (isDailyChallenge) {
-            const data = loadDailyStreakData();
-            const today = getTodayDateStr();
-            if (!data.dates.includes(today)) {
-                data.dates.push(today);
-                data.streak = (data.streak || 0) + 1;
-                data.lastDate = today;
-                saveDailyStreakData(data);
-                updateDailyStreakUI();
-                showToast(`🔥 Daily Streak Updated! You are now on a ${data.streak}-day streak!`);
+            const history = loadDailyHistory();
+            const dateStr = activeDailyChallengeDate || getTodayDateStr();
+            const todayStr = getTodayDateStr();
+            const isToday = (dateStr === todayStr);
+            const isNewSolve = !history[dateStr];
+
+            if (isNewSolve || moveCount < (history[dateStr].moves || 9999)) {
+                history[dateStr] = {
+                    moves: moveCount,
+                    time: secondsElapsed,
+                    stars: stars,
+                    completedAt: Date.now(),
+                    gridSize: selectedGridSize,
+                    isArchive: !isToday
+                };
+                saveDailyHistory(history);
+            }
+
+            const streakInfo = computeDailyStreakInfo();
+            updateDailyStreakUI();
+            if (typeof checkDailyMilestoneBadges === 'function') {
+                checkDailyMilestoneBadges();
+            }
+
+            if (isToday) {
+                showToast(`🔥 Daily Challenge Cleared! Current streak: ${streakInfo.streak} day${streakInfo.streak === 1 ? '' : 's'}!`);
+                addPlayerXp(150, 'Daily Challenge Cleared');
+            } else {
+                showToast(`🕹️ Archive Challenge Solved!`);
+                addPlayerXp(75, 'Archive Challenge Cleared');
             }
             isDailyChallenge = false;
         }
@@ -2727,19 +2748,225 @@ document.addEventListener('DOMContentLoaded', () => {
         if (replayToolbarBtn) replayToolbarBtn.style.display = 'inline-block';
     }
 
-    // --- DAILY CHALLENGE ENGINE ---
+    // --- ENHANCED DAILY CHALLENGE ENGINE ---
+    let activeDailyChallengeDate = getTodayDateStr();
+    let selectedCalendarDateStr = getTodayDateStr();
+    let calDisplayYear = new Date().getFullYear();
+    let calDisplayMonth = new Date().getMonth();
+
     function getTodayDateStr() {
         const d = new Date();
         return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     }
 
-    function loadDailyStreakData() {
-        const raw = localStorage.getItem('snappuzzle_daily_streak');
-        if (!raw) return { streak: 0, lastDate: '', dates: [] };
+    function getHashForDate(dateStr) {
+        let hash = 0;
+        for (let i = 0; i < dateStr.length; i++) {
+            hash = ((hash << 5) - hash) + dateStr.charCodeAt(i);
+            hash |= 0;
+        }
+        return Math.abs(hash);
+    }
+
+    function createSeededRandom(seed) {
+        let s = (seed % 2147483647) || 12345;
+        if (s <= 0) s += 2147483646;
+        return function() {
+            s = (s * 16807) % 2147483647;
+            return (s - 1) / 2147483646;
+        };
+    }
+
+    const DAILY_THEMES = [
+        {
+            name: 'Cosmic Nebula',
+            bg: ['#0f172a', '#1e1b4b', '#311042'],
+            palette: ['#ec4899', '#8b5cf6', '#38bdf8', '#fbbf24', '#ffffff']
+        },
+        {
+            name: 'Solar Flare Horizon',
+            bg: ['#1c1917', '#450a0a', '#7f1d1d'],
+            palette: ['#f97316', '#ef4444', '#facc15', '#f43f5e', '#fff7ed']
+        },
+        {
+            name: 'Cyberpunk Metropolis',
+            bg: ['#09090b', '#18181b', '#030712'],
+            palette: ['#06b6d4', '#f43f5e', '#a855f7', '#10b981', '#38bdf8']
+        },
+        {
+            name: 'Emerald Rainforest',
+            bg: ['#052e16', '#064e3b', '#022c22'],
+            palette: ['#10b981', '#34d399', '#a7f3d0', '#facc15', '#047857']
+        },
+        {
+            name: 'Crystal Geode Cavity',
+            bg: ['#1e1b4b', '#2e1065', '#172554'],
+            palette: ['#c084fc', '#e879f9', '#818cf8', '#67e8f9', '#ffffff']
+        },
+        {
+            name: 'Oceanic Bioluminescence',
+            bg: ['#020617', '#082f49', '#0c4a6e'],
+            palette: ['#0284c7', '#06b6d4', '#2dd4bf', '#a5f3fc', '#f0fdf4']
+        },
+        {
+            name: 'Autumn Sunset Glow',
+            bg: ['#292524', '#451a03', '#78350f'],
+            palette: ['#ea580c', '#d97706', '#b45309', '#f59e0b', '#fed7aa']
+        }
+    ];
+
+    function getDailyConfigForDate(dateStr) {
+        const hash = getHashForDate(dateStr);
+        const themeIndex = hash % DAILY_THEMES.length;
+        const theme = DAILY_THEMES[themeIndex];
+
+        const dateObj = new Date(dateStr + 'T00:00:00');
+        const dayOfWeek = dateObj.getDay();
+        let gridSize = 4;
+        if (dayOfWeek === 1 || dayOfWeek === 2) {
+            gridSize = 3;
+        } else if (dayOfWeek === 5 || dayOfWeek === 6) {
+            gridSize = (hash % 2 === 0) ? 4 : 5;
+        } else {
+            gridSize = 4;
+        }
+
+        const targetMoves = gridSize === 3 ? 30 : (gridSize === 4 ? 50 : 85);
+        return { hash, theme, gridSize, targetMoves, dateStr };
+    }
+
+    function generateDailyProceduralPhoto(dateStr) {
+        const config = getDailyConfigForDate(dateStr);
+        const rand = createSeededRandom(config.hash);
+        const theme = config.theme;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = 600;
+        canvas.height = 600;
+        const ctx = canvas.getContext('2d');
+
+        // 1. Radial background
+        const bgGrad = ctx.createRadialGradient(300, 300, 30, 300, 300, 420);
+        bgGrad.addColorStop(0, theme.bg[1] || theme.bg[0]);
+        bgGrad.addColorStop(0.65, theme.bg[0]);
+        bgGrad.addColorStop(1, theme.bg[2] || '#050814');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, 600, 600);
+
+        // 2. Cosmic / Background particles
+        ctx.save();
+        for (let i = 0; i < 50; i++) {
+            const px = rand() * 600;
+            const py = rand() * 600;
+            const pr = 1 + rand() * 4.5;
+            ctx.fillStyle = theme.palette[Math.floor(rand() * theme.palette.length)];
+            ctx.globalAlpha = 0.25 + rand() * 0.7;
+            ctx.beginPath();
+            ctx.arc(px, py, pr, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.restore();
+
+        // 3. Central geometric mandala composition
+        ctx.save();
+        ctx.translate(300, 300);
+        const numRays = 8 + (Math.floor(rand() * 4) * 2);
+        const maxRadius = 180 + rand() * 50;
+
+        for (let r = 0; r < 3; r++) {
+            ctx.beginPath();
+            ctx.arc(0, 0, maxRadius - r * 35, 0, Math.PI * 2);
+            ctx.strokeStyle = theme.palette[r % theme.palette.length];
+            ctx.lineWidth = 2 + rand() * 3;
+            ctx.globalAlpha = 0.4 + rand() * 0.35;
+            ctx.stroke();
+        }
+
+        for (let layer = 0; layer < 4; layer++) {
+            const curR = maxRadius * (1 - layer * 0.22);
+            ctx.beginPath();
+            const color = theme.palette[(layer + 1) % theme.palette.length];
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = 3;
+            ctx.globalAlpha = 0.35 + layer * 0.15;
+
+            for (let i = 0; i <= numRays; i++) {
+                const angle = (i * 2 * Math.PI) / numRays + (layer * 0.2);
+                const rad = (i % 2 === 0) ? curR : curR * 0.55;
+                const x = Math.cos(angle) * rad;
+                const y = Math.sin(angle) * rad;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.stroke();
+            if (layer === 3) ctx.fill();
+        }
+
+        const coreGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, 50);
+        coreGrad.addColorStop(0, '#ffffff');
+        coreGrad.addColorStop(0.5, theme.palette[0]);
+        coreGrad.addColorStop(1, 'transparent');
+        ctx.fillStyle = coreGrad;
+        ctx.globalAlpha = 0.95;
+        ctx.beginPath();
+        ctx.arc(0, 0, 50, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        // 4. Stylized Daily Banner
+        ctx.save();
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+        ctx.fillRect(0, 545, 600, 55);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(0, 545);
+        ctx.lineTo(600, 545);
+        ctx.stroke();
+
+        ctx.font = 'bold 15px monospace';
+        ctx.fillStyle = '#f8fafc';
+        ctx.textAlign = 'left';
+        ctx.fillText(`📅 DAILY: ${dateStr}`, 18, 578);
+
+        ctx.font = '700 13px system-ui, sans-serif';
+        ctx.fillStyle = '#a5b4fc';
+        ctx.textAlign = 'right';
+        ctx.fillText(`THEME: ${theme.name.toUpperCase()}`, 582, 578);
+        ctx.restore();
+
+        return canvas.toDataURL('image/jpeg', 0.92);
+    }
+
+    function loadDailyHistory() {
+        const raw = localStorage.getItem('snappuzzle_daily_history');
+        if (!raw) return {};
         try {
             return JSON.parse(raw);
         } catch(e) {
-            return { streak: 0, lastDate: '', dates: [] };
+            return {};
+        }
+    }
+
+    function saveDailyHistory(history) {
+        localStorage.setItem('snappuzzle_daily_history', JSON.stringify(history));
+    }
+
+    function loadDailyStreakData() {
+        const raw = localStorage.getItem('snappuzzle_daily_streak');
+        if (!raw) return { streak: 0, bestStreak: 0, lastDate: '', dates: [] };
+        try {
+            const parsed = JSON.parse(raw);
+            return {
+                streak: parsed.streak || 0,
+                bestStreak: parsed.bestStreak || parsed.streak || 0,
+                lastDate: parsed.lastDate || '',
+                dates: parsed.dates || []
+            };
+        } catch(e) {
+            return { streak: 0, bestStreak: 0, lastDate: '', dates: [] };
         }
     }
 
@@ -2747,32 +2974,222 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('snappuzzle_daily_streak', JSON.stringify(data));
     }
 
-    function updateDailyStreakUI() {
-        const data = loadDailyStreakData();
-        if (dailyStreakBadge) dailyStreakBadge.innerHTML = `🔥 ${data.streak}`;
-        if (dailyStreakText) dailyStreakText.textContent = `${data.streak} Day Streak`;
+    function computeDailyStreakInfo() {
+        const history = loadDailyHistory();
+        const streakData = loadDailyStreakData();
+        const today = getTodayDateStr();
 
-        if (dailyDateBadge) {
-            const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
-            dailyDateBadge.textContent = new Date().toLocaleDateString('en-US', options);
+        let cur = new Date(today + 'T00:00:00');
+        let streak = 0;
+
+        const todayCompleted = !!history[today];
+        if (!todayCompleted) {
+            cur.setDate(cur.getDate() - 1);
         }
 
-        const currentDayIndex = (new Date().getDay() + 6) % 7;
-        for (let i = 0; i < 7; i++) {
-            const dot = document.getElementById(`dayDot${i}`);
-            if (dot) {
-                if (i <= currentDayIndex && data.dates.length > 0) {
-                    dot.classList.add('active');
-                } else {
-                    dot.classList.remove('active');
-                }
+        while (true) {
+            const dStr = `${cur.getFullYear()}-${String(cur.getMonth()+1).padStart(2,'0')}-${String(cur.getDate()).padStart(2,'0')}`;
+            if (history[dStr]) {
+                streak++;
+                cur.setDate(cur.getDate() - 1);
+            } else {
+                break;
+            }
+        }
+
+        const bestStreak = Math.max(streakData.bestStreak || 0, streak);
+        streakData.streak = streak;
+        streakData.bestStreak = bestStreak;
+        saveDailyStreakData(streakData);
+
+        const totalSolved = Object.keys(history).length;
+        return { streak, bestStreak, totalSolved, todayCompleted };
+    }
+
+    function renderDailyCalendar() {
+        const grid = document.getElementById('dailyCalendarGrid');
+        const monthTitle = document.getElementById('dailyMonthYearTitle');
+        if (!grid || !monthTitle) return;
+
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        monthTitle.textContent = `${months[calDisplayMonth]} ${calDisplayYear}`;
+
+        const firstDayIndex = new Date(calDisplayYear, calDisplayMonth, 1).getDay();
+        const daysInMonth = new Date(calDisplayYear, calDisplayMonth + 1, 0).getDate();
+
+        const todayStr = getTodayDateStr();
+        const history = loadDailyHistory();
+
+        let html = '';
+        for (let i = 0; i < firstDayIndex; i++) {
+            html += `<div class="cal-day-cell empty-day"></div>`;
+        }
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dateStr = `${calDisplayYear}-${String(calDisplayMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const isToday = (dateStr === todayStr);
+            const isFuture = (dateStr > todayStr);
+            const isSelected = (dateStr === selectedCalendarDateStr);
+            const entry = history[dateStr];
+            const isCompleted = !!entry;
+
+            let classes = ['cal-day-cell'];
+            if (isToday) classes.push('today');
+            if (isFuture) classes.push('future-day');
+            if (isSelected) classes.push('selected');
+            if (isCompleted) classes.push('completed');
+
+            let iconHtml = '';
+            if (isCompleted) {
+                iconHtml = `<span class="cal-status-icon">${entry.stars || '⭐'}</span>`;
+            } else if (isToday) {
+                iconHtml = `<span class="cal-status-icon">🔥</span>`;
+            }
+
+            html += `<div class="${classes.join(' ')}" data-date="${dateStr}">
+                <span>${day}</span>
+                ${iconHtml}
+            </div>`;
+        }
+
+        grid.innerHTML = html;
+
+        grid.querySelectorAll('.cal-day-cell:not(.empty-day):not(.future-day)').forEach(cell => {
+            cell.addEventListener('click', () => {
+                selectedCalendarDateStr = cell.dataset.date;
+                playSound('click');
+                renderDailyCalendar();
+                updateSelectedChallengeCard(selectedCalendarDateStr);
+            });
+        });
+    }
+
+    function updateSelectedChallengeCard(dateStr) {
+        const todayStr = getTodayDateStr();
+        const history = loadDailyHistory();
+        const entry = history[dateStr];
+        const config = getDailyConfigForDate(dateStr);
+
+        const badge = document.getElementById('dailySelectedBadge');
+        const title = document.getElementById('dailySelectedDateTitle');
+        const statusPill = document.getElementById('dailySelectedStatusPill');
+        const themeEl = document.getElementById('dailySelectedTheme');
+        const gridEl = document.getElementById('dailySelectedGrid');
+        const targetEl = document.getElementById('dailySelectedTarget');
+        const recordEl = document.getElementById('dailySelectedRecord');
+        const launchBtn = document.getElementById('startDailyChallengeBtn');
+
+        const dateObj = new Date(dateStr + 'T00:00:00');
+        const formattedDate = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
+
+        if (title) title.textContent = formattedDate;
+        if (themeEl) themeEl.textContent = config.theme.name;
+        if (gridEl) gridEl.textContent = `${config.gridSize} × ${config.gridSize} (${config.gridSize * config.gridSize} Tiles)`;
+        if (targetEl) targetEl.textContent = `< ${config.targetMoves} Moves`;
+
+        const isToday = (dateStr === todayStr);
+
+        if (badge) {
+            badge.textContent = isToday ? "Today's Mission" : "Archive Challenge";
+            badge.className = isToday ? "selected-badge" : "selected-badge archive";
+        }
+
+        if (statusPill) {
+            if (entry) {
+                statusPill.className = "selected-status-pill completed";
+                statusPill.innerHTML = `<span>✓</span> Solved (${entry.stars || '⭐⭐⭐'})`;
+            } else {
+                statusPill.className = "selected-status-pill";
+                statusPill.innerHTML = `<span>⚪</span> Not Completed`;
+            }
+        }
+
+        if (recordEl) {
+            if (entry) {
+                recordEl.textContent = `${entry.moves} moves (${formatTime(entry.time)})`;
+            } else {
+                recordEl.textContent = '--';
+            }
+        }
+
+        if (launchBtn) {
+            if (isToday) {
+                launchBtn.textContent = entry ? "🔄 Replay Today's Challenge" : "🚀 Launch Today's Challenge";
+            } else {
+                launchBtn.textContent = entry ? "🔄 Replay Archive Challenge" : "🕹️ Launch Archive Challenge";
             }
         }
     }
 
+    function updateDailyStreakUI() {
+        const streakInfo = computeDailyStreakInfo();
+
+        const curStreakEl = document.getElementById('dailyCurrentStreakVal');
+        const bestStreakEl = document.getElementById('dailyBestStreakVal');
+        const totalSolvedEl = document.getElementById('dailyTotalSolvedVal');
+
+        if (curStreakEl) curStreakEl.textContent = streakInfo.streak;
+        if (bestStreakEl) bestStreakEl.textContent = streakInfo.bestStreak;
+        if (totalSolvedEl) totalSolvedEl.textContent = streakInfo.totalSolved;
+
+        if (dailyStreakBadge) dailyStreakBadge.innerHTML = `🔥 ${streakInfo.streak}`;
+
+        renderDailyCalendar();
+        updateSelectedChallengeCard(selectedCalendarDateStr);
+    }
+
+    // Modal navigation & action buttons
+    const closeDailyChallengeFooterBtn = document.getElementById('closeDailyChallengeFooterBtn');
+    const dailyPrevMonthBtn = document.getElementById('dailyPrevMonthBtn');
+    const dailyNextMonthBtn = document.getElementById('dailyNextMonthBtn');
+    const dailyTodayJumpBtn = document.getElementById('dailyTodayJumpBtn');
+
+    if (dailyPrevMonthBtn) {
+        dailyPrevMonthBtn.addEventListener('click', () => {
+            calDisplayMonth--;
+            if (calDisplayMonth < 0) {
+                calDisplayMonth = 11;
+                calDisplayYear--;
+            }
+            playSound('click');
+            renderDailyCalendar();
+        });
+    }
+
+    if (dailyNextMonthBtn) {
+        dailyNextMonthBtn.addEventListener('click', () => {
+            calDisplayMonth++;
+            if (calDisplayMonth > 11) {
+                calDisplayMonth = 0;
+                calDisplayYear++;
+            }
+            playSound('click');
+            renderDailyCalendar();
+        });
+    }
+
+    if (dailyTodayJumpBtn) {
+        dailyTodayJumpBtn.addEventListener('click', () => {
+            const now = new Date();
+            calDisplayYear = now.getFullYear();
+            calDisplayMonth = now.getMonth();
+            selectedCalendarDateStr = getTodayDateStr();
+            playSound('click');
+            renderDailyCalendar();
+            updateSelectedChallengeCard(selectedCalendarDateStr);
+        });
+    }
+
     if (dailyChallengeBtn) {
         dailyChallengeBtn.addEventListener('click', () => {
+            const now = new Date();
+            calDisplayYear = now.getFullYear();
+            calDisplayMonth = now.getMonth();
+            selectedCalendarDateStr = getTodayDateStr();
             updateDailyStreakUI();
+            if (typeof renderDailyMilestoneBadges === 'function') {
+                renderDailyMilestoneBadges();
+            }
             dailyChallengeModal.style.display = 'flex';
             playSound('click');
         });
@@ -2785,31 +3202,37 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    if (closeDailyChallengeFooterBtn) {
+        closeDailyChallengeFooterBtn.addEventListener('click', () => {
+            dailyChallengeModal.style.display = 'none';
+            playSound('click');
+        });
+    }
+
     if (startDailyChallengeBtn) {
         startDailyChallengeBtn.addEventListener('click', () => {
+            const targetDateStr = selectedCalendarDateStr || getTodayDateStr();
+            activeDailyChallengeDate = targetDateStr;
             isDailyChallenge = true;
             dailyChallengeModal.style.display = 'none';
-            
-            const sampleCards = document.querySelectorAll('.sample-card img');
-            if (sampleCards.length > 0) {
-                const dayNum = new Date().getDate();
-                const chosenSample = sampleCards[dayNum % sampleCards.length];
-                rawPhotoDataUrl = chosenSample.src;
-                currentPhotoDataUrl = rawPhotoDataUrl;
-            }
-            
-            selectedGridSize = 4;
+
+            const config = getDailyConfigForDate(targetDateStr);
+            rawPhotoDataUrl = generateDailyProceduralPhoto(targetDateStr);
+            currentPhotoDataUrl = rawPhotoDataUrl;
+
+            selectedGridSize = config.gridSize;
             puzzleMode = 'sliding';
-            
+
             captureSection.style.display = 'none';
             configSection.style.display = 'none';
             gameSection.style.display = 'flex';
             headerStats.style.display = 'flex';
             resetAppBtn.style.display = 'inline-flex';
-            
+
             initPuzzle();
             playSound('win');
-            showToast('🔥 Daily Seeded Challenge Started! Grid: 4x4');
+            const isToday = (targetDateStr === getTodayDateStr());
+            showToast(isToday ? `🔥 Daily Challenge Launched! Grid: ${config.gridSize}x${config.gridSize}` : `🕹️ Archive Challenge (${targetDateStr}) Launched!`);
         });
     }
 
