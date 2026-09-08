@@ -714,6 +714,8 @@ body {
     background: rgba(0, 0, 0, 0.8);
     position: relative;
     transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    touch-action: none;
+    user-select: none;
 }
 
 /* Board Border Neon Glow Effects */
@@ -784,6 +786,7 @@ body {
     background-repeat: no-repeat;
     cursor: pointer;
     user-select: none;
+    touch-action: none;
     border-radius: 6px;
     transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
@@ -796,6 +799,38 @@ body {
     box-shadow: inset 0 0 0 3px var(--secondary-accent), 0 0 12px var(--secondary-accent) !important;
     transform: scale(0.95);
     z-index: 5;
+}
+
+/* Hold & Drag-and-Drop Interaction Styles */
+.puzzle-tile.tile-held {
+    z-index: 100 !important;
+    cursor: grabbing !important;
+    transition: none !important;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55), 0 0 24px rgba(99, 102, 241, 0.7), inset 0 0 0 2px #a5b4fc !important;
+    will-change: transform;
+}
+
+.puzzle-tile.tile-drop-target {
+    box-shadow: inset 0 0 0 3px #38bdf8, 0 0 20px rgba(56, 189, 248, 0.8) !important;
+    transform: scale(1.05);
+    z-index: 20;
+    animation: pulseDropTarget 0.8s infinite alternate ease-in-out;
+}
+
+@keyframes pulseDropTarget {
+    from {
+        box-shadow: inset 0 0 0 3px #38bdf8, 0 0 14px rgba(56, 189, 248, 0.6);
+        transform: scale(1.03);
+    }
+    to {
+        box-shadow: inset 0 0 0 4px #818cf8, 0 0 26px rgba(129, 140, 248, 0.9);
+        transform: scale(1.06);
+    }
+}
+
+.puzzle-tile.empty-tile.empty-slot-highlight {
+    background: rgba(99, 102, 241, 0.25) !important;
+    box-shadow: inset 0 0 0 2px #818cf8, 0 0 20px rgba(99, 102, 241, 0.6) !important;
 }
 
 /* Colorblind & High Contrast Mode */

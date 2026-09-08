@@ -23,11 +23,15 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
 - **🎹 Web Audio Sound Lab & Synthesizer Soundboard:** Interactive modal synth pad with real-time canvas waveform visualizer for testing sound FX and solfeggio audio tones.
 - **Local File Upload & Drag-and-Drop:** Ability to upload any image file (`.png`, `.jpg`, `.webp`) as an alternative to live capture.
 
-### 🧩 2. Dual Puzzle Engine
+### 🧩 2. Dual Puzzle Engine & Hold & Drop Interactions
+- **🖐️ Unified Pointer Hold & Drop Engine:**
+  - **Touch & Mouse Hold-and-Drag:** Grab any puzzle piece with mouse or touch, drag it across the board with dynamic elevated floating shadow and scale, and drop it to slide or swap!
+  - **Sliding Mode Directional Snapping:** Constrains sliding pieces along the valid row/column toward the empty slot with elastic spring-back or automatic snap-into-slot upon release past 25% threshold.
+  - **Jigsaw Mode Free Floating Drag:** Free 2D dragging with animated destination drop-target highlight (`.tile-drop-target`), swap on drop, and tactile haptic vibration cues.
 - **Classic Jigsaw Mode:**
-  - Dynamic piece drag-and-drop snapping and tile swap interactions.
+  - Dynamic piece drag-and-drop snapping, tile swap interactions, and cluster grouping.
 - **Sliding Tile Mode (15-Puzzle):**
-  - Classic sliding block puzzle with arrow key navigation and smooth animations.
+  - Classic sliding block puzzle with arrow key navigation, click to slide, and smooth hold-and-drop animations.
   - Guaranteed solvability validation.
 
 ### 🎚️ 3. Customizable Difficulty Levels

@@ -2407,9 +2407,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 tileDiv.appendChild(cbBadge);
             }
 
-            // Click handling
-            tileDiv.addEventListener('click', () => handleTileClick(tile));
-
             // Sonar Proximity Radar hover listener
             if (isSonarRadarEnabled && !tile.isEmpty) {
                 tileDiv.addEventListener('pointerenter', () => {
@@ -2432,26 +2429,181 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            // Drag and drop events for Jigsaw mode
-            if (puzzleMode === 'jigsaw') {
-                tileDiv.addEventListener('dragstart', (e) => {
-                    selectedTile = tile;
-                    e.dataTransfer.setData('text/plain', tile.id);
-                    tileDiv.classList.add('selected-tile');
-                });
-                tileDiv.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                });
-                tileDiv.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    if (selectedTile && selectedTile.id !== tile.id) {
-                        swapTiles(selectedTile, tile);
-                        selectedTile = null;
-                    }
-                });
-            }
+            // Unified Pointer Hold & Drop for both Sliding and Jigsaw modes
+            setupTilePointerHoldAndDrop(tileDiv, tile);
 
             puzzleBoard.appendChild(tileDiv);
+        });
+    }
+
+    function setupTilePointerHoldAndDrop(tileDiv, tile) {
+        if (tile.isEmpty) return;
+
+        tileDiv.addEventListener('pointerdown', (e) => {
+            if (e.button !== 0 || !isGameActive) return;
+            if (e.target.classList.contains('tile-orientation-indicator')) return;
+
+            const size = selectedGridSize;
+            const emptyTile = (puzzleMode === 'sliding') ? tiles.find(t => t.isEmpty) : null;
+            let canSlide = false;
+            let dirX = 0;
+            let dirY = 0;
+
+            if (puzzleMode === 'sliding' && emptyTile) {
+                const tRow = Math.floor(tile.currentPos / size);
+                const tCol = tile.currentPos % size;
+                const eRow = Math.floor(emptyTile.currentPos / size);
+                const eCol = emptyTile.currentPos % size;
+
+                const isAdjacent = (Math.abs(tRow - eRow) + Math.abs(tCol - eCol)) === 1;
+                if (isAdjacent) {
+                    canSlide = true;
+                    dirX = eCol - tCol;
+                    dirY = eRow - tRow;
+                }
+            }
+
+            const startX = e.clientX;
+            const startY = e.clientY;
+            let isDragging = false;
+            let lastDropTarget = null;
+            const tileRect = tileDiv.getBoundingClientRect();
+            const maxTravel = (dirX !== 0) ? (tileRect.width + 2) : (tileRect.height + 2);
+            const emptyTileEl = (puzzleMode === 'sliding') ? puzzleBoard.querySelector('.empty-tile') : null;
+
+            try {
+                tileDiv.setPointerCapture(e.pointerId);
+            } catch (err) {}
+
+            const onPointerMove = (moveEvt) => {
+                if (moveEvt.pointerId !== e.pointerId) return;
+
+                const dx = moveEvt.clientX - startX;
+                const dy = moveEvt.clientY - startY;
+                const distance = Math.hypot(dx, dy);
+
+                if (!isDragging && distance > 5) {
+                    isDragging = true;
+                    tileDiv.classList.add('tile-held');
+                    triggerHaptic([12]);
+                }
+
+                if (!isDragging) return;
+
+                const baseRotation = tile.rotation ? `rotate(${tile.rotation}deg) ` : '';
+
+                if (puzzleMode === 'sliding') {
+                    if (canSlide) {
+                        let projection = (dirX !== 0) ? (dx * dirX) : (dy * dirY);
+                        projection = Math.max(0, Math.min(maxTravel, projection));
+
+                        const currentDx = projection * dirX;
+                        const currentDy = projection * dirY;
+                        tileDiv.style.transform = `${baseRotation}translate3d(${currentDx}px, ${currentDy}px, 0) scale(1.03)`;
+
+                        if (emptyTileEl) {
+                            if (projection >= maxTravel * 0.25) {
+                                emptyTileEl.classList.add('empty-slot-highlight');
+                            } else {
+                                emptyTileEl.classList.remove('empty-slot-highlight');
+                            }
+                        }
+                    } else {
+                        const nudgeX = Math.max(-12, Math.min(12, dx * 0.15));
+                        const nudgeY = Math.max(-12, Math.min(12, dy * 0.15));
+                        tileDiv.style.transform = `${baseRotation}translate3d(${nudgeX}px, ${nudgeY}px, 0)`;
+                    }
+                } else if (puzzleMode === 'jigsaw') {
+                    tileDiv.style.transform = `${baseRotation}translate3d(${dx}px, ${dy}px, 0) scale(1.06)`;
+
+                    tileDiv.style.pointerEvents = 'none';
+                    const elUnder = document.elementFromPoint(moveEvt.clientX, moveEvt.clientY);
+                    tileDiv.style.pointerEvents = '';
+
+                    const targetTileEl = elUnder ? elUnder.closest('.puzzle-tile') : null;
+                    if (targetTileEl && targetTileEl !== tileDiv && !targetTileEl.classList.contains('empty-tile')) {
+                        if (lastDropTarget !== targetTileEl) {
+                            if (lastDropTarget) lastDropTarget.classList.remove('tile-drop-target');
+                            targetTileEl.classList.add('tile-drop-target');
+                            lastDropTarget = targetTileEl;
+                        }
+                    } else {
+                        if (lastDropTarget) {
+                            lastDropTarget.classList.remove('tile-drop-target');
+                            lastDropTarget = null;
+                        }
+                    }
+                }
+            };
+
+            const onPointerUp = (upEvt) => {
+                if (upEvt.pointerId !== e.pointerId) return;
+
+                tileDiv.removeEventListener('pointermove', onPointerMove);
+                tileDiv.removeEventListener('pointerup', onPointerUp);
+                tileDiv.removeEventListener('pointercancel', onPointerUp);
+
+                try {
+                    tileDiv.releasePointerCapture(e.pointerId);
+                } catch (err) {}
+
+                tileDiv.classList.remove('tile-held');
+                if (emptyTileEl) emptyTileEl.classList.remove('empty-slot-highlight');
+                if (lastDropTarget) {
+                    lastDropTarget.classList.remove('tile-drop-target');
+                    lastDropTarget = null;
+                }
+
+                if (isDragging) {
+                    const dx = upEvt.clientX - startX;
+                    const dy = upEvt.clientY - startY;
+
+                    if (puzzleMode === 'sliding') {
+                        let projection = (dirX !== 0) ? (dx * dirX) : (dy * dirY);
+                        if (canSlide && projection >= maxTravel * 0.25) {
+                            triggerHaptic([20]);
+                            swapTiles(tile, emptyTile);
+                        } else {
+                            tileDiv.style.transition = 'transform 0.18s cubic-bezier(0.2, 0.9, 0.3, 1.2)';
+                            tileDiv.style.transform = tile.rotation ? `rotate(${tile.rotation}deg)` : '';
+                            setTimeout(() => {
+                                tileDiv.style.transition = '';
+                            }, 200);
+                        }
+                    } else if (puzzleMode === 'jigsaw') {
+                        tileDiv.style.pointerEvents = 'none';
+                        const elUnder = document.elementFromPoint(upEvt.clientX, upEvt.clientY);
+                        tileDiv.style.pointerEvents = '';
+
+                        const targetTileEl = elUnder ? elUnder.closest('.puzzle-tile') : null;
+                        let swapped = false;
+
+                        if (targetTileEl && targetTileEl !== tileDiv) {
+                            const targetId = parseInt(targetTileEl.dataset.id, 10);
+                            const targetTile = tiles.find(t => t.id === targetId);
+                            if (targetTile && !targetTile.isEmpty) {
+                                triggerHaptic([22]);
+                                swapTiles(tile, targetTile);
+                                swapped = true;
+                            }
+                        }
+
+                        if (!swapped) {
+                            tileDiv.style.transition = 'transform 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.2)';
+                            tileDiv.style.transform = tile.rotation ? `rotate(${tile.rotation}deg)` : '';
+                            setTimeout(() => {
+                                tileDiv.style.transition = '';
+                            }, 220);
+                        }
+                    }
+                } else {
+                    handleTileClick(tile);
+                }
+            };
+
+            tileDiv.addEventListener('pointermove', onPointerMove);
+            tileDiv.addEventListener('pointerup', onPointerUp);
+            tileDiv.addEventListener('pointercancel', onPointerUp);
         });
     }
 
