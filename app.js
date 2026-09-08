@@ -4233,6 +4233,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 4000);
     }
 
+    function showToast(message, title = 'Notification') {
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        toast.className = 'achievement-toast app-toast';
+        toast.innerHTML = `
+            <div class="achievement-toast-icon" style="font-size: 1.6rem;">💡</div>
+            <div class="achievement-toast-content">
+                <div class="achievement-toast-tag" style="color: #38bdf8;">${title}</div>
+                <div class="achievement-toast-name" style="font-size: 0.9rem; font-weight: 600;">${message}</div>
+            </div>
+        `;
+        container.appendChild(toast);
+        setTimeout(() => {
+            if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 3400);
+    }
+
     function updateAchievementsUI() {
         const badgeEl = document.getElementById('achievementsBadge');
         if (badgeEl) {
