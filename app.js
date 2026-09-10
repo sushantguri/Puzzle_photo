@@ -1286,15 +1286,388 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Tab switcher trigger to start motion loop
+    // Tab switcher trigger to start motion loop or collage refresh
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             if (btn.dataset.tab === 'livemotion') {
                 cancelAnimationFrame(motionAnimFrame);
                 renderMotionCanvas();
+            } else if (btn.dataset.tab === 'collage') {
+                renderCollagePreview();
+                renderCollageSlotsUI();
             }
         });
     });
+
+    // ==========================================
+    // --- MULTI-PHOTO COLLAGE STUDIO ENGINE ---
+    // ==========================================
+    const collagePreviewCanvas = document.getElementById('collagePreviewCanvas');
+    const collageSlotsList = document.getElementById('collageSlotsList');
+    const collageGapSlider = document.getElementById('collageGapSlider');
+    const collageGapVal = document.getElementById('collageGapVal');
+    const collageBorderColorSelect = document.getElementById('collageBorderColorSelect');
+    const collageRandomizeSamplesBtn = document.getElementById('collageRandomizeSamplesBtn');
+    const resetCollageSlotsBtn = document.getElementById('resetCollageSlotsBtn');
+    const createPuzzleFromCollageBtn = document.getElementById('createPuzzleFromCollageBtn');
+    const headerCollageBtn = document.getElementById('headerCollageBtn');
+
+    let currentCollageLayout = 'split-v'; // 'split-v', 'split-h', 'trio', 'quad'
+    let collageBorderGap = 4;
+    let collageBorderColor = '#0f172a';
+    let collageSlotImages = [null, null, null, null]; // holds HTMLImageElement or null
+
+    const COLLAGE_LAYOUT_CONFIGS = {
+        'split-v': {
+            name: '2 Split (Vertical)',
+            slots: 2,
+            slotNames: ['Left Half', 'Right Half'],
+            getRects: (w, h, gap) => {
+                const halfW = (w - gap) / 2;
+                return [
+                    { x: 0, y: 0, w: halfW, h: h },
+                    { x: halfW + gap, y: 0, w: halfW, h: h }
+                ];
+            }
+        },
+        'split-h': {
+            name: '2 Split (Horizontal)',
+            slots: 2,
+            slotNames: ['Top Half', 'Bottom Half'],
+            getRects: (w, h, gap) => {
+                const halfH = (h - gap) / 2;
+                return [
+                    { x: 0, y: 0, w: w, h: halfH },
+                    { x: 0, y: halfH + gap, w: w, h: halfH }
+                ];
+            }
+        },
+        'trio': {
+            name: '3 Trio (1 Main + 2)',
+            slots: 3,
+            slotNames: ['Top Panoramic', 'Bottom Left', 'Bottom Right'],
+            getRects: (w, h, gap) => {
+                const halfH = (h - gap) / 2;
+                const halfW = (w - gap) / 2;
+                return [
+                    { x: 0, y: 0, w: w, h: halfH },
+                    { x: 0, y: halfH + gap, w: halfW, h: halfH },
+                    { x: halfW + gap, y: halfH + gap, w: halfW, h: halfH }
+                ];
+            }
+        },
+        'quad': {
+            name: '4 Quad (2×2 Grid)',
+            slots: 4,
+            slotNames: ['Top Left', 'Top Right', 'Bottom Left', 'Bottom Right'],
+            getRects: (w, h, gap) => {
+                const halfW = (w - gap) / 2;
+                const halfH = (h - gap) / 2;
+                return [
+                    { x: 0, y: 0, w: halfW, h: halfH },
+                    { x: halfW + gap, y: 0, w: halfW, h: halfH },
+                    { x: 0, y: halfH + gap, w: halfW, h: halfH },
+                    { x: halfW + gap, y: halfH + gap, w: halfW, h: halfH }
+                ];
+            }
+        }
+    };
+
+    function drawCollageToCanvas(canvas, targetLayout, imagesArray, gap, borderColor) {
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width;
+        const H = canvas.height;
+        const layoutConfig = COLLAGE_LAYOUT_CONFIGS[targetLayout] || COLLAGE_LAYOUT_CONFIGS['split-v'];
+        const rects = layoutConfig.getRects(W, H, gap);
+
+        // Fill background / border
+        if (borderColor === 'transparent') {
+            ctx.clearRect(0, 0, W, H);
+        } else {
+            ctx.fillStyle = borderColor;
+            ctx.fillRect(0, 0, W, H);
+        }
+
+        rects.forEach((rect, idx) => {
+            const img = imagesArray[idx];
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(rect.x, rect.y, rect.w, rect.h);
+            ctx.clip();
+
+            if (img && (img.complete && (img.naturalWidth > 0 || img.width > 0))) {
+                // Aspect ratio cover cropping
+                const nw = img.naturalWidth || img.width;
+                const nh = img.naturalHeight || img.height;
+                const scale = Math.max(rect.w / nw, rect.h / nh);
+                const sw = rect.w / scale;
+                const sh = rect.h / scale;
+                const sx = (nw - sw) / 2;
+                const sy = (nh - sh) / 2;
+                ctx.drawImage(img, sx, sy, sw, sh, rect.x, rect.y, rect.w, rect.h);
+            } else {
+                // Empty placeholder gradient
+                const grad = ctx.createLinearGradient(rect.x, rect.y, rect.x + rect.w, rect.y + rect.h);
+                grad.addColorStop(0, 'rgba(30, 41, 59, 0.85)');
+                grad.addColorStop(1, 'rgba(15, 23, 42, 0.95)');
+                ctx.fillStyle = grad;
+                ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+
+                // Slot border outline
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(rect.x + 1, rect.y + 1, rect.w - 2, rect.h - 2);
+
+                // Center placeholder icon & text
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+                ctx.font = 'bold 18px Outfit, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(`Slot ${idx + 1}`, rect.x + rect.w / 2, rect.y + rect.h / 2 - 12);
+                ctx.font = '13px Outfit, sans-serif';
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+                ctx.fillText(layoutConfig.slotNames[idx] || 'Empty', rect.x + rect.w / 2, rect.y + rect.h / 2 + 14);
+            }
+            ctx.restore();
+        });
+    }
+
+    function renderCollagePreview() {
+        if (!collagePreviewCanvas) return;
+        drawCollageToCanvas(collagePreviewCanvas, currentCollageLayout, collageSlotImages, collageBorderGap, collageBorderColor);
+    }
+
+    function renderCollageSlotsUI() {
+        if (!collageSlotsList) return;
+        collageSlotsList.innerHTML = '';
+        const layoutConfig = COLLAGE_LAYOUT_CONFIGS[currentCollageLayout] || COLLAGE_LAYOUT_CONFIGS['split-v'];
+
+        for (let i = 0; i < layoutConfig.slots; i++) {
+            const slotCard = document.createElement('div');
+            slotCard.className = 'collage-slot-item';
+
+            const slotImg = collageSlotImages[i];
+            const hasImage = !!(slotImg && (slotImg.naturalWidth > 0 || slotImg.width > 0));
+
+            slotCard.innerHTML = `
+                <div class="collage-slot-header">
+                    <span class="collage-slot-title">#${i + 1} · ${layoutConfig.slotNames[i]}</span>
+                    ${hasImage ? `<button type="button" class="slot-remove-btn" title="Remove Photo">✕</button>` : ''}
+                </div>
+                <div class="collage-slot-body">
+                    <div class="collage-slot-thumb">
+                        ${hasImage ? `<img src="${slotImg.src}" alt="Slot ${i + 1}">` : `<span class="thumb-placeholder">🖼️</span>`}
+                    </div>
+                    <div class="collage-slot-controls">
+                        <label class="btn btn-secondary btn-sm slot-upload-label" style="cursor: pointer;">
+                            📁 Upload
+                            <input type="file" accept="image/*" class="slot-file-input" style="display:none;">
+                        </label>
+                        <button type="button" class="btn btn-secondary btn-sm slot-sample-btn">🎲 Art</button>
+                        <button type="button" class="btn btn-secondary btn-sm slot-snap-btn" title="Capture from Webcam">📸 Snap</button>
+                    </div>
+                </div>
+            `;
+
+            // File input listener
+            const fileInput = slotCard.querySelector('.slot-file-input');
+            if (fileInput) {
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files && e.target.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = (evt) => {
+                            const img = new Image();
+                            img.onload = () => {
+                                collageSlotImages[i] = img;
+                                renderCollagePreview();
+                                renderCollageSlotsUI();
+                                playSound('click');
+                            };
+                            img.src = evt.target.result;
+                        };
+                        reader.readAsDataURL(e.target.files[0]);
+                    }
+                });
+            }
+
+            // Sample Art button listener
+            const sampleBtn = slotCard.querySelector('.slot-sample-btn');
+            if (sampleBtn) {
+                sampleBtn.addEventListener('click', () => {
+                    const sampleTypes = ['cyberpunk', 'nature', 'abstract', 'cyberpunk'];
+                    const chosen = sampleTypes[i % sampleTypes.length];
+                    const dataUrl = generateSampleArtDataUrl(chosen);
+                    const img = new Image();
+                    img.onload = () => {
+                        collageSlotImages[i] = img;
+                        renderCollagePreview();
+                        renderCollageSlotsUI();
+                        playSound('click');
+                    };
+                    img.src = dataUrl;
+                });
+            }
+
+            // Snap from camera listener
+            const snapBtn = slotCard.querySelector('.slot-snap-btn');
+            if (snapBtn) {
+                snapBtn.addEventListener('click', () => {
+                    if (videoEl && videoEl.srcObject && videoEl.videoWidth > 0) {
+                        const snapCanvas = document.createElement('canvas');
+                        snapCanvas.width = videoEl.videoWidth;
+                        snapCanvas.height = videoEl.videoHeight;
+                        const sCtx = snapCanvas.getContext('2d');
+                        sCtx.drawImage(videoEl, 0, 0);
+                        const img = new Image();
+                        img.onload = () => {
+                            collageSlotImages[i] = img;
+                            renderCollagePreview();
+                            renderCollageSlotsUI();
+                            playSound('snap');
+                        };
+                        img.src = snapCanvas.toDataURL('image/jpeg', 0.95);
+                    } else {
+                        showToast('💡 Open the Camera Tab first to enable live snapshotting!', 'Webcam Tip');
+                        playSound('click');
+                    }
+                });
+            }
+
+            // Remove button listener
+            const removeBtn = slotCard.querySelector('.slot-remove-btn');
+            if (removeBtn) {
+                removeBtn.addEventListener('click', () => {
+                    collageSlotImages[i] = null;
+                    renderCollagePreview();
+                    renderCollageSlotsUI();
+                    playSound('click');
+                });
+            }
+
+            collageSlotsList.appendChild(slotCard);
+        }
+    }
+
+    // Initialize Layout Selector Buttons
+    document.querySelectorAll('.collage-layout-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.collage-layout-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentCollageLayout = btn.dataset.layout || 'split-v';
+            renderCollageSlotsUI();
+            renderCollagePreview();
+            playSound('click');
+        });
+    });
+
+    // Gap Slider listener
+    if (collageGapSlider && collageGapVal) {
+        collageGapSlider.addEventListener('input', (e) => {
+            collageBorderGap = parseInt(e.target.value, 10) || 0;
+            collageGapVal.textContent = collageBorderGap + 'px';
+            renderCollagePreview();
+        });
+    }
+
+    // Border Color Select listener
+    if (collageBorderColorSelect) {
+        collageBorderColorSelect.addEventListener('change', (e) => {
+            collageBorderColor = e.target.value;
+            renderCollagePreview();
+            playSound('click');
+        });
+    }
+
+    // Randomize Samples for all active slots
+    function fillCollageWithSamples() {
+        const types = ['cyberpunk', 'nature', 'abstract', 'cyberpunk'];
+        const layoutConfig = COLLAGE_LAYOUT_CONFIGS[currentCollageLayout] || COLLAGE_LAYOUT_CONFIGS['split-v'];
+        let loaded = 0;
+        for (let i = 0; i < layoutConfig.slots; i++) {
+            const dataUrl = generateSampleArtDataUrl(types[i % types.length]);
+            const img = new Image();
+            const slotIndex = i;
+            img.onload = () => {
+                collageSlotImages[slotIndex] = img;
+                loaded++;
+                if (loaded === layoutConfig.slots) {
+                    renderCollagePreview();
+                    renderCollageSlotsUI();
+                }
+            };
+            img.src = dataUrl;
+        }
+    }
+
+    if (collageRandomizeSamplesBtn) {
+        collageRandomizeSamplesBtn.addEventListener('click', () => {
+            fillCollageWithSamples();
+            playSound('click');
+            showToast('🎲 Filled slots with procedural art samples!', 'Collage Studio');
+        });
+    }
+
+    // Reset slots button
+    if (resetCollageSlotsBtn) {
+        resetCollageSlotsBtn.addEventListener('click', () => {
+            collageSlotImages = [null, null, null, null];
+            renderCollagePreview();
+            renderCollageSlotsUI();
+            playSound('click');
+        });
+    }
+
+    // Create Puzzle from Collage Button
+    if (createPuzzleFromCollageBtn) {
+        createPuzzleFromCollageBtn.addEventListener('click', () => {
+            const layoutConfig = COLLAGE_LAYOUT_CONFIGS[currentCollageLayout] || COLLAGE_LAYOUT_CONFIGS['split-v'];
+            const hasAnyImage = collageSlotImages.slice(0, layoutConfig.slots).some(img => img && (img.naturalWidth > 0 || img.width > 0));
+            
+            if (!hasAnyImage) {
+                fillCollageWithSamples();
+                showToast('💡 Populated empty slots with art samples!', 'Collage Ready');
+            }
+
+            // High resolution composite canvas (800x800)
+            const exportCanvas = document.createElement('canvas');
+            exportCanvas.width = 800;
+            exportCanvas.height = 800;
+            drawCollageToCanvas(exportCanvas, currentCollageLayout, collageSlotImages, Math.round(collageBorderGap * 1.33), collageBorderColor);
+
+            rawPhotoDataUrl = exportCanvas.toDataURL('image/jpeg', 0.95);
+            currentPhotoDataUrl = rawPhotoDataUrl;
+
+            // Unlock collage architect achievement
+            if (typeof unlockAchievement === 'function') {
+                unlockAchievement('collage_architect');
+            }
+
+            showConfigSection();
+            showToast('⊞ Multi-Photo Collage Ready for Puzzle!', 'Collage Studio');
+            playSound('snap');
+        });
+    }
+
+    // Header Collage Button listener
+    if (headerCollageBtn) {
+        headerCollageBtn.addEventListener('click', () => {
+            if (captureSection) captureSection.style.display = 'block';
+            if (configSection) configSection.style.display = 'none';
+            if (gameSection) gameSection.style.display = 'none';
+            if (headerStats) headerStats.style.display = 'none';
+            if (resetAppBtn) resetAppBtn.style.display = 'none';
+
+            const collageTabBtn = document.getElementById('collageTabBtn');
+            if (collageTabBtn) collageTabBtn.click();
+            playSound('click');
+        });
+    }
+
+    // Populate initial collage slots with default sample images on first load
+    setTimeout(() => {
+        fillCollageWithSamples();
+    }, 150);
 
     // Slider & transform photo enhancement listeners
     const rotateCwBtn = document.getElementById('rotateCwBtn');
@@ -4191,7 +4564,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'week_warrior', icon: '🥈', title: 'Week Warrior', desc: 'Achieve a 7-day daily challenge solving streak.' },
         { id: 'fortnight_master', icon: '🥇', title: 'Fortnight Master', desc: 'Achieve a 14-day daily challenge solving streak.' },
         { id: 'monthly_legend', icon: '💎', title: 'Monthly Legend', desc: 'Achieve a 30-day daily challenge solving streak.' },
-        { id: 'archive_explorer', icon: '🧭', title: 'Archive Explorer', desc: 'Solve 5 past daily challenges from the archive calendar.' }
+        { id: 'archive_explorer', icon: '🧭', title: 'Archive Explorer', desc: 'Solve 5 past daily challenges from the archive calendar.' },
+        { id: 'collage_architect', icon: '⊞', title: 'Collage Architect', desc: 'Create and play a multi-photo collage puzzle.' }
     ];
 
     let unlockedAchievements = [];
