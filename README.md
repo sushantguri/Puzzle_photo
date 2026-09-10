@@ -22,6 +22,12 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
 - **✨ Ambient Canvas Background FX Engine:** Interactive 60fps canvas particle system with 4 dynamic presets (Starfield Dust, Neon Aurora, Matrix Rain, Firefly Bokeh) reacting to mouse parallax.
 - **🎹 Web Audio Sound Lab & Synthesizer Soundboard:** Interactive modal synth pad with real-time canvas waveform visualizer for testing sound FX and solfeggio audio tones.
 - **Local File Upload & Drag-and-Drop:** Ability to upload any image file (`.png`, `.jpg`, `.webp`) as an alternative to live capture.
+- **⊞ Multi-Photo Collage Puzzle Maker Studio:**
+  - **4 Template Layouts:** 2 Split Vertical (`🌗`), 2 Split Horizontal (`🌓`), 3 Trio Panoramic (`📐`), and 4 Quad 2×2 Grid (`⊞`).
+  - **Modular Per-Slot Manager:** Upload custom files, pick procedural art styles, snap live from webcam, or clear individual slot photos.
+  - **Live Styling Controls:** Interactive border gap slider (0–20px) and themed border color presets (Dark Slate, Pure White, Indigo Glow, Cyan Cyber, Golden Amber, or Borderless).
+  - **High-Definition Compositing:** Generates high-resolution 800×800 composited canvases with aspect-ratio cover cropping for razor-sharp puzzle solving.
+  - **Collage Architect Achievement:** Unlocks the `Collage Architect` badge upon launching your collage puzzle.
 
 ### 🧩 2. Dual Puzzle Engine & Hold & Drop Interactions
 - **🖐️ Unified Pointer Hold & Drop Engine:**
