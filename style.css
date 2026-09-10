@@ -2167,6 +2167,212 @@ button.hotkeys-badge:hover {
     100% { transform: scale(1.05); filter: brightness(1.25); }
 }
 
+/* Multi-Photo Collage Studio Styling */
+.collage-studio-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+}
+
+.collage-layout-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.collage-selector-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #a5b4fc;
+}
+
+.collage-layout-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+@media (max-width: 640px) {
+    .collage-layout-buttons {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.collage-layout-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 10px 8px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.collage-layout-btn:hover {
+    background: rgba(99, 102, 241, 0.2);
+    border-color: #6366f1;
+    transform: translateY(-2px);
+    color: #fff;
+}
+
+.collage-layout-btn.active {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(168, 85, 247, 0.35));
+    border-color: #818cf8;
+    color: #ffffff;
+    box-shadow: 0 0 16px rgba(99, 102, 241, 0.4);
+}
+
+.collage-layout-btn .layout-icon {
+    font-size: 1.4rem;
+    line-height: 1;
+}
+
+.collage-builder-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 16px;
+    align-items: start;
+}
+
+@media (max-width: 768px) {
+    .collage-builder-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.collage-canvas-column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.collage-canvas-box {
+    width: 100%;
+    aspect-ratio: 1;
+    max-width: 440px;
+    margin: 0 auto;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+}
+
+.collage-canvas-box canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+}
+
+.collage-styling-bar {
+    display: flex;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.collage-styling-bar .style-control {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.76rem;
+    color: #94a3b8;
+}
+
+.collage-slots-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.collage-slots-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 480px;
+    overflow-y: auto;
+}
+
+.collage-slot-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 10px;
+    padding: 10px;
+    transition: all 0.2s;
+}
+
+.collage-slot-card:hover {
+    border-color: rgba(99, 102, 241, 0.4);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.collage-slot-preview {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.collage-slot-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.collage-slot-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.collage-slot-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #e2e8f0;
+}
+
+.collage-slot-btns {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.collage-slot-btns .btn-sm {
+    padding: 3px 8px;
+    font-size: 0.72rem;
+}
+
+.collage-actions-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+    gap: 12px;
+}
+
 
 
 

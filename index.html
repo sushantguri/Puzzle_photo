@@ -74,6 +74,7 @@
                 <button id="leaderboardBtn" class="btn btn-icon" title="View Best Records / High Scores">🏆</button>
                 <button id="saveLoadModalBtn" class="btn btn-icon" title="Save & Load Game Slots">💾</button>
                 <button id="headerAnalyticsBtn" class="btn btn-icon" title="View Solve Heatmap & Tile Analytics">📊 Heatmap</button>
+                <button id="headerCollageBtn" class="btn btn-icon" title="Multi-Photo Collage Puzzle Studio">⊞ Collage</button>
                 <button id="toggleColorblindBtn" class="btn btn-icon" title="Toggle High-Contrast Colorblind Pattern Overlay">👁️ High Contrast</button>
                 <select id="soundPresetSelect" class="form-select theme-select" title="Sound Effect Preset">
                     <option value="arcade">🕹️ 8-Bit Arcade</option>
@@ -142,6 +143,7 @@
                     <button class="tab-btn" data-tab="sample">🖼️ Sample Photos</button>
                     <button class="tab-btn" data-tab="doodle">🎨 Draw & Paint</button>
                     <button class="tab-btn" data-tab="livemotion">⚡ Live Motion Canvas</button>
+                    <button class="tab-btn" data-tab="collage" id="collageTabBtn">⊞ Multi-Photo Collage</button>
                 </div>
 
                 <!-- Camera Tab Content -->
@@ -295,6 +297,85 @@
                         <div class="motion-actions">
                             <button id="useMotionPuzzleBtn" type="button" class="btn btn-primary btn-lg">
                                 🚀 Create Puzzle from Motion Texture
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Multi-Photo Collage Tab Content -->
+                <div id="collageTab" class="tab-content">
+                    <div class="collage-studio-container">
+                        <div class="collage-header-group">
+                            <h3 style="margin: 0 0 4px; font-size: 1.15rem; color: #c7d2fe;">⊞ Multi-Photo Collage Maker Studio</h3>
+                            <p style="margin: 0; font-size: 0.85rem; color: #94a3b8;">Combine 2, 3, or 4 photos into a custom split or grid layout to create a unique multi-picture puzzle!</p>
+                        </div>
+
+                        <!-- Template Layout Selector -->
+                        <div class="collage-layout-selector">
+                            <span class="collage-selector-label">Choose Layout:</span>
+                            <div class="collage-layout-buttons">
+                                <button type="button" class="collage-layout-btn active" data-layout="split-v">
+                                    <span class="layout-icon">🌗</span>
+                                    <span>2 Split (Vertical)</span>
+                                </button>
+                                <button type="button" class="collage-layout-btn" data-layout="split-h">
+                                    <span class="layout-icon">🌓</span>
+                                    <span>2 Split (Horizontal)</span>
+                                </button>
+                                <button type="button" class="collage-layout-btn" data-layout="trio">
+                                    <span class="layout-icon">📐</span>
+                                    <span>3 Trio (1 Main + 2)</span>
+                                </button>
+                                <button type="button" class="collage-layout-btn" data-layout="quad">
+                                    <span class="layout-icon">⊞</span>
+                                    <span>4 Quad (2×2 Grid)</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Main Collage Builder Workspace (Canvas + Slots Grid) -->
+                        <div class="collage-builder-grid">
+                            <!-- Left: Live Preview Canvas -->
+                            <div class="collage-canvas-column">
+                                <div class="collage-canvas-box">
+                                    <canvas id="collagePreviewCanvas" width="600" height="600"></canvas>
+                                </div>
+                                <div class="collage-styling-bar">
+                                    <div class="style-control">
+                                        <label for="collageGapSlider">Border Gap: <span id="collageGapVal">4px</span></label>
+                                        <input type="range" id="collageGapSlider" min="0" max="20" value="4" class="form-range">
+                                    </div>
+                                    <div class="style-control">
+                                        <label for="collageBorderColorSelect">Border Color:</label>
+                                        <select id="collageBorderColorSelect" class="form-select form-select-sm">
+                                            <option value="#0f172a" selected>Dark Slate</option>
+                                            <option value="#ffffff">Pure White</option>
+                                            <option value="#6366f1">Indigo Glow</option>
+                                            <option value="#06b6d4">Cyan Cyber</option>
+                                            <option value="#f59e0b">Golden Amber</option>
+                                            <option value="transparent">No Border</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right: Photo Slots Manager -->
+                            <div class="collage-slots-column">
+                                <h4 style="margin: 0 0 8px; font-size: 0.92rem; color: #a5b4fc; display: flex; justify-content: space-between; align-items: center;">
+                                    <span>🖼️ Photo Slots</span>
+                                    <button id="collageRandomizeSamplesBtn" type="button" class="btn btn-secondary btn-sm" style="font-size: 0.75rem;">🎲 Fill Samples</button>
+                                </h4>
+                                <div class="collage-slots-list" id="collageSlotsList">
+                                    <!-- Populated dynamically via JS based on chosen layout -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Collage Actions -->
+                        <div class="collage-actions-bar">
+                            <button id="resetCollageSlotsBtn" type="button" class="btn btn-secondary">🔄 Clear Slots</button>
+                            <button id="createPuzzleFromCollageBtn" type="button" class="btn btn-primary btn-lg">
+                                🚀 Create Puzzle from Collage
                             </button>
                         </div>
                     </div>
