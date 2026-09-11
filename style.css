@@ -764,6 +764,7 @@ body {
     z-index: 15;
 }
 
+/* Fog of War Spotlight & Beam Profiles */
 .spotlight-overlay {
     position: absolute;
     top: 0;
@@ -773,12 +774,156 @@ body {
     pointer-events: none;
     z-index: 18;
     background: radial-gradient(
-        circle 115px at var(--mouse-x, 50%) var(--mouse-y, 50%),
-        transparent 0%,
-        rgba(0, 0, 0, 0.45) 55%,
-        rgba(3, 7, 18, 0.97) 100%
+        circle var(--torch-radius, 140px) at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        rgba(6, 182, 212, 0.12) 0%,
+        transparent 50%,
+        rgba(15, 23, 42, 0.65) 80%,
+        rgba(3, 7, 18, 0.98) 100%
     );
     transition: opacity 0.25s ease;
+}
+
+.spotlight-overlay.beam-lantern {
+    background: radial-gradient(
+        circle var(--torch-radius, 140px) at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        rgba(251, 191, 36, 0.16) 0%,
+        transparent 52%,
+        rgba(15, 23, 42, 0.7) 82%,
+        rgba(3, 7, 18, 0.98) 100%
+    );
+}
+
+.spotlight-overlay.beam-neon {
+    background: radial-gradient(
+        circle var(--torch-radius, 140px) at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        rgba(6, 182, 212, 0.16) 0%,
+        rgba(168, 85, 247, 0.08) 35%,
+        transparent 55%,
+        rgba(15, 23, 42, 0.72) 82%,
+        rgba(2, 6, 23, 0.98) 100%
+    );
+}
+
+.spotlight-overlay.beam-nightvision {
+    background: radial-gradient(
+        circle var(--torch-radius, 140px) at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        rgba(16, 185, 129, 0.18) 0%,
+        transparent 50%,
+        rgba(4, 47, 36, 0.78) 82%,
+        rgba(1, 15, 12, 0.98) 100%
+    );
+}
+
+/* Sonar Radar Pulse Wave */
+.radar-pulse-wave {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 19;
+    transform: translate(-50%, -50%);
+}
+
+.radar-pulse-wave.pulsing {
+    animation: radarPulseExpand 2.5s cubic-bezier(0.1, 0.6, 0.2, 1) forwards;
+}
+
+@keyframes radarPulseExpand {
+    0% {
+        transform: translate(-50%, -50%) scale(0.1);
+        opacity: 0.95;
+        box-shadow: 0 0 0 4px #06b6d4, 0 0 35px #06b6d4, inset 0 0 20px rgba(6, 182, 212, 0.5);
+    }
+    50% {
+        opacity: 0.7;
+        box-shadow: 0 0 0 6px #22c55e, 0 0 45px #22c55e;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(9);
+        opacity: 0;
+        box-shadow: 0 0 0 1px rgba(6, 182, 212, 0);
+    }
+}
+
+/* Fog of War Shrouded Tiles */
+.puzzle-tile.tile-fog-shrouded {
+    filter: blur(6px) brightness(0.38) saturate(0.4);
+    transition: filter 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease, transform 0.15s ease-out;
+}
+
+.puzzle-board.fog-mode-blindfold .puzzle-tile.tile-fog-shrouded {
+    filter: blur(14px) brightness(0.18) contrast(1.3);
+}
+
+.puzzle-tile.tile-fog-shrouded:hover,
+.puzzle-tile.tile-fog-torch-revealed {
+    filter: blur(0px) brightness(1.1) saturate(1.15) !important;
+    box-shadow: inset 0 0 0 2px rgba(56, 189, 248, 0.7), 0 0 16px rgba(56, 189, 248, 0.4) !important;
+    z-index: 6;
+}
+
+.puzzle-tile.tile-fog-shrouded:hover .tile-mystery-glyph,
+.puzzle-tile.tile-fog-torch-revealed .tile-mystery-glyph,
+.puzzle-tile.tile-fog-radar-revealed .tile-mystery-glyph {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+}
+
+.puzzle-tile.tile-fog-ambient-revealed {
+    filter: blur(2px) brightness(0.78) saturate(0.85) !important;
+    box-shadow: inset 0 0 0 1px rgba(147, 197, 253, 0.4) !important;
+}
+
+.puzzle-tile.tile-fog-ambient-revealed .tile-mystery-glyph {
+    opacity: 0.35;
+    font-size: 0.85rem;
+}
+
+.puzzle-tile.tile-fog-radar-revealed {
+    filter: blur(0px) brightness(1.22) contrast(1.06) !important;
+    box-shadow: inset 0 0 0 2px #06b6d4, 0 0 20px rgba(6, 182, 212, 0.8) !important;
+    z-index: 5;
+}
+
+.puzzle-tile.tile-fog-dispelled {
+    filter: none !important;
+    box-shadow: inset 0 0 0 2px #22c55e, 0 0 14px rgba(34, 197, 94, 0.45) !important;
+    animation: fogDispelFlash 0.65s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes fogDispelFlash {
+    0% {
+        filter: brightness(2) contrast(1.3);
+        box-shadow: inset 0 0 0 4px #4ade80, 0 0 28px #4ade80;
+    }
+    100% {
+        filter: none;
+        box-shadow: inset 0 0 0 2px #22c55e, 0 0 14px rgba(34, 197, 94, 0.45);
+    }
+}
+
+/* Mystery Glyph */
+.tile-mystery-glyph {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: clamp(1.1rem, 2.5vw, 1.8rem);
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.65);
+    text-shadow: 0 0 8px rgba(99, 102, 241, 0.8);
+    pointer-events: none;
+    z-index: 4;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    animation: mysteryGlyphBreath 2.2s infinite ease-in-out;
+}
+
+@keyframes mysteryGlyphBreath {
+    0%, 100% { opacity: 0.55; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.12); text-shadow: 0 0 14px rgba(129, 140, 248, 1); }
 }
 
 .puzzle-tile {

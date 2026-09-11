@@ -466,6 +466,16 @@
                     </div>
 
                     <div class="setting-group">
+                        <label>🌫️ Mystery Fog of War:</label>
+                        <div class="fog-challenge-controls" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button class="fog-mode-btn shape-btn active" data-fog="off" type="button"><span class="shape-icon">☀️</span> Clear View (Off)</button>
+                            <button class="fog-mode-btn shape-btn" data-fog="flashlight" type="button"><span class="shape-icon">🔦</span> Flashlight Torch</button>
+                            <button class="fog-mode-btn shape-btn" data-fog="sonar" type="button"><span class="shape-icon">📡</span> Sonar Radar Pulse</button>
+                            <button class="fog-mode-btn shape-btn" data-fog="blindfold" type="button"><span class="shape-icon">👁️‍🗨️</span> Hardcore Blindfold</button>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
                         <label>Timer Mode:</label>
                         <div class="mode-toggle">
                             <button class="timer-mode-btn active" data-timermode="stopwatch">
@@ -572,7 +582,13 @@
                     <button id="sonarRadarToggleBtn" class="btn btn-secondary btn-sm" title="Toggle Audio Sonar Proximity Radar (Beeps higher pitch as piece nears target slot)">🔊 Sonar Radar</button>
                     <button id="hapticFeedbackToggleBtn" class="btn btn-secondary btn-sm" title="Toggle Tactile Haptic Vibration Feedback">📳 Haptics: ON</button>
                     <button id="toggleGhostBtn" class="btn btn-secondary btn-sm">👁️ Toggle Guide (G)</button>
-                    <button id="toggleFogBtn" class="btn btn-secondary btn-sm" title="Toggle Fog of War Spotlight Mode (F)">🔦 Spotlight (F)</button>
+                    <button id="toggleFogBtn" class="btn btn-secondary btn-sm" title="Toggle Fog of War & Mystery Shroud Mode (F)">🌫️ Fog: OFF (F)</button>
+                    <button id="sonarPulseBtn" class="btn btn-secondary btn-sm" title="Trigger Sonar Radar Pulse to reveal board for 2.5s (M)" style="display: none;">📡 Sonar Pulse (M)</button>
+                    <select id="fogBeamSelect" class="form-select form-select-sm" style="display: none; width: auto; font-size: 0.8rem; padding: 2px 6px;" title="Flashlight Torch Beam Preset">
+                        <option value="lantern">🕯️ Warm Lantern</option>
+                        <option value="neon" selected>🔬 Cyber Neon UV</option>
+                        <option value="nightvision">🟢 Night Vision</option>
+                    </select>
                     <button id="toggle3dTiltBtn" class="btn btn-secondary btn-sm" title="Toggle 3D Holographic Gyroscope Tilt Perspective (T)">🧊 3D Tilt (T)</button>
                     <button id="toggleCrtFxBtn" class="btn btn-secondary btn-sm" title="Toggle Retro CRT Scanlines & Screen Shake (C)">📺 CRT & Shake (C)</button>
                     <button id="peekGhostBtn" class="btn btn-secondary btn-sm" title="Flash guide for 1.2s speed peek (B)">⚡ Speed Peek (B)</button>
@@ -632,7 +648,9 @@
                     <div id="puzzleBoard" class="puzzle-board"></div>
                     <canvas id="tileFxCanvas" class="tile-fx-canvas"></canvas>
                     <!-- Fog of War Spotlight Overlay -->
-                    <div id="spotlightOverlay" class="spotlight-overlay" style="display: none;"></div>
+                    <div id="spotlightOverlay" class="spotlight-overlay beam-neon" style="display: none;"></div>
+                    <!-- Sonar Radar Pulse Wave Overlay -->
+                    <div id="radarPulseWave" class="radar-pulse-wave" style="display: none;"></div>
                     <!-- Retro CRT Scanline Shader Overlay -->
                     <div id="crtOverlay" class="crt-overlay" style="display: none;"></div>
                     <!-- Translucent Reference Image Overlay -->
@@ -1052,6 +1070,14 @@
                     <div class="hotkey-item" style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.04); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
                         <span style="font-size: 0.85rem; color: #cbd5e1;">CRT & Screen Shake</span>
                         <kbd class="kbd-badge">C</kbd>
+                    </div>
+                    <div class="hotkey-item" style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.04); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                        <span style="font-size: 0.85rem; color: #cbd5e1;">Fog of War Mode</span>
+                        <kbd class="kbd-badge">F</kbd>
+                    </div>
+                    <div class="hotkey-item" style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.04); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                        <span style="font-size: 0.85rem; color: #cbd5e1;">Sonar Radar Pulse</span>
+                        <kbd class="kbd-badge">M</kbd>
                     </div>
                     <div class="hotkey-item" style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.04); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
                         <span style="font-size: 0.85rem; color: #cbd5e1;">Close Modals</span>
