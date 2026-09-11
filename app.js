@@ -555,6 +555,50 @@ document.addEventListener('DOMContentLoaded', () => {
                     o.start(now + i * 0.05);
                     o.stop(now + i * 0.05 + 0.2);
                 });
+            } else if (type === 'sonar') {
+                // Dual-tone frequency sweep radar sonar ping with spatial echo
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.connect(gain);
+                gain.connect(masterGain);
+                osc.frequency.setValueAtTime(1080 * pitch, now);
+                osc.frequency.exponentialRampToValueAtTime(540 * pitch, now + 0.32);
+                gain.gain.setValueAtTime(0.32, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
+                osc.start(now);
+                osc.stop(now + 0.32);
+
+                // Distant sonar rebound echo
+                const echoOsc = audioCtx.createOscillator();
+                const echoGain = audioCtx.createGain();
+                echoOsc.type = 'sine';
+                echoOsc.connect(echoGain);
+                echoGain.connect(masterGain);
+                echoOsc.frequency.setValueAtTime(1420 * pitch, now + 0.14);
+                echoOsc.frequency.exponentialRampToValueAtTime(710 * pitch, now + 0.44);
+                echoGain.gain.setValueAtTime(0, now);
+                echoGain.gain.setValueAtTime(0.16, now + 0.14);
+                echoGain.gain.exponentialRampToValueAtTime(0.001, now + 0.44);
+                echoOsc.start(now + 0.14);
+                echoOsc.stop(now + 0.44);
+            } else if (type === 'fog_dispel') {
+                // Mystical celestial dispel shimmer arpeggio
+                const dispelNotes = [659.25, 830.61, 987.77, 1318.51];
+                dispelNotes.forEach((freq, i) => {
+                    const o = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    o.type = 'triangle';
+                    o.connect(g);
+                    g.connect(masterGain);
+                    const startTime = now + i * 0.045;
+                    o.frequency.setValueAtTime(freq * pitch, startTime);
+                    o.frequency.exponentialRampToValueAtTime(freq * 1.08 * pitch, startTime + 0.18);
+                    g.gain.setValueAtTime(0.15, startTime);
+                    g.gain.exponentialRampToValueAtTime(0.001, startTime + 0.22);
+                    o.start(startTime);
+                    o.stop(startTime + 0.22);
+                });
             } else if (type === 'win') {
                 // Play major chord fanfare
                 [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
@@ -3242,6 +3286,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (['hexagon', 'diamond', 'wave', 'tabbed', 'starburst', 'octagon'].includes(selectedShape)) {
                 unlockAchievement('shape_shifter');
             }
+            if (isFogModeActive) {
+                unlockAchievement('fog_explorer');
+                if (sonarPulsesCountInGame >= 5) {
+                    unlockAchievement('sonar_master');
+                }
+                if (fogModeType === 'blindfold' && selectedGridSize >= 4 && !usedGhostGuideInSession) {
+                    unlockAchievement('blindfold_champion');
+                }
+            }
 
             triggerVictory();
         }
@@ -4635,7 +4688,10 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'fortnight_master', icon: '🥇', title: 'Fortnight Master', desc: 'Achieve a 14-day daily challenge solving streak.' },
         { id: 'monthly_legend', icon: '💎', title: 'Monthly Legend', desc: 'Achieve a 30-day daily challenge solving streak.' },
         { id: 'archive_explorer', icon: '🧭', title: 'Archive Explorer', desc: 'Solve 5 past daily challenges from the archive calendar.' },
-        { id: 'collage_architect', icon: '⊞', title: 'Collage Architect', desc: 'Create and play a multi-photo collage puzzle.' }
+        { id: 'collage_architect', icon: '⊞', title: 'Collage Architect', desc: 'Create and play a multi-photo collage puzzle.' },
+        { id: 'fog_explorer', icon: '🌫️', title: 'Mist Walker', desc: 'Solve any photo puzzle with Fog of War Mystery mode active.' },
+        { id: 'sonar_master', icon: '📡', title: 'Radar Pathfinder', desc: 'Trigger 5 Sonar Radar Pulses and complete a Fog of War puzzle.' },
+        { id: 'blindfold_champion', icon: '👁️‍🗨️', title: 'Clairvoyant Master', desc: 'Complete a 4x4 or higher grid in Hardcore Blindfold mode without using the Ghost Guide.' }
     ];
 
     let unlockedAchievements = [];
