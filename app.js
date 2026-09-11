@@ -2473,6 +2473,11 @@ document.addEventListener('DOMContentLoaded', () => {
         isGameActive = true;
         speedrunSplitsReached = { 25: false, 50: false, 75: false };
         tileSwapCounts = {};
+        sonarPulsesCountInGame = 0;
+        usedGhostGuideInSession = false;
+        revealedTileIds.clear();
+        isSonarPulseActive = false;
+        if (sonarPulseTimer) clearTimeout(sonarPulseTimer);
         const splitBadge = document.getElementById('splitBadge');
         if (splitBadge) splitBadge.style.display = 'none';
         updateUndoButtonState();
@@ -2709,6 +2714,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const size = selectedGridSize;
         const clusterMap = getClusterMap();
 
+        if (isFogModeActive) {
+            puzzleBoard.classList.add('fog-active');
+            puzzleBoard.classList.add('fog-mode-' + fogModeType);
+        } else {
+            puzzleBoard.classList.remove('fog-active', 'fog-mode-off', 'fog-mode-flashlight', 'fog-mode-sonar', 'fog-mode-blindfold');
+        }
+
         // Sort tiles by currentPos so they render in grid order
         const sortedTiles = [...tiles].sort((a, b) => a.currentPos - b.currentPos);
 
@@ -2729,6 +2741,47 @@ document.addEventListener('DOMContentLoaded', () => {
                         tileDiv.classList.add('cluster-locked');
                         tileDiv.dataset.clusterSize = clusterMap.get(tile.id);
                     }
+                }
+            }
+
+            // Fog of War & Mystery Shroud mechanic
+            if (isFogModeActive && !tile.isEmpty) {
+                const isCorrect = tile.currentPos === tile.correctPos;
+                if (isCorrect) {
+                    revealedTileIds.add(tile.id);
+                }
+
+                if (revealedTileIds.has(tile.id)) {
+                    tileDiv.classList.add('tile-fog-dispelled');
+                } else {
+                    tileDiv.classList.add('tile-fog-shrouded');
+
+                    // Check if adjacent neighbors are dispelled for ambient light reveal
+                    const r = Math.floor(tile.currentPos / size);
+                    const c = tile.currentPos % size;
+                    const neighborPositions = [
+                        (r > 0) ? (r - 1) * size + c : -1,
+                        (r < size - 1) ? (r + 1) * size + c : -1,
+                        (c > 0) ? r * size + (c - 1) : -1,
+                        (c < size - 1) ? r * size + (c + 1) : -1
+                    ];
+                    const hasDispelledNeighbor = neighborPositions.some(nPos => {
+                        if (nPos === -1) return false;
+                        const nTile = tiles.find(t => t.currentPos === nPos);
+                        return nTile && revealedTileIds.has(nTile.id);
+                    });
+                    if (hasDispelledNeighbor) {
+                        tileDiv.classList.add('tile-fog-ambient-revealed');
+                    }
+
+                    if (isSonarPulseActive) {
+                        tileDiv.classList.add('tile-fog-radar-revealed');
+                    }
+
+                    const mysteryGlyph = document.createElement('span');
+                    mysteryGlyph.classList.add('tile-mystery-glyph');
+                    mysteryGlyph.textContent = '?';
+                    tileDiv.appendChild(mysteryGlyph);
                 }
             }
 
@@ -3017,6 +3070,23 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isUndo) {
             triggerTileSnapFx(tileA, tileB);
         }
+
+        // Fog of War Dispel & Lock Audio Shimmer
+        if (isFogModeActive) {
+            if (isUndo) {
+                refreshRevealedTiles();
+            } else {
+                const aBecameCorrect = tileA && tileA.currentPos === tileA.correctPos && !revealedTileIds.has(tileA.id);
+                const bBecameCorrect = tileB && tileB.currentPos === tileB.correctPos && !revealedTileIds.has(tileB.id);
+                if (aBecameCorrect || bBecameCorrect) {
+                    if (aBecameCorrect) revealedTileIds.add(tileA.id);
+                    if (bBecameCorrect) revealedTileIds.add(tileB.id);
+                    playSound('fog_dispel', pan);
+                    triggerHaptic([15, 30]);
+                }
+            }
+        }
+
         renderTiles();
         if (!isUndo) {
             checkClusterFormation(tileA, tileB);
@@ -4967,6 +5037,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Toolbar buttons
     let peekTimeout = null;
     toggleGhostBtn.addEventListener('click', () => {
+        usedGhostGuideInSession = true;
         const isHidden = ghostOverlay.style.display === 'none';
         ghostOverlay.style.display = isHidden ? 'block' : 'none';
         toggleGhostBtn.style.background = isHidden ? 'rgba(99, 102, 241, 0.4)' : '';
@@ -4981,6 +5052,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const triggerSpeedPeek = () => {
+        usedGhostGuideInSession = true;
         if (!ghostOverlay) return;
         if (peekTimeout) clearTimeout(peekTimeout);
         ghostOverlay.style.display = 'block';
@@ -5002,19 +5074,140 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let isFogModeActive = false;
+    let fogModeType = 'flashlight'; // 'off' | 'flashlight' | 'sonar' | 'blindfold'
+    let flashlightBeamStyle = 'neon'; // 'lantern' | 'neon' | 'nightvision'
+    let flashlightRadius = 140; // px
+    let revealedTileIds = new Set();
+    let isSonarPulseActive = false;
+    let sonarPulseTimer = null;
+    let sonarPulsesCountInGame = 0;
+    let usedGhostGuideInSession = false;
+
     const toggleFogBtn = document.getElementById('toggleFogBtn');
+    const sonarPulseBtn = document.getElementById('sonarPulseBtn');
+    const fogBeamSelect = document.getElementById('fogBeamSelect');
     const spotlightOverlay = document.getElementById('spotlightOverlay');
     const puzzleWrapperEl = document.getElementById('puzzleWrapper');
 
-    if (toggleFogBtn && spotlightOverlay) {
-        toggleFogBtn.addEventListener('click', () => {
-            isFogModeActive = !isFogModeActive;
-            spotlightOverlay.style.display = isFogModeActive ? 'block' : 'none';
-            toggleFogBtn.style.background = isFogModeActive ? 'rgba(16, 185, 129, 0.4)' : '';
-            playSound('click');
-            showToast(isFogModeActive ? '🔦 Fog of War Spotlight Active!' : '🔦 Spotlight Disabled');
+    function refreshRevealedTiles() {
+        revealedTileIds.clear();
+        tiles.forEach(t => {
+            if (!t.isEmpty && t.currentPos === t.correctPos) {
+                revealedTileIds.add(t.id);
+            }
         });
     }
+
+    function setFogMode(enabled, mode = 'flashlight') {
+        isFogModeActive = enabled;
+        if (enabled && mode) fogModeType = mode;
+
+        if (isFogModeActive) {
+            refreshRevealedTiles();
+            if (spotlightOverlay) {
+                spotlightOverlay.style.display = 'block';
+                spotlightOverlay.className = `spotlight-overlay beam-${flashlightBeamStyle}`;
+                spotlightOverlay.style.setProperty('--torch-radius', `${flashlightRadius}px`);
+            }
+            if (toggleFogBtn) {
+                toggleFogBtn.classList.add('active');
+                toggleFogBtn.textContent = '🌫️ Fog: ON (F)';
+                toggleFogBtn.style.background = 'rgba(16, 185, 129, 0.4)';
+            }
+            if (sonarPulseBtn) sonarPulseBtn.style.display = 'inline-flex';
+            if (fogBeamSelect) fogBeamSelect.style.display = 'inline-flex';
+            showToast(`🌫️ Fog of War Active: ${fogModeType.toUpperCase()} Mode!`, 'Fog of War');
+        } else {
+            if (spotlightOverlay) spotlightOverlay.style.display = 'none';
+            if (toggleFogBtn) {
+                toggleFogBtn.classList.remove('active');
+                toggleFogBtn.textContent = '🌫️ Fog: OFF (F)';
+                toggleFogBtn.style.background = '';
+            }
+            if (sonarPulseBtn) sonarPulseBtn.style.display = 'none';
+            if (fogBeamSelect) fogBeamSelect.style.display = 'none';
+            puzzleBoard.querySelectorAll('.tile-fog-torch-revealed').forEach(el => {
+                el.classList.remove('tile-fog-torch-revealed');
+            });
+            showToast('☀️ Fog of War Disabled', 'Clear View');
+        }
+        renderTiles();
+    }
+
+    if (toggleFogBtn) {
+        toggleFogBtn.addEventListener('click', () => {
+            setFogMode(!isFogModeActive, fogModeType || 'flashlight');
+            playSound('click');
+        });
+    }
+
+    function triggerSonarPulse() {
+        if (!isFogModeActive || !isGameActive) return;
+        sonarPulsesCountInGame++;
+        isSonarPulseActive = true;
+        playSound('sonar');
+        triggerHaptic([30, 40, 30]);
+
+        // Sonar wave ring animation
+        const radarPulseWave = document.getElementById('radarPulseWave');
+        if (radarPulseWave) {
+            radarPulseWave.style.display = 'block';
+            radarPulseWave.classList.remove('pulsing');
+            void radarPulseWave.offsetWidth; // Force reflow
+            radarPulseWave.classList.add('pulsing');
+        }
+
+        // Temporarily reveal shrouded tiles
+        puzzleBoard.querySelectorAll('.puzzle-tile.tile-fog-shrouded').forEach(el => {
+            el.classList.add('tile-fog-radar-revealed');
+        });
+
+        showToast('📡 Sonar Radar Pulse: Tiles revealed for 2.5s!', 'Sonar Radar');
+
+        if (sonarPulseTimer) clearTimeout(sonarPulseTimer);
+        sonarPulseTimer = setTimeout(() => {
+            isSonarPulseActive = false;
+            puzzleBoard.querySelectorAll('.tile-fog-radar-revealed').forEach(el => {
+                el.classList.remove('tile-fog-radar-revealed');
+            });
+            if (radarPulseWave) radarPulseWave.style.display = 'none';
+        }, 2500);
+    }
+
+    if (sonarPulseBtn) {
+        sonarPulseBtn.addEventListener('click', triggerSonarPulse);
+    }
+
+    if (fogBeamSelect) {
+        fogBeamSelect.addEventListener('change', (e) => {
+            flashlightBeamStyle = e.target.value;
+            if (spotlightOverlay) {
+                spotlightOverlay.className = `spotlight-overlay beam-${flashlightBeamStyle}`;
+            }
+            playSound('click');
+        });
+    }
+
+    // Pre-game fog setting buttons
+    document.querySelectorAll('.fog-mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.fog-mode-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const mode = btn.dataset.fog;
+            if (mode === 'off') {
+                isFogModeActive = false;
+            } else {
+                isFogModeActive = true;
+                fogModeType = mode;
+                if (mode === 'blindfold') {
+                    flashlightRadius = 90;
+                } else {
+                    flashlightRadius = 140;
+                }
+            }
+            playSound('click');
+        });
+    });
 
     if (puzzleWrapperEl && spotlightOverlay) {
         const updateSpotlightPos = (e) => {
@@ -5030,9 +5223,34 @@ document.addEventListener('DOMContentLoaded', () => {
             const y = clientY - rect.top;
             spotlightOverlay.style.setProperty('--mouse-x', `${x}px`);
             spotlightOverlay.style.setProperty('--mouse-y', `${y}px`);
+            spotlightOverlay.style.setProperty('--torch-radius', `${flashlightRadius}px`);
+
+            // In flashlight or blindfold mode, dynamically highlight pieces under torch beam
+            if (fogModeType === 'flashlight' || fogModeType === 'blindfold') {
+                const radiusSq = (flashlightRadius * 0.95) ** 2;
+                const tileEls = puzzleBoard.querySelectorAll('.puzzle-tile:not(.empty-tile)');
+                tileEls.forEach(el => {
+                    const tileRect = el.getBoundingClientRect();
+                    const tileCenterX = (tileRect.left + tileRect.right) / 2 - rect.left;
+                    const tileCenterY = (tileRect.top + tileRect.bottom) / 2 - rect.top;
+                    const distSq = (x - tileCenterX) ** 2 + (y - tileCenterY) ** 2;
+                    if (distSq <= radiusSq) {
+                        el.classList.add('tile-fog-torch-revealed');
+                    } else {
+                        el.classList.remove('tile-fog-torch-revealed');
+                    }
+                });
+            }
         };
+
         puzzleWrapperEl.addEventListener('mousemove', updateSpotlightPos);
         puzzleWrapperEl.addEventListener('touchmove', updateSpotlightPos, { passive: true });
+        puzzleWrapperEl.addEventListener('pointerleave', () => {
+            if (!isFogModeActive) return;
+            puzzleBoard.querySelectorAll('.tile-fog-torch-revealed').forEach(el => {
+                el.classList.remove('tile-fog-torch-revealed');
+            });
+        });
     }
 
     if (toggleNumbersBtn) {
@@ -5615,6 +5833,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     toggle3dTiltBtn.click();
                 } else if (key === 'c' && toggleCrtFxBtn) {
                     toggleCrtFxBtn.click();
+                } else if (key === 'f' && toggleFogBtn) {
+                    toggleFogBtn.click();
+                } else if (key === 'm' && sonarPulseBtn) {
+                    sonarPulseBtn.click();
                 } else if (key === 'r') {
                     shuffleBtn.click();
                 } else if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key) && puzzleMode === 'sliding') {
