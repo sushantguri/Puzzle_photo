@@ -48,13 +48,21 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
 - ⚡ **Expert:** 8 × 8 (64 pieces) — Ultimate spatial memory test
 
 - **▶️ Animated Move Playback & Replay:** Step-by-step interactive move replay system (`P` key) with 1x/2x/4x speed controls, timeline scrubber, move highlights, and Web Audio step sound FX.
-- **🎖️ Achievements & Badges System:** 9 unlockable trophies with animated toast notifications, sound fanfares, progress bar tracking, and dedicated modal card.
+- **🎖️ Achievements & Badges System:** 22 unlockable trophies with animated toast notifications, sound fanfares, progress bar tracking, and dedicated modal card.
 - **🤖 Auto-Solve Demo Assistant:** Interactive animated AI bot (`A` key) that steps through move history or auto-arranges tiles to help players get unstuck.
 - **🧘 Zen Relax & Time Attack Modes:** Switch between competitive Time Attack countdown, classic Stopwatch, or untimed Zen Relax mode with 528Hz Solfeggio audio chime synthesis for mindful puzzle solving!
 - **↩️ Move History & Undo System:** Step-by-step move stack allowing players to undo tile moves (`U` key or `Ctrl+Z`).
 - **🔢 Tile Numbers Overlay:** Toggleable position badges (`N` key) to assist on higher difficulty grid layouts (5x5, 6x6, 8x8).
 - **👁️ Speed Peek & Adjustable Ghost Guide:** Toggleable phantom background image (`G` key) with dynamic opacity slider (10%–90%) and 1.2s flash speed peek button (`B` key).
-- **⌨️ Keyboard Hotkey Controls:** Arrow keys to slide tiles, `G` for guide, `B` for speed peek, `H` for hints, `N` for numbers, `U` for undo, `A` for auto-solve, `P` for replay, `R` to reshuffle, `Space` to snap photo.
+- **⌨️ Keyboard Hotkey Controls:** Arrow keys to slide tiles, `G` for guide, `B` for speed peek, `H` for hints, `N` for numbers, `U` for undo, `A` for auto-solve, `P` for replay, `R` to reshuffle, `F` for Fog of War mode, `M` for Sonar Radar Pulse, `Space` to snap photo.
+- **🌫️ Mystery Fog of War & Dynamic Flashlight Unmasking:**
+  - **Frosted Shroud Engine:** Unsolved puzzle pieces are veiled in frosted glass mist with pulsating mystery glyphs (`?`).
+  - **Dynamic Flashlight Torchbeam:** Real-time pointer/touch tracking unmasks piece imagery beneath the cursor with 60fps hardware-accelerated radial light.
+  - **3 Torchlight Beam Presets:** 🕯️ Warm Lantern, 🔬 Cyber Neon UV, and 🟢 Night Vision.
+  - **Permanent Dispersion on Correct Placement:** Locking a piece permanently dispels the fog with an ascending celestial harp chime (`fog_dispel`) and casts ambient light onto adjacent tiles.
+  - **📡 Sonar Radar Pulse Wave (`M` key):** Triggers an expanding sonic radar wave with dual-frequency sweep audio ping, temporarily piercing the mist for 2.5 seconds.
+  - **👁️‍🗨️ Hardcore Blindfold Challenge:** Deep obsidian veil mode for master solvers testing pure spatial intuition.
+  - **3 Mystery Trophies:** Unlock `🌫️ Mist Walker`, `📡 Radar Pathfinder`, and `👁️‍🗨️ Clairvoyant Master`.
 - **📥 Custom Victory Score Card & Polaroid Frame Generator:** Custom PNG exporter with 4 frame styles (Cyber Glass, Retro Polaroid, Neon Cyberpunk, Royal Gold) and editable photo caption!
 - **🔊 Web Audio Sound FX & Ambient Music Generator:** Switchable sound wave synthesis (8-Bit Arcade, Synthwave, Glass Chime, Zen Wooden Marimba, and Crystal Bell FM Chime) plus procedural background ambient music tracks (Cyber Synth, Lo-Fi Chill, 8-Bit Chiptune).
 - **✨ Geometric Cutout Shapes & Faceted Polygons:** Choose from 9 unique piece cutout styles: Classic Square, Pill, Hexagon, Diamond, Cyber Glow, Wave Curves, Classic Tabs, Starburst (12-point star polygon), and Gem Octagon (faceted jewel cut)!
