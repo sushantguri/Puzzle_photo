@@ -133,7 +133,7 @@ flowchart TD
 
 ---
 
-## 💻 Local Setup & Quick Start
+## 💻 Local Setup and start.
 
 1. **Clone the Repository:**
    ```bash
