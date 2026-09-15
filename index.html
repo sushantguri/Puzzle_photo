@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
     <!-- Main CSS -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
     <!-- Background Ambient Canvas & Glow -->
@@ -24,107 +24,229 @@
     <div class="app-container">
         <!-- Navigation Header -->
         <header class="app-header">
-            <div class="logo">
-                <span class="logo-icon">🧩</span>
-                <span class="logo-text">Snap<span class="highlight">Puzzle</span></span>
-                <span id="headerTitleBadge" class="title-badge" style="margin-left: 8px; padding: 3px 10px; background: rgba(99, 102, 241, 0.15); border: 1px solid var(--accent-primary); border-radius: 12px; font-size: 0.75rem; font-weight: 600; color: #a5b4fc;" title="Active Player Title (Unlocked via Level XP)">🧩 Novice Solver</span>
+            <div class="header-left">
+                <div class="logo">
+                    <span class="logo-icon">🧩</span>
+                    <span class="logo-text">Snap<span class="highlight">Puzzle</span></span>
+                </div>
+                <span id="headerTitleBadge" class="title-badge" title="Active Player Title (Unlocked via Level XP)">🧩 Novice Solver</span>
             </div>
+
+            <!-- In-game Stats display (Floating Center) -->
             <div class="header-stats" id="headerStats" style="display: none;">
-                <div class="stat-badge">
+                <div class="stat-badge stat-timer">
                     <span class="stat-icon">⏱️</span>
                     <span id="timerDisplay">00:00</span>
                 </div>
-                <div class="stat-badge">
+                <div class="stat-badge stat-moves">
                     <span class="stat-icon">🎯</span>
                     <span id="moveDisplay">0 Moves</span>
                 </div>
-                <div class="stat-badge" id="splitBadge" style="display: none;" title="Speedrun Pace Split vs Personal Best">
+                <div class="stat-badge stat-split" id="splitBadge" style="display: none;" title="Speedrun Pace Split vs Personal Best">
                     <span class="stat-icon">🚩</span>
                     <span id="splitDisplay">Split 0%</span>
                 </div>
             </div>
+
             <div class="header-actions">
-                <select id="themeSelect" class="form-select theme-select" title="Change Theme Palette">
-                    <option value="cyber">🌌 Cyber Midnight</option>
-                    <option value="sunset">🌅 Sunset Synth</option>
-                    <option value="emerald">🌿 Deep Emerald</option>
-                    <option value="retro">📻 Retro Sepia</option>
-                    <option value="volcano">🌋 Volcanic Ruby</option>
-                    <option value="sakura">🌸 Sakura Blossom</option>
-                    <option value="neon">⚡ Neon Cyberpunk</option>
-                    <option value="custom">🎨 Custom Studio Theme</option>
-                </select>
-                <select id="ambientBgSelect" class="form-select theme-select" title="Background Ambient Effect">
-                    <option value="starfield">✨ Starfield Dust</option>
-                    <option value="aurora">🌌 Neon Aurora</option>
-                    <option value="matrix">🟢 Matrix Rain</option>
-                    <option value="bokeh">🎆 Firefly Bokeh</option>
-                    <option value="off">🚫 FX Off</option>
-                </select>
-                <select id="boardGlowSelect" class="form-select theme-select" title="Puzzle Board Neon Glow Border FX">
-                    <option value="none">✨ Glow: Off</option>
-                    <option value="cyber" selected>⚡ Cyber Pulse</option>
-                    <option value="aurora">🌌 Aurora Wave</option>
-                    <option value="ruby">🌋 Magma Ruby</option>
-                    <option value="gold">🥇 Royal Gold</option>
-                </select>
-                <button id="dailyChallengeBtn" class="btn btn-icon daily-btn" title="Daily Seeded Challenge & Streak Tracker">📅 <span id="dailyStreakBadge" class="badge-count">🔥 0</span></button>
-                <button id="questsBtn" class="btn btn-icon daily-btn" title="Daily Quests & Level XP Bounties">📜 <span id="questsBadge" class="badge-count">0/3</span></button>
-                <button id="achievementsBtn" class="btn btn-icon achievements-btn" title="View Achievements & Badges">🎖️ <span id="achievementsBadge" class="badge-count">0/12</span></button>
-                <button id="leaderboardBtn" class="btn btn-icon" title="View Best Records / High Scores">🏆</button>
-                <button id="saveLoadModalBtn" class="btn btn-icon" title="Save & Load Game Slots">💾</button>
-                <button id="headerAnalyticsBtn" class="btn btn-icon" title="View Solve Heatmap & Tile Analytics">📊 Heatmap</button>
-                <button id="headerCollageBtn" class="btn btn-icon" title="Multi-Photo Collage Puzzle Studio">⊞ Collage</button>
-                <button id="toggleColorblindBtn" class="btn btn-icon" title="Toggle High-Contrast Colorblind Pattern Overlay">👁️ High Contrast</button>
-                <select id="soundPresetSelect" class="form-select theme-select" title="Sound Effect Preset">
-                    <option value="arcade">🕹️ 8-Bit Arcade</option>
-                    <option value="synth" selected>⚡ Synthwave</option>
-                    <option value="chime">🔔 Glass Chime</option>
-                    <option value="marimba">🪵 Zen Marimba</option>
-                    <option value="crystal">🔮 Crystal Bell</option>
-                </select>
-                <div class="volume-control-group" title="Master Audio Volume">
-                    <button id="soundToggleBtn" class="btn btn-icon" title="Toggle Sound Mute">🔊</button>
-                    <input type="range" id="masterVolumeSlider" min="0" max="100" value="80" class="volume-slider" title="Master Sound Volume">
+                <!-- Theme quick selector -->
+                <div class="theme-select-wrapper" title="Change Theme Palette">
+                    <span class="action-icon">🎨</span>
+                    <select id="themeSelect" class="form-select theme-select">
+                        <option value="cyber">🌌 Cyber Midnight</option>
+                        <option value="sunset">🌅 Sunset Synth</option>
+                        <option value="emerald">🌿 Deep Emerald</option>
+                        <option value="retro">📻 Retro Sepia</option>
+                        <option value="volcano">🌋 Volcanic Ruby</option>
+                        <option value="sakura">🌸 Sakura Blossom</option>
+                        <option value="neon">⚡ Neon Cyberpunk</option>
+                        <option value="custom">🎨 Custom Studio Theme</option>
+                    </select>
                 </div>
-                <button id="spatialAudioToggleBtn" class="btn btn-icon theme-select" title="Toggle 3D Stereo Spatial Audio Panning">🎧 3D Audio: ON</button>
-                <select id="ambientMusicSelect" class="form-select theme-select" title="Background Procedural Music Soundscape">
-                    <option value="off" selected>🎵 Music: Off</option>
-                    <option value="cyber">🌌 Cyber Synthwave</option>
-                    <option value="zen">🧘 Zen Solfeggio</option>
-                    <option value="chiptune">🕹️ 8-Bit Chiptune</option>
-                    <option value="space">🚀 Deep Space Drone</option>
-                </select>
-                <button id="soundboardBtn" class="btn btn-icon" title="Open Web Audio Sound Lab & Synthesizer Modal">🎹 Sound Lab</button>
-                <button id="openFxStudioBtn" class="btn btn-icon" title="Customize Tile Placement Particle Explosion FX">💥 FX Studio</button>
-                <select id="celebrationFxSelect" class="form-select theme-select" title="Victory Celebration Particle FX Style">
-                    <option value="confetti">🎊 Confetti Rain</option>
-                    <option value="fireworks">🎆 Fireworks Explosion</option>
-                    <option value="stars">⭐ Gold Stars</option>
-                    <option value="hearts">💖 Romantic Hearts</option>
-                    <option value="coins">🪙 Gold Coin Splash</option>
-                    <option value="sparks">⚡ Cyber Sparks</option>
-                </select>
-                <button id="testVictoryFxBtn" class="btn btn-icon" title="Test Victory Celebration Particle FX Studio">🎆 Test FX</button>
-                <button id="toggleVoiceAnnouncerBtn" class="btn btn-icon theme-select" title="Toggle Web Speech Voice Announcer" style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.8rem;">🎙️ Voice: ON</button>
-                <button id="openVoiceStudioBtn" class="btn btn-icon" title="Customize Web Speech Combo Voice Announcer Studio">🎙️ Voice Studio</button>
-                <select id="musicTrackSelect" class="form-select theme-select" title="Procedural Ambient Music Track">
-                    <option value="off">🔇 Music Off</option>
-                    <option value="cyber">🎧 Cyber Synth</option>
-                    <option value="lofi">🍵 Lo-Fi Chill</option>
-                    <option value="arcade">🕹️ 8-Bit Chiptune</option>
-                    <option value="space">🌌 Deep Space Drone</option>
-                    <option value="rain">🌧️ Binaural Rain</option>
-                    <option value="zenbell">🌿 Zen Temple Chimes</option>
-                    <option value="synthwave">🌆 Outrun Horizon</option>
-                    <option value="cyberwind">🌬️ Cybernetic Wind</option>
-                </select>
-                <div class="pitch-control-group" title="Music Pitch Modulation" style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.75rem; background: rgba(0,0,0,0.25); padding: 4px 8px; border-radius: 8px; border: 1px solid var(--border-color);">
-                    <span>🎵 Pitch:</span>
-                    <input type="range" id="musicPitchSlider" min="50" max="150" value="100" style="width: 50px; accent-color: var(--accent-primary); cursor: pointer;" title="Adjust Music Pitch Scale">
+
+                <!-- Game Hub Dropdown -->
+                <div class="dropdown-wrapper">
+                    <button id="gameHubDropdownBtn" type="button" class="btn btn-nav" title="Daily Challenges, Quests, Badges & Leaderboards">
+                        <span>🏆 Hub</span>
+                        <span class="dropdown-caret">▾</span>
+                    </button>
+                    <div id="gameHubDropdownMenu" class="dropdown-panel">
+                        <div class="dropdown-header">
+                            <span class="dropdown-title">🏆 Game Hub</span>
+                        </div>
+                        <div class="dropdown-grid">
+                            <button id="dailyChallengeBtn" type="button" class="hub-menu-item" title="Daily Seeded Challenge & Streak Tracker">
+                                <span class="hub-icon">📅</span>
+                                <div class="hub-text">
+                                    <span class="hub-name">Daily Challenge</span>
+                                    <span id="dailyStreakBadge" class="badge-count">🔥 0</span>
+                                </div>
+                            </button>
+                            <button id="questsBtn" type="button" class="hub-menu-item" title="Daily Quests & Level XP Bounties">
+                                <span class="hub-icon">📜</span>
+                                <div class="hub-text">
+                                    <span class="hub-name">Quests & XP</span>
+                                    <span id="questsBadge" class="badge-count">0/3</span>
+                                </div>
+                            </button>
+                            <button id="achievementsBtn" type="button" class="hub-menu-item" title="View Achievements & Badges">
+                                <span class="hub-icon">🎖️</span>
+                                <div class="hub-text">
+                                    <span class="hub-name">Achievements</span>
+                                    <span id="achievementsBadge" class="badge-count">0/12</span>
+                                </div>
+                            </button>
+                            <button id="leaderboardBtn" type="button" class="hub-menu-item" title="View Best Records / High Scores">
+                                <span class="hub-icon">🏆</span>
+                                <div class="hub-text">
+                                    <span class="hub-name">Leaderboard</span>
+                                    <span class="hub-desc">High scores</span>
+                                </div>
+                            </button>
+                            <button id="saveLoadModalBtn" type="button" class="hub-menu-item" title="Save & Load Game Slots">
+                                <span class="hub-icon">💾</span>
+                                <div class="hub-text">
+                                    <span class="hub-name">Saved Games</span>
+                                    <span class="hub-desc">Save / load slots</span>
+                                </div>
+                            </button>
+                            <button id="headerAnalyticsBtn" type="button" class="hub-menu-item" title="View Solve Heatmap & Tile Analytics">
+                                <span class="hub-icon">📊</span>
+                                <div class="hub-text">
+                                    <span class="hub-name">Heatmap Stats</span>
+                                    <span class="hub-desc">Pace & efficiency</span>
+                                </div>
+                            </button>
+                            <button id="headerCollageBtn" type="button" class="hub-menu-item" title="Multi-Photo Collage Puzzle Studio">
+                                <span class="hub-icon">⊞</span>
+                                <div class="hub-text">
+                                    <span class="hub-name">Collage Studio</span>
+                                    <span class="hub-desc">Combine 2-4 photos</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <button id="pwaInstallBtn" class="btn btn-icon pwa-install-btn" title="Install SnapPuzzle Offline Web App" style="display: none;">📲 Install App</button>
-                <button id="resetAppBtn" class="btn btn-secondary" style="display: none;">📷 New Snap</button>
+
+                <!-- Settings & Audio Lab Dropdown -->
+                <div class="dropdown-wrapper">
+                    <button id="settingsDropdownBtn" type="button" class="btn btn-nav" title="Audio, Visual Effects, Music & Customization">
+                        <span>⚙️ Studio</span>
+                        <span class="dropdown-caret">▾</span>
+                    </button>
+                    <div id="settingsDropdownMenu" class="dropdown-panel dropdown-panel-wide">
+                        <div class="dropdown-header">
+                            <span class="dropdown-title">⚙️ Audio & Visual Studio</span>
+                        </div>
+                        <div class="settings-sections">
+                            <!-- Sound & Music -->
+                            <div class="settings-section-card">
+                                <div class="section-card-title">🔊 Audio & Music</div>
+                                <div class="settings-row">
+                                    <span class="setting-label">Master Sound:</span>
+                                    <div class="volume-control-group" title="Master Audio Volume">
+                                        <button id="soundToggleBtn" type="button" class="btn btn-icon" title="Toggle Sound Mute">🔊</button>
+                                        <input type="range" id="masterVolumeSlider" min="0" max="100" value="80" class="volume-slider" title="Master Sound Volume">
+                                    </div>
+                                </div>
+                                <div class="settings-row">
+                                    <span class="setting-label">Sound Profile:</span>
+                                    <select id="soundPresetSelect" class="form-select form-select-sm">
+                                        <option value="arcade">🕹️ 8-Bit Arcade</option>
+                                        <option value="synth" selected>⚡ Synthwave</option>
+                                        <option value="chime">🔔 Glass Chime</option>
+                                        <option value="marimba">🪵 Zen Marimba</option>
+                                        <option value="crystal">🔮 Crystal Bell</option>
+                                    </select>
+                                </div>
+                                <div class="settings-row">
+                                    <span class="setting-label">Procedural Track:</span>
+                                    <select id="musicTrackSelect" class="form-select form-select-sm">
+                                        <option value="off">🔇 Music Off</option>
+                                        <option value="cyber">🎧 Cyber Synth</option>
+                                        <option value="lofi">🍵 Lo-Fi Chill</option>
+                                        <option value="arcade">🕹️ 8-Bit Chiptune</option>
+                                        <option value="space">🌌 Deep Space Drone</option>
+                                        <option value="rain">🌧️ Binaural Rain</option>
+                                        <option value="zenbell">🌿 Zen Temple Chimes</option>
+                                        <option value="synthwave">🌆 Outrun Horizon</option>
+                                        <option value="cyberwind">🌬️ Cybernetic Wind</option>
+                                    </select>
+                                </div>
+                                <div class="settings-row">
+                                    <span class="setting-label">Procedural Soundscape:</span>
+                                    <select id="ambientMusicSelect" class="form-select form-select-sm">
+                                        <option value="off" selected>🎵 Music: Off</option>
+                                        <option value="cyber">🌌 Cyber Synthwave</option>
+                                        <option value="zen">🧘 Zen Solfeggio</option>
+                                        <option value="chiptune">🕹️ 8-Bit Chiptune</option>
+                                        <option value="space">🚀 Deep Space Drone</option>
+                                    </select>
+                                </div>
+                                <div class="settings-row">
+                                    <span class="setting-label">Pitch Scale:</span>
+                                    <div class="pitch-control-group">
+                                        <input type="range" id="musicPitchSlider" min="50" max="150" value="100" class="volume-slider">
+                                    </div>
+                                </div>
+                                <div class="settings-actions-group">
+                                    <button id="spatialAudioToggleBtn" type="button" class="btn btn-secondary btn-sm" title="Toggle 3D Stereo Spatial Audio Panning">🎧 3D Audio: ON</button>
+                                    <button id="soundboardBtn" type="button" class="btn btn-secondary btn-sm" title="Open Web Audio Sound Lab & Synthesizer Modal">🎹 Sound Lab</button>
+                                </div>
+                            </div>
+
+                            <!-- Visual FX & Atmosphere -->
+                            <div class="settings-section-card">
+                                <div class="section-card-title">✨ Visual Effects & Atmosphere</div>
+                                <div class="settings-row">
+                                    <span class="setting-label">Background FX:</span>
+                                    <select id="ambientBgSelect" class="form-select form-select-sm">
+                                        <option value="starfield">✨ Starfield Dust</option>
+                                        <option value="aurora">🌌 Neon Aurora</option>
+                                        <option value="matrix">🟢 Matrix Rain</option>
+                                        <option value="bokeh">🎆 Firefly Bokeh</option>
+                                        <option value="off">🚫 FX Off</option>
+                                    </select>
+                                </div>
+                                <div class="settings-row">
+                                    <span class="setting-label">Board Neon Glow:</span>
+                                    <select id="boardGlowSelect" class="form-select form-select-sm">
+                                        <option value="none">✨ Glow: Off</option>
+                                        <option value="cyber" selected>⚡ Cyber Pulse</option>
+                                        <option value="aurora">🌌 Aurora Wave</option>
+                                        <option value="ruby">🌋 Magma Ruby</option>
+                                        <option value="gold">🥇 Royal Gold</option>
+                                    </select>
+                                </div>
+                                <div class="settings-row">
+                                    <span class="setting-label">Victory Particle FX:</span>
+                                    <div style="display: flex; gap: 4px; width: 100%;">
+                                        <select id="celebrationFxSelect" class="form-select form-select-sm" style="flex:1;">
+                                            <option value="confetti">🎊 Confetti Rain</option>
+                                            <option value="fireworks">🎆 Fireworks</option>
+                                            <option value="stars">⭐ Gold Stars</option>
+                                            <option value="hearts">💖 Hearts</option>
+                                            <option value="coins">🪙 Gold Coins</option>
+                                            <option value="sparks">⚡ Sparks</option>
+                                        </select>
+                                        <button id="testVictoryFxBtn" type="button" class="btn btn-secondary btn-sm" title="Test celebration effect">Test</button>
+                                    </div>
+                                </div>
+                                <div class="settings-actions-group">
+                                    <button id="openFxStudioBtn" type="button" class="btn btn-secondary btn-sm" title="Customize Tile Placement Particle Explosion FX">💥 FX Studio</button>
+                                    <button id="toggleColorblindBtn" type="button" class="btn btn-secondary btn-sm" title="Toggle High-Contrast Colorblind Pattern Overlay">👁️ High Contrast</button>
+                                </div>
+                                <div class="settings-actions-group" style="margin-top: 6px;">
+                                    <button id="toggleVoiceAnnouncerBtn" type="button" class="btn btn-secondary btn-sm" title="Toggle Web Speech Voice Announcer">🎙️ Voice: ON</button>
+                                    <button id="openVoiceStudioBtn" type="button" class="btn btn-secondary btn-sm" title="Customize Web Speech Combo Voice Announcer Studio">🎙️ Voice Studio</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="pwaInstallBtn" type="button" class="btn btn-icon pwa-install-btn" title="Install SnapPuzzle Offline Web App" style="display: none;">📲 Install</button>
+                <button id="resetAppBtn" type="button" class="btn btn-secondary nav-reset-btn" style="display: none;">📷 New Photo</button>
             </div>
         </header>
 
@@ -384,225 +506,277 @@
 
             <!-- STEP 2: PUZZLE CONFIGURATION SECTION -->
             <section id="configSection" class="card config-card" style="display: none;">
-                <div class="preview-container">
-                    <h3>Photo Ready!</h3>
-                    <div class="photo-preview-box">
-                        <img id="photoPreviewImg" src="" alt="Captured Snapshot">
-                    </div>
-                    <div class="photo-art-studio" style="margin-top: 10px; display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;">
-                        <button id="applyKaleidoscopeBtn" class="btn btn-secondary btn-sm" type="button" title="Generate Symmetrical Kaleidoscope Photo Pattern">🪞 Kaleidoscope</button>
-                        <button id="applyMosaicBtn" class="btn btn-secondary btn-sm" type="button" title="Transform Photo into Pixel Art Mosaic">🧩 Mosaic Art</button>
-                    </div>
-                </div>
-
-                <div class="config-controls">
-                    <h3>Step 2: Choose Game Mode & Difficulty</h3>
-                    
-                    <div class="setting-group">
-                        <label>Puzzle Mode:</label>
-                        <div class="mode-toggle">
-                            <button class="mode-btn active" data-mode="sliding">
-                                <span class="mode-icon">🧱</span> Sliding Block
-                            </button>
-                            <button class="mode-btn" data-mode="jigsaw">
-                                <span class="mode-icon">🧩</span> Classic Jigsaw
-                            </button>
-                            <button class="mode-btn" data-mode="zen">
-                                <span class="mode-icon">🧘</span> Zen Meditation
-                            </button>
-                            <button class="mode-btn" data-mode="versus">
-                                <span class="mode-icon">⚔️</span> 2P Versus Duel
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="setting-group">
-                        <label>Tile Cutout Style:</label>
-                        <div class="shape-selector">
-                            <button class="shape-btn active" data-shape="square" type="button"><span class="shape-icon">🟦</span> Square</button>
-                            <button class="shape-btn" data-shape="rounded" type="button"><span class="shape-icon">🟢</span> Pill</button>
-                            <button class="shape-btn" data-shape="hexagon" type="button"><span class="shape-icon">🐝</span> Hexagon</button>
-                            <button class="shape-btn" data-shape="diamond" type="button"><span class="shape-icon">💎</span> Diamond</button>
-                            <button class="shape-btn" data-shape="cyber" type="button"><span class="shape-icon">⚡</span> Cyber Glow</button>
-                            <button class="shape-btn" data-shape="wave" type="button"><span class="shape-icon">🌊</span> Wave Curves</button>
-                            <button class="shape-btn" data-shape="tabbed" type="button"><span class="shape-icon">🧩</span> Classic Tabs</button>
-                            <button class="shape-btn" data-shape="starburst" type="button"><span class="shape-icon">🌟</span> Starburst</button>
-                            <button class="shape-btn" data-shape="octagon" type="button"><span class="shape-icon">💎</span> Gem Octagon</button>
-                        </div>
-                    </div>
-
-                    <div class="setting-group">
-                        <label>Board Silhouette Mask:</label>
-                        <div class="mask-selector" style="display: flex; gap: 8px; flex-wrap: wrap;">
-                            <button class="mask-btn active shape-btn" data-mask="none" type="button"><span class="shape-icon">⬛</span> Classic Grid</button>
-                            <button class="mask-btn shape-btn" data-mask="circle" type="button"><span class="shape-icon">⚪</span> Circle Mask</button>
-                            <button class="mask-btn shape-btn" data-mask="diamond" type="button"><span class="shape-icon">💎</span> Diamond Mask</button>
-                            <button class="mask-btn shape-btn" data-mask="shield" type="button"><span class="shape-icon">🛡️</span> Shield Mask</button>
-                            <button class="mask-btn shape-btn" data-mask="heart" type="button"><span class="shape-icon">❤️</span> Heart Mask</button>
-                        </div>
-                    </div>
-
-                    <div class="setting-group">
-                        <label>Extra Challenge Mechanic:</label>
-                        <div class="rotation-controls">
-                            <button id="toggleRotationBtn" class="mode-btn" type="button" title="Rotate tiles with right-click or double-tap">
-                                <span class="mode-icon">🔄</span> Tile Rotation Challenge: Off
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="setting-group">
-                        <label>AI Rival Speedrun Mode:</label>
-                        <div class="ai-rival-controls" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                            <button id="toggleAiRivalBtn" class="mode-btn" type="button">
-                                <span class="mode-icon">🤖</span> AI Rival: Off
-                            </button>
-                            <select id="aiLevelSelect" class="form-select" style="display: none; width: auto;" title="AI Rival Bot Speed">
-                                <option value="easy">🐱 Novice Cat (Slow)</option>
-                                <option value="medium" selected>🤖 Cyber Bot (Medium)</option>
-                                <option value="hard">⚡ Grandmaster AI (Fast)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="setting-group">
-                        <label>🌫️ Mystery Fog of War:</label>
-                        <div class="fog-challenge-controls" style="display: flex; gap: 8px; flex-wrap: wrap;">
-                            <button class="fog-mode-btn shape-btn active" data-fog="off" type="button"><span class="shape-icon">☀️</span> Clear View (Off)</button>
-                            <button class="fog-mode-btn shape-btn" data-fog="flashlight" type="button"><span class="shape-icon">🔦</span> Flashlight Torch</button>
-                            <button class="fog-mode-btn shape-btn" data-fog="sonar" type="button"><span class="shape-icon">📡</span> Sonar Radar Pulse</button>
-                            <button class="fog-mode-btn shape-btn" data-fog="blindfold" type="button"><span class="shape-icon">👁️‍🗨️</span> Hardcore Blindfold</button>
-                        </div>
-                    </div>
-
-                    <div class="setting-group">
-                        <label>Timer Mode:</label>
-                        <div class="mode-toggle">
-                            <button class="timer-mode-btn active" data-timermode="stopwatch">
-                                <span class="mode-icon">⏱️</span> Stopwatch
-                            </button>
-                            <button class="timer-mode-btn" data-timermode="countdown">
-                                <span class="mode-icon">⚡</span> Time Attack
-                            </button>
-                            <button class="timer-mode-btn" data-timermode="zen">
-                                <span class="mode-icon">🧘</span> Zen Relax
-                            </button>
-                            <button class="timer-mode-btn" data-timermode="speedrun">
-                                <span class="mode-icon">🚀</span> Speedrun Rush
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="setting-group">
-                        <label>Grid Difficulty:</label>
-                        <div class="grid-selector">
-                            <button class="grid-btn active" data-grid="3">3 × 3 <span>(9 Pcs - Easy)</span></button>
-                            <button class="grid-btn" data-grid="4">4 × 4 <span>(16 Pcs - Medium)</span></button>
-                            <button class="grid-btn" data-grid="5">5 × 5 <span>(25 Pcs - Hard)</span></button>
-                            <button class="grid-btn" data-grid="6">6 × 6 <span>(36 Pcs - Master)</span></button>
-                            <button class="grid-btn" data-grid="8">8 × 8 <span>(64 Pcs - Expert)</span></button>
-                        </div>
-                    </div>
-
-                    <div class="setting-group photo-adjustments">
-                        <label>Photo Enhancements & Orientation:</label>
-                        <div class="sliders-grid">
-                            <div class="slider-item">
-                                <span>☀️ Brightness</span>
-                                <input type="range" id="brightnessSlider" min="50" max="150" value="100">
+                <div class="config-layout-grid">
+                    <!-- Left Column: Photo Preview & Styling Controls -->
+                    <div class="config-preview-col">
+                        <div class="preview-card-wrapper">
+                            <div class="preview-header">
+                                <h3>Photo Preview</h3>
+                                <span class="badge-ready">Ready to Shatter</span>
                             </div>
-                            <div class="slider-item">
-                                <span>🌓 Contrast</span>
-                                <input type="range" id="contrastSlider" min="50" max="150" value="100">
+                            <div class="photo-preview-box">
+                                <img id="photoPreviewImg" src="" alt="Captured Snapshot">
                             </div>
-                            <div class="slider-item">
-                                <span>🎨 Saturation</span>
-                                <input type="range" id="saturationSlider" min="0" max="200" value="100">
+                            <!-- Quick Transform Bar -->
+                            <div class="preview-quick-actions">
+                                <button id="rotateCwBtn" class="btn btn-secondary btn-xs" type="button" title="Rotate Photo 90° Clockwise">🔄 Rotate 90°</button>
+                                <button id="flipHorizBtn" class="btn btn-secondary btn-xs" type="button" title="Flip Photo Horizontally">↔️ Flip H</button>
+                                <button id="flipVertBtn" class="btn btn-secondary btn-xs" type="button" title="Flip Photo Vertically">↕️ Flip V</button>
+                                <button id="openCropModalBtn" class="btn btn-secondary btn-xs" type="button" title="Crop & Framing Studio">✂️ Crop</button>
+                                <button id="applyKaleidoscopeBtn" class="btn btn-secondary btn-xs" type="button" title="Generate Symmetrical Kaleidoscope Photo Pattern">🪞 Kaleidoscope</button>
+                                <button id="applyMosaicBtn" class="btn btn-secondary btn-xs" type="button" title="Transform Photo into Pixel Art Mosaic">🧩 Mosaic Art</button>
+                            </div>
+
+                            <!-- Collapsible Photo Adjustments, Stickers & Signature -->
+                            <details class="config-collapsible-panel" id="photoAdjustmentsDetails">
+                                <summary class="collapsible-summary">
+                                    <span>🎨 Adjustments, Stickers & Watermark</span>
+                                    <span class="collapsible-caret">▾</span>
+                                </summary>
+                                <div class="collapsible-content">
+                                    <div class="sliders-grid">
+                                        <div class="slider-item">
+                                            <span>☀️ Brightness</span>
+                                            <input type="range" id="brightnessSlider" min="50" max="150" value="100">
+                                        </div>
+                                        <div class="slider-item">
+                                            <span>🌓 Contrast</span>
+                                            <input type="range" id="contrastSlider" min="50" max="150" value="100">
+                                        </div>
+                                        <div class="slider-item">
+                                            <span>🎨 Saturation</span>
+                                            <input type="range" id="saturationSlider" min="0" max="200" value="100">
+                                        </div>
+                                    </div>
+
+                                    <div class="sticker-toolbar">
+                                        <label class="section-micro-label">Stamps & Stickers:</label>
+                                        <div class="sticker-picker">
+                                            <button type="button" class="sticker-btn" data-sticker="😎" title="Cool Glasses">😎</button>
+                                            <button type="button" class="sticker-btn" data-sticker="👑" title="Gold Crown">👑</button>
+                                            <button type="button" class="sticker-btn" data-sticker="⭐" title="Sparkle Star">⭐</button>
+                                            <button type="button" class="sticker-btn" data-sticker="🧩" title="Puzzle Piece">🧩</button>
+                                            <button type="button" class="sticker-btn" data-sticker="🔥" title="Fire Flame">🔥</button>
+                                            <button type="button" class="sticker-btn" data-sticker="💖" title="Pink Heart">💖</button>
+                                            <button type="button" class="sticker-btn" data-sticker="🏆" title="Trophy">🏆</button>
+                                            <button type="button" class="sticker-btn" data-sticker="🚀" title="Rocket">🚀</button>
+                                            <button type="button" class="sticker-btn" data-sticker="🐱" title="Cat Mask">🐱</button>
+                                            <button id="clearStickersBtn" type="button" class="btn btn-secondary btn-xs" title="Remove All Stickers">🗑️ Clear</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="watermark-toolbar">
+                                        <label class="section-micro-label">Watermark & Signature:</label>
+                                        <div class="watermark-inputs">
+                                            <input type="text" id="watermarkInput" class="form-input form-input-sm" placeholder="e.g. SnapPuzzle 2026" maxlength="30">
+                                            <select id="watermarkPosition" class="form-select form-select-sm" title="Watermark Alignment">
+                                                <option value="bottom-right">↘️ Bottom-Right</option>
+                                                <option value="bottom-left">↙️ Bottom-Left</option>
+                                                <option value="top-right">↗️ Top-Right</option>
+                                                <option value="top-left">↖️ Top-Left</option>
+                                                <option value="center">🎯 Center</option>
+                                            </select>
+                                            <select id="watermarkFont" class="form-select form-select-sm" title="Font Family">
+                                                <option value="Outfit">Modern Bold</option>
+                                                <option value="cursive">Cursive Script</option>
+                                                <option value="monospace">Retro Matrix</option>
+                                            </select>
+                                            <input type="color" id="watermarkColor" value="#6366f1" class="doodle-color-picker" title="Watermark Color">
+                                            <button id="applyWatermarkBtn" type="button" class="btn btn-secondary btn-xs" title="Stamp Watermark Text onto Photo">✍️ Stamp</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Game Mode, Difficulty & Cutouts -->
+                    <div class="config-controls-col">
+                        <div class="config-header">
+                            <h2>Step 2: Customize Your Puzzle</h2>
+                            <p>Choose your gameplay style, piece cutouts, and grid challenge level.</p>
+                        </div>
+
+                        <!-- Game Mode Selector -->
+                        <div class="config-group">
+                            <label class="config-group-label">🎮 Puzzle Mode:</label>
+                            <div class="mode-toggle">
+                                <button class="mode-btn active" data-mode="sliding" type="button">
+                                    <span class="mode-icon">🧱</span>
+                                    <span class="mode-info">
+                                        <strong>Sliding Block</strong>
+                                        <small>Slide 1 tile at a time</small>
+                                    </span>
+                                </button>
+                                <button class="mode-btn" data-mode="jigsaw" type="button">
+                                    <span class="mode-icon">🧩</span>
+                                    <span class="mode-info">
+                                        <strong>Classic Jigsaw</strong>
+                                        <small>Drag & snap to board</small>
+                                    </span>
+                                </button>
+                                <button class="mode-btn" data-mode="zen" type="button">
+                                    <span class="mode-icon">🧘</span>
+                                    <span class="mode-info">
+                                        <strong>Zen Relax</strong>
+                                        <small>Meditative ambient pace</small>
+                                    </span>
+                                </button>
+                                <button class="mode-btn" data-mode="versus" type="button">
+                                    <span class="mode-icon">⚔️</span>
+                                    <span class="mode-info">
+                                        <strong>2P Versus Duel</strong>
+                                        <small>Split screen race</small>
+                                    </span>
+                                </button>
                             </div>
                         </div>
-                        <div class="transform-actions" style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
-                            <button id="rotateCwBtn" class="btn btn-secondary btn-sm" type="button" title="Rotate Photo 90° Clockwise">🔄 Rotate 90°</button>
-                            <button id="flipHorizBtn" class="btn btn-secondary btn-sm" type="button" title="Flip Photo Horizontally">↔️ Flip H</button>
-                            <button id="flipVertBtn" class="btn btn-secondary btn-sm" type="button" title="Flip Photo Vertically">↕️ Flip V</button>
-                            <button id="openCropModalBtn" class="btn btn-secondary btn-sm" type="button" title="Crop & Framing Studio">✂️ Crop Photo</button>
-                        </div>
-                        <div class="sticker-toolbar" style="margin-top: 14px;">
-                            <label style="display:block; margin-bottom: 6px; font-weight: 500; font-size: 0.9rem;">🎨 Photo Stamps & Stickers:</label>
-                            <div class="sticker-picker" style="display: flex; gap: 6px; flex-wrap: wrap;">
-                                <button type="button" class="sticker-btn" data-sticker="😎" title="Cool Glasses">😎</button>
-                                <button type="button" class="sticker-btn" data-sticker="👑" title="Gold Crown">👑</button>
-                                <button type="button" class="sticker-btn" data-sticker="⭐" title="Sparkle Star">⭐</button>
-                                <button type="button" class="sticker-btn" data-sticker="🧩" title="Puzzle Piece">🧩</button>
-                                <button type="button" class="sticker-btn" data-sticker="🔥" title="Fire Flame">🔥</button>
-                                <button type="button" class="sticker-btn" data-sticker="💖" title="Pink Heart">💖</button>
-                                <button type="button" class="sticker-btn" data-sticker="🏆" title="Trophy">🏆</button>
-                                <button type="button" class="sticker-btn" data-sticker="🚀" title="Rocket">🚀</button>
-                                <button type="button" class="sticker-btn" data-sticker="🐱" title="Cat Mask">🐱</button>
-                                <button id="clearStickersBtn" type="button" class="btn btn-secondary btn-sm" title="Remove All Stickers">🗑️ Clear</button>
-                            </div>
-                        </div>
-                        <div class="watermark-toolbar" style="margin-top: 14px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);">
-                            <label style="display:block; margin-bottom: 6px; font-weight: 500; font-size: 0.9rem;">✍️ Signature & Watermark Stamp:</label>
-                            <div class="watermark-inputs" style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-                                <input type="text" id="watermarkInput" class="form-input" placeholder="e.g. SnapPuzzle 2026" style="flex: 1; min-width: 140px; padding: 6px 12px; font-size: 0.85rem;" maxlength="30">
-                                <select id="watermarkPosition" class="form-select" style="width: auto; font-size: 0.85rem;" title="Watermark Alignment">
-                                    <option value="bottom-right">↘️ Bottom-Right</option>
-                                    <option value="bottom-left">↙️ Bottom-Left</option>
-                                    <option value="top-right">↗️ Top-Right</option>
-                                    <option value="top-left">↖️ Top-Left</option>
-                                    <option value="center">🎯 Center</option>
-                                </select>
-                                <select id="watermarkFont" class="form-select" style="width: auto; font-size: 0.85rem;" title="Font Family">
-                                    <option value="Outfit">Modern Bold</option>
-                                    <option value="cursive">Cursive Script</option>
-                                    <option value="monospace">Retro Matrix</option>
-                                </select>
-                                <input type="color" id="watermarkColor" value="#6366f1" class="doodle-color-picker" title="Watermark Color" style="height: 32px; width: 36px; padding: 2px;">
-                                <button id="applyWatermarkBtn" type="button" class="btn btn-secondary btn-sm" title="Stamp Watermark Text onto Photo">✍️ Stamp Text</button>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="action-bar">
-                        <button id="reTakeBtn" class="btn btn-secondary">Retake Photo</button>
-                        <button id="startPuzzleBtn" class="btn btn-primary btn-lg">
-                            🚀 Create & Play Puzzle
-                        </button>
+                        <!-- Grid Difficulty -->
+                        <div class="config-group">
+                            <label class="config-group-label">📐 Grid Size & Difficulty:</label>
+                            <div class="grid-selector">
+                                <button class="grid-btn active" data-grid="3" type="button">3 × 3 <span>(9 Pcs - Easy)</span></button>
+                                <button class="grid-btn" data-grid="4" type="button">4 × 4 <span>(16 Pcs - Medium)</span></button>
+                                <button class="grid-btn" data-grid="5" type="button">5 × 5 <span>(25 Pcs - Hard)</span></button>
+                                <button class="grid-btn" data-grid="6" type="button">6 × 6 <span>(36 Pcs - Master)</span></button>
+                                <button class="grid-btn" data-grid="8" type="button">8 × 8 <span>(64 Pcs - Expert)</span></button>
+                            </div>
+                        </div>
+
+                        <!-- Tile Cutouts & Masking -->
+                        <div class="config-group">
+                            <label class="config-group-label">✂️ Tile Cutout Style:</label>
+                            <div class="shape-selector">
+                                <button class="shape-btn active" data-shape="square" type="button"><span class="shape-icon">🟦</span> Square</button>
+                                <button class="shape-btn" data-shape="rounded" type="button"><span class="shape-icon">🟢</span> Pill</button>
+                                <button class="shape-btn" data-shape="hexagon" type="button"><span class="shape-icon">🐝</span> Hexagon</button>
+                                <button class="shape-btn" data-shape="diamond" type="button"><span class="shape-icon">💎</span> Diamond</button>
+                                <button class="shape-btn" data-shape="cyber" type="button"><span class="shape-icon">⚡</span> Cyber Glow</button>
+                                <button class="shape-btn" data-shape="wave" type="button"><span class="shape-icon">🌊</span> Wave Curves</button>
+                                <button class="shape-btn" data-shape="tabbed" type="button"><span class="shape-icon">🧩</span> Tabs</button>
+                                <button class="shape-btn" data-shape="starburst" type="button"><span class="shape-icon">🌟</span> Starburst</button>
+                                <button class="shape-btn" data-shape="octagon" type="button"><span class="shape-icon">💎</span> Octagon</button>
+                            </div>
+                        </div>
+
+                        <div class="config-group">
+                            <label class="config-group-label">🖼️ Board Silhouette Mask:</label>
+                            <div class="mask-selector">
+                                <button class="mask-btn active shape-btn" data-mask="none" type="button"><span class="shape-icon">⬛</span> Classic Grid</button>
+                                <button class="mask-btn shape-btn" data-mask="circle" type="button"><span class="shape-icon">⚪</span> Circle</button>
+                                <button class="mask-btn shape-btn" data-mask="diamond" type="button"><span class="shape-icon">💎</span> Diamond</button>
+                                <button class="mask-btn shape-btn" data-mask="shield" type="button"><span class="shape-icon">🛡️</span> Shield</button>
+                                <button class="mask-btn shape-btn" data-mask="heart" type="button"><span class="shape-icon">❤️</span> Heart</button>
+                            </div>
+                        </div>
+
+                        <!-- Extra Challenge Modifiers -->
+                        <div class="config-group">
+                            <label class="config-group-label">⚡ Extra Challenges & Game Modifiers:</label>
+                            <div class="modifiers-grid">
+                                <div class="modifier-box">
+                                    <span class="modifier-title">⏱️ Timer Mode</span>
+                                    <div class="timer-mode-group">
+                                        <button class="timer-mode-btn active" data-timermode="stopwatch" type="button">Stopwatch</button>
+                                        <button class="timer-mode-btn" data-timermode="countdown" type="button">Time Attack</button>
+                                        <button class="timer-mode-btn" data-timermode="zen" type="button">Zen</button>
+                                        <button class="timer-mode-btn" data-timermode="speedrun" type="button">Speedrun</button>
+                                    </div>
+                                </div>
+                                <div class="modifier-box">
+                                    <span class="modifier-title">🌫️ Mystery Fog of War</span>
+                                    <div class="fog-challenge-controls">
+                                        <button class="fog-mode-btn shape-btn active" data-fog="off" type="button">Off</button>
+                                        <button class="fog-mode-btn shape-btn" data-fog="flashlight" type="button">Torch</button>
+                                        <button class="fog-mode-btn shape-btn" data-fog="sonar" type="button">Sonar</button>
+                                        <button class="fog-mode-btn shape-btn" data-fog="blindfold" type="button">Blindfold</button>
+                                    </div>
+                                </div>
+                                <div class="modifier-box modifier-box-row">
+                                    <div class="rotation-controls">
+                                        <button id="toggleRotationBtn" class="btn btn-secondary btn-sm" type="button" title="Rotate tiles with right-click or double-tap">
+                                            <span class="mode-icon">🔄</span> Tile Rotation Challenge: Off
+                                        </button>
+                                    </div>
+                                    <div class="ai-rival-controls">
+                                        <button id="toggleAiRivalBtn" class="btn btn-secondary btn-sm" type="button">
+                                            <span class="mode-icon">🤖</span> AI Rival: Off
+                                        </button>
+                                        <select id="aiLevelSelect" class="form-select form-select-sm" style="display: none;" title="AI Rival Bot Speed">
+                                            <option value="easy">🐱 Novice (Slow)</option>
+                                            <option value="medium" selected>🤖 Cyber (Med)</option>
+                                            <option value="hard">⚡ Master (Fast)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sticky Launch Bar -->
+                        <div class="action-bar">
+                            <button id="reTakeBtn" class="btn btn-secondary" type="button">📷 Retake</button>
+                            <button id="startPuzzleBtn" class="btn btn-primary btn-lg" type="button">
+                                🚀 Launch Puzzle
+                            </button>
+                        </div>
                     </div>
                 </div>
             </section>
 
             <!-- STEP 3: GAMEPLAY BOARD SECTION -->
             <section id="gameSection" class="card game-card" style="display: none;">
-                <!-- Secondary Game Controls -->
-                <div class="game-toolbar">
-                    <button id="openHotkeysBtn" class="hotkeys-badge" type="button" title="View Keyboard Shortcuts Guide (?)">⌨️ Hotkeys Active (?)</button>
-                    <button id="rotationModeToggleBtn" class="btn btn-secondary btn-sm" title="Toggle 90° Piece Rotation Challenge Mode (Rotate pieces with right-click or Shift+click)">🔄 Rotation: OFF</button>
-                    <button id="snapAssistToggleBtn" class="btn btn-secondary btn-sm" title="Toggle Smart Magnetic Snap Assist & Target Destination Glow">🧲 Snap Assist</button>
-                    <button id="sonarRadarToggleBtn" class="btn btn-secondary btn-sm" title="Toggle Audio Sonar Proximity Radar (Beeps higher pitch as piece nears target slot)">🔊 Sonar Radar</button>
-                    <button id="hapticFeedbackToggleBtn" class="btn btn-secondary btn-sm" title="Toggle Tactile Haptic Vibration Feedback">📳 Haptics: ON</button>
-                    <button id="toggleGhostBtn" class="btn btn-secondary btn-sm">👁️ Toggle Guide (G)</button>
-                    <button id="toggleFogBtn" class="btn btn-secondary btn-sm" title="Toggle Fog of War & Mystery Shroud Mode (F)">🌫️ Fog: OFF (F)</button>
-                    <button id="sonarPulseBtn" class="btn btn-secondary btn-sm" title="Trigger Sonar Radar Pulse to reveal board for 2.5s (M)" style="display: none;">📡 Sonar Pulse (M)</button>
-                    <select id="fogBeamSelect" class="form-select form-select-sm" style="display: none; width: auto; font-size: 0.8rem; padding: 2px 6px;" title="Flashlight Torch Beam Preset">
-                        <option value="lantern">🕯️ Warm Lantern</option>
-                        <option value="neon" selected>🔬 Cyber Neon UV</option>
-                        <option value="nightvision">🟢 Night Vision</option>
-                    </select>
-                    <button id="toggle3dTiltBtn" class="btn btn-secondary btn-sm" title="Toggle 3D Holographic Gyroscope Tilt Perspective (T)">🧊 3D Tilt (T)</button>
-                    <button id="toggleCrtFxBtn" class="btn btn-secondary btn-sm" title="Toggle Retro CRT Scanlines & Screen Shake (C)">📺 CRT & Shake (C)</button>
-                    <button id="peekGhostBtn" class="btn btn-secondary btn-sm" title="Flash guide for 1.2s speed peek (B)">⚡ Speed Peek (B)</button>
-                    <div class="ghost-opacity-wrapper" style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.8rem; background: rgba(0,0,0,0.25); padding: 4px 8px; border-radius: 8px; border: 1px solid var(--border-color);">
-                        <span>🔍 Opacity:</span>
-                        <input type="range" id="ghostOpacitySlider" min="10" max="90" value="35" style="width: 55px; accent-color: var(--accent-primary); cursor: pointer;" title="Adjust Ghost Guide Transparency">
+                <!-- Gameplay HUD & Toolbar -->
+                <div class="game-hud-container">
+                    <!-- Primary Controls Bar (Essential actions) -->
+                    <div class="game-primary-toolbar">
+                        <button id="hintBtn" class="btn btn-secondary btn-sm" title="Show hint (H)">💡 Hint</button>
+                        <button id="hintPathBtn" class="btn btn-secondary btn-sm" title="Optimal hint path">📍 Path</button>
+                        <button id="toggleGhostBtn" class="btn btn-secondary btn-sm" title="Toggle reference guide (G)">👁️ Guide</button>
+                        <button id="peekGhostBtn" class="btn btn-secondary btn-sm" title="Flash guide for 1.2s (B)">⚡ Peek</button>
+                        <button id="toggleNumbersBtn" class="btn btn-secondary btn-sm" title="Toggle tile numbers (N)">🔢 Numbers</button>
+                        <button id="undoBtn" class="btn btn-secondary btn-sm" disabled title="Undo move (U)">↩️ Undo</button>
+                        <button id="shuffleBtn" class="btn btn-secondary btn-sm" title="Reshuffle pieces (R)">🔀 Reshuffle</button>
+                        <button id="autoSolveBtn" class="btn btn-secondary btn-sm" title="Watch AI solve puzzle (A)">🤖 Auto-Solve</button>
+                        <button id="replayToolbarBtn" class="btn btn-secondary btn-sm" title="Replay moves (P)" style="display: none;">▶️ Replay</button>
+                        <button id="gameAssistsToggleBtn" type="button" class="btn btn-secondary btn-sm btn-assists-toggle" title="Toggle Sensory & Visual FX Controls">
+                            <span>✨ Assists & FX</span>
+                            <span class="assists-caret">▾</span>
+                        </button>
                     </div>
-                    <button id="toggleNumbersBtn" class="btn btn-secondary btn-sm">🔢 Numbers (N)</button>
-                    <button id="undoBtn" class="btn btn-secondary btn-sm" disabled>↩️ Undo (U)</button>
-                    <button id="hintBtn" class="btn btn-secondary btn-sm">💡 Hint (H)</button>
-                    <button id="hintPathBtn" class="btn btn-secondary btn-sm" title="Visualize minimum optimal move distance and hint path">💡 Optimal Path</button>
-                    <button id="autoSolveBtn" class="btn btn-secondary btn-sm" title="Watch AI step through puzzle solution (A)">🤖 Auto-Solve (A)</button>
-                    <button id="replayToolbarBtn" class="btn btn-secondary btn-sm" title="Watch animated step-by-step move replay (P)" style="display: none;">▶️ Replay (P)</button>
-                    <button id="shuffleBtn" class="btn btn-secondary btn-sm">🔀 Reshuffle (R)</button>
+
+                    <!-- Collapsible Assists & Visual FX Drawer -->
+                    <div id="gameAssistsPanel" class="game-assists-panel">
+                        <div class="assists-group">
+                            <span class="assists-group-label">🎮 Mechanics</span>
+                            <button id="snapAssistToggleBtn" class="btn btn-secondary btn-xs" title="Toggle Smart Magnetic Snap Assist">🧲 Snap Assist</button>
+                            <button id="rotationModeToggleBtn" class="btn btn-secondary btn-xs" title="Toggle 90° Piece Rotation Challenge">🔄 Rotation: OFF</button>
+                            <button id="hapticFeedbackToggleBtn" class="btn btn-secondary btn-xs" title="Toggle Haptic Feedback">📳 Haptics: ON</button>
+                        </div>
+                        <div class="assists-group">
+                            <span class="assists-group-label">👁️ Visuals</span>
+                            <button id="toggle3dTiltBtn" class="btn btn-secondary btn-xs" title="Toggle 3D Holographic Perspective (T)">🧊 3D Tilt</button>
+                            <button id="toggleCrtFxBtn" class="btn btn-secondary btn-xs" title="Toggle Retro CRT Scanlines (C)">📺 CRT FX</button>
+                            <div class="ghost-opacity-wrapper" title="Adjust Ghost Guide Transparency">
+                                <span>Guide Opacity:</span>
+                                <input type="range" id="ghostOpacitySlider" min="10" max="90" value="35">
+                            </div>
+                        </div>
+                        <div class="assists-group">
+                            <span class="assists-group-label">🌫️ Fog & Radar</span>
+                            <button id="toggleFogBtn" class="btn btn-secondary btn-xs" title="Toggle Mystery Fog Mode (F)">🌫️ Fog: OFF</button>
+                            <select id="fogBeamSelect" class="form-select form-select-xs" style="display: none;" title="Torch Beam Preset">
+                                <option value="lantern">🕯️ Warm</option>
+                                <option value="neon" selected>🔬 Neon UV</option>
+                                <option value="nightvision">🟢 Night Vision</option>
+                            </select>
+                            <button id="sonarRadarToggleBtn" class="btn btn-secondary btn-xs" title="Toggle Sonar Proximity Radar">🔊 Sonar</button>
+                            <button id="sonarPulseBtn" class="btn btn-secondary btn-xs" title="Trigger Sonar Radar Pulse (M)" style="display: none;">📡 Sonar Pulse</button>
+                        </div>
+                        <div class="assists-group assists-group-right">
+                            <button id="openHotkeysBtn" class="hotkeys-badge" type="button" title="Keyboard Shortcuts Guide (?)">⌨️ Hotkeys (?)</button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- AI Rival Speedrun HUD -->
@@ -1306,6 +1480,8 @@
                     <button id="closeFxStudioFooterBtn" class="btn btn-secondary">Close Studio</button>
                 </div>
             </div>
+        </div>
+
         <!-- DAILY QUESTS & LEVEL XP MODAL -->
         <div id="questsModal" class="modal-backdrop" style="display: none;">
             <div class="modal-card quests-modal-card" style="max-width: 540px; text-align: center;">
@@ -1365,6 +1541,8 @@
                     <button id="closeQuestsFooterBtn" class="btn btn-secondary">Close Quests</button>
                 </div>
             </div>
+        </div>
+
         <!-- HD PHOTO VAULT GALLERY MODAL -->
         <div id="photoVaultModal" class="modal-backdrop" style="display: none;">
             <div class="modal-card photo-vault-card" style="max-width: 620px; text-align: center;">
@@ -1413,6 +1591,8 @@
                     <button id="closePhotoVaultFooterBtn" class="btn btn-secondary">Close Vault</button>
                 </div>
             </div>
+        </div>
+
         <!-- VOICE ANNOUNCER STUDIO MODAL -->
         <div id="voiceStudioModal" class="modal-backdrop" style="display: none;">
             <div class="modal-card voice-studio-card" style="max-width: 520px; text-align: center;">
@@ -1507,7 +1687,7 @@
         </div>
     </div>
 
-    <!-- Main JavaScript -->
-    <script src="app.js"></script>
+    <!-- Main Application Logic -->
+    <script src="app.js?v=4"></script>
 </body>
 </html>
