@@ -7954,6 +7954,68 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // UI Modernization Menu & Assists Toggle Logic
+    const gameHubDropdownBtn = document.getElementById('gameHubDropdownBtn');
+    const gameHubDropdownMenu = document.getElementById('gameHubDropdownMenu');
+    const settingsDropdownBtn = document.getElementById('settingsDropdownBtn');
+    const settingsDropdownMenu = document.getElementById('settingsDropdownMenu');
+    const gameAssistsToggleBtn = document.getElementById('gameAssistsToggleBtn');
+    const gameAssistsPanel = document.getElementById('gameAssistsPanel');
+
+    function toggleNavDropdown(menuToOpen) {
+        const isOpen = menuToOpen.classList.contains('open');
+        if (gameHubDropdownMenu) gameHubDropdownMenu.classList.remove('open');
+        if (settingsDropdownMenu) settingsDropdownMenu.classList.remove('open');
+        if (!isOpen) {
+            menuToOpen.classList.add('open');
+            playSound('click');
+        }
+    }
+
+    if (gameHubDropdownBtn && gameHubDropdownMenu) {
+        gameHubDropdownBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleNavDropdown(gameHubDropdownMenu);
+        });
+    }
+
+    if (settingsDropdownBtn && settingsDropdownMenu) {
+        settingsDropdownBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleNavDropdown(settingsDropdownMenu);
+        });
+    }
+
+    if (gameAssistsToggleBtn && gameAssistsPanel) {
+        gameAssistsToggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            gameAssistsPanel.classList.toggle('open');
+            const isOpen = gameAssistsPanel.classList.contains('open');
+            const caret = gameAssistsToggleBtn.querySelector('.assists-caret');
+            if (caret) caret.textContent = isOpen ? '▴' : '▾';
+            playSound('click');
+        });
+    }
+
+    // Close open menus when clicking outside
+    document.addEventListener('click', (e) => {
+        if (gameHubDropdownMenu && !e.target.closest('.dropdown-wrapper')) {
+            gameHubDropdownMenu.classList.remove('open');
+        }
+        if (settingsDropdownMenu && !e.target.closest('.dropdown-wrapper')) {
+            settingsDropdownMenu.classList.remove('open');
+        }
+    });
+
+    // Close hub dropdown when a hub action button is clicked
+    if (gameHubDropdownMenu) {
+        gameHubDropdownMenu.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                gameHubDropdownMenu.classList.remove('open');
+            });
+        });
+    }
+
     // Auto-start webcam initially
     startWebcam();
 });
