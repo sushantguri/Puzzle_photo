@@ -2,7 +2,7 @@
    SnapPuzzle Service Worker — Offline Caching Engine
    ========================================================================== */
 
-const CACHE_NAME = 'snappuzzle-v4';
+const CACHE_NAME = 'snappuzzle-v5';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -37,7 +37,7 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
     event.respondWith(
-        caches.match(event.request).then((response) => {
+        caches.match(event.request, { ignoreSearch: true }).then((response) => {
             return response || fetch(event.request).catch(() => {
                 if (event.request.mode === 'navigate') {
                     return caches.match('./index.html');
