@@ -48,7 +48,8 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
 - ⚡ **Expert:** 8 × 8 (64 pieces) — Ultimate spatial memory test
 
 - **▶️ Animated Move Playback & Replay:** Step-by-step interactive move replay system (`P` key) with 1x/2x/4x speed controls, timeline scrubber, move highlights, and Web Audio step sound FX.
-- **🎖️ Achievements & Badges System:** 22 unlockable trophies with animated toast notifications, sound fanfares, progress bar tracking, and dedicated modal card.
+- **🎖️ Achievements & Badges System:** 23 unlockable trophies with animated toast notifications, sound fanfares, progress bar tracking, and dedicated modal card (including `⚡ Combo King`).
+- **⚡ Rapid Combo Multiplier & Floating Score Popups:** Chain correct tile placements to trigger dynamic ascending audio pitch synthesis, floating combo popups (`🔥 COMBO x2!`, `⚡ MEGA x5!`), and HUD bonus score multipliers!
 - **🤖 Auto-Solve Demo Assistant:** Interactive animated AI bot (`A` key) that steps through move history or auto-arranges tiles to help players get unstuck.
 - **🧘 Zen Relax & Time Attack Modes:** Switch between competitive Time Attack countdown, classic Stopwatch, or untimed Zen Relax mode with 528Hz Solfeggio audio chime synthesis for mindful puzzle solving!
 - **↩️ Move History & Undo System:** Step-by-step move stack allowing players to undo tile moves (`U` key or `Ctrl+Z`).
@@ -78,7 +79,7 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
 - **🔊 Audio Sonar Proximity Radar & Haptic Feedback:** Proximity radar that beeps higher frequencies as tiles near their target slots, alongside tactile device vibration feedback.
 - **🎨 Custom Photo Filter Matrix Shader Studio:** Interactive modal lab allowing players to fine-tune photo shader parameters (Hue Rotate, Brightness, Contrast, Saturation, Sepia, Invert), preview matrix effects live on canvas, and save custom filter presets to LocalStorage.
 - **🎵 Procedural Ambient Soundscape Synthesizer Studio:** Real-time Web Audio API procedural music generator with 4 atmosphere soundscape presets (Cyber Synthwave, Zen Solfeggio 528Hz, 8-Bit Chiptune, Deep Space Drone), stereo panning, LFO modulation, and volume slider controls in header and Sound Lab.
-- **📱 PWA Offline Support:** Built with Web App Manifest (`manifest.json`) and Service Worker (`sw.js`) for 100% offline gameplay.
+- **📱 PWA Offline Support & App Shortcuts:** Built with Web App Manifest (`manifest.json`) and Service Worker (`sw.js` v5) for 100% offline gameplay, featuring App Shortcuts and URL deep-linking (`?mode=daily`, `?mode=collage`, `?mode=motion`, `?mode=camera`).
 
 ---
 
