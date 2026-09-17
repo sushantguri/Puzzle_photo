@@ -3144,8 +3144,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function checkComboMultiplier(tileA, tileB) {
         const now = Date.now();
-        const isCorrect = (tileA && tileA.currentPos === tileA.correctPos) || (tileB && tileB.currentPos === tileB.correctPos);
-        if (isCorrect) {
+        const correctTile = (tileA && tileA.currentPos === tileA.correctPos) ? tileA : 
+                            (tileB && tileB.currentPos === tileB.correctPos) ? tileB : null;
+        if (correctTile) {
             if (now - lastMoveTime < 3200 && lastMoveTime > 0) {
                 comboStreak++;
             } else {
@@ -3154,6 +3155,7 @@ document.addEventListener('DOMContentLoaded', () => {
             lastMoveTime = now;
 
             if (comboStreak >= 2) {
+                showFloatingComboBadge(correctTile, comboStreak);
                 const comboHud = document.getElementById('comboHud');
                 const comboBadge = document.getElementById('comboBadge');
                 const comboPtsText = document.getElementById('comboPtsText');
@@ -3164,6 +3166,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     comboHud.style.display = 'flex';
                     playComboSynthTone(comboStreak);
                     if (comboStreak >= 3) speakVoiceAnnouncements(`${comboStreak}X Combo Streak!`);
+                    if (comboStreak >= 5) unlockAchievement('combo_king');
 
                     clearTimeout(comboTimer);
                     comboTimer = setTimeout(() => {
@@ -3173,6 +3176,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
+    }
+
+    function showFloatingComboBadge(tile, streak) {
+        const board = document.getElementById('puzzleBoard');
+        if (!board || !tile) return;
+        const tileEl = document.querySelector(`.puzzle-tile[data-id="${tile.id}"]`);
+        const popup = document.createElement('div');
+        popup.className = 'floating-combo-popup';
+        popup.textContent = streak >= 5 ? `⚡ MEGA x${streak}!` : `🔥 COMBO x${streak}!`;
+        if (tileEl) {
+            popup.style.left = `${tileEl.offsetLeft + tileEl.offsetWidth / 2}px`;
+            popup.style.top = `${tileEl.offsetTop}px`;
+        } else {
+            popup.style.left = '50%';
+            popup.style.top = '50%';
+        }
+        board.appendChild(popup);
+        setTimeout(() => popup.remove(), 1200);
     }
 
     function playComboSynthTone(streak) {
@@ -4691,7 +4712,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'collage_architect', icon: '⊞', title: 'Collage Architect', desc: 'Create and play a multi-photo collage puzzle.' },
         { id: 'fog_explorer', icon: '🌫️', title: 'Mist Walker', desc: 'Solve any photo puzzle with Fog of War Mystery mode active.' },
         { id: 'sonar_master', icon: '📡', title: 'Radar Pathfinder', desc: 'Trigger 5 Sonar Radar Pulses and complete a Fog of War puzzle.' },
-        { id: 'blindfold_champion', icon: '👁️‍🗨️', title: 'Clairvoyant Master', desc: 'Complete a 4x4 or higher grid in Hardcore Blindfold mode without using the Ghost Guide.' }
+        { id: 'blindfold_champion', icon: '👁️‍🗨️', title: 'Clairvoyant Master', desc: 'Complete a 4x4 or higher grid in Hardcore Blindfold mode without using the Ghost Guide.' },
+        { id: 'combo_king', icon: '⚡', title: 'Combo King', desc: 'Chain 5 correct piece placements in rapid succession.' }
     ];
 
     let unlockedAchievements = [];
@@ -8016,6 +8038,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- PWA SHORTCUTS & DEEP-LINKING ROUTING ---
+    const urlParams = new URLSearchParams(window.location.search);
+    const modeParam = urlParams.get('mode') || urlParams.get('tab');
+    if (modeParam === 'daily') {
+        setTimeout(() => {
+            if (dailyChallengeBtn) dailyChallengeBtn.click();
+        }, 300);
+    } else if (modeParam === 'collage') {
+        const collageBtn = document.querySelector('.tab-btn[data-tab="collage"]');
+        if (collageBtn) collageBtn.click();
+    } else if (modeParam === 'motion' || modeParam === 'livemotion') {
+        const motionBtn = document.querySelector('.tab-btn[data-tab="livemotion"]');
+        if (motionBtn) motionBtn.click();
+    } else if (modeParam === 'camera') {
+        const cameraBtn = document.querySelector('.tab-btn[data-tab="camera"]');
+        if (cameraBtn) cameraBtn.click();
+    }
+
     // Auto-start webcam initially
-    startWebcam();
+    if (!modeParam || modeParam === 'camera') {
+        startWebcam();
+    }
 });

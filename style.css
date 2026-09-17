@@ -3096,8 +3096,44 @@ button.hotkeys-badge:hover {
     gap: 12px;
 }
 
+/* ==========================================================================
+   Floating Combo Streak Popups
+   ========================================================================== */
+.floating-combo-popup {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 120;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #fff;
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 18px rgba(239, 68, 68, 0.5), 0 0 10px rgba(245, 158, 11, 0.6);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+    letter-spacing: 0.5px;
+    animation: comboFloatUp 1.1s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+    white-space: nowrap;
+}
 
-
-
-
-
+@keyframes comboFloatUp {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, 0) scale(0.6);
+    }
+    20% {
+        opacity: 1;
+        transform: translate(-50%, -18px) scale(1.15);
+    }
+    60% {
+        opacity: 1;
+        transform: translate(-50%, -32px) scale(1.0);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -48px) scale(0.85);
+    }
+}
