@@ -4713,7 +4713,9 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'fog_explorer', icon: '🌫️', title: 'Mist Walker', desc: 'Solve any photo puzzle with Fog of War Mystery mode active.' },
         { id: 'sonar_master', icon: '📡', title: 'Radar Pathfinder', desc: 'Trigger 5 Sonar Radar Pulses and complete a Fog of War puzzle.' },
         { id: 'blindfold_champion', icon: '👁️‍🗨️', title: 'Clairvoyant Master', desc: 'Complete a 4x4 or higher grid in Hardcore Blindfold mode without using the Ghost Guide.' },
-        { id: 'combo_king', icon: '⚡', title: 'Combo King', desc: 'Chain 5 correct piece placements in rapid succession.' }
+        { id: 'combo_king', icon: '⚡', title: 'Combo King', desc: 'Chain 5 correct piece placements in rapid succession.' },
+        { id: 'fullscreen_master', icon: '⛶', title: 'Immersive Solver', desc: 'Activate Fullscreen Mode for distraction-free puzzle solving.' },
+        { id: 'theme_connoisseur', icon: '🎨', title: 'Theme Connoisseur', desc: 'Explore and try out at least 5 different color theme palettes.' }
     ];
 
     let unlockedAchievements = [];
@@ -5837,6 +5839,18 @@ document.addEventListener('DOMContentLoaded', () => {
         document.documentElement.setAttribute('data-theme', themeName);
         if (themeSelect) themeSelect.value = themeName;
         localStorage.setItem('snappuzzle_theme', themeName);
+
+        // Track explored themes for achievement
+        try {
+            let exploredThemes = JSON.parse(localStorage.getItem('snappuzzle_themes_explored')) || [];
+            if (!exploredThemes.includes(themeName)) {
+                exploredThemes.push(themeName);
+                localStorage.setItem('snappuzzle_themes_explored', JSON.stringify(exploredThemes));
+            }
+            if (exploredThemes.length >= 5) {
+                unlockAchievement('theme_connoisseur');
+            }
+        } catch (e) {}
     }
 
     // --- KEYBOARD HOTKEYS & ACCESSIBILITY ---
