@@ -48,14 +48,16 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
 - ⚡ **Expert:** 8 × 8 (64 pieces) — Ultimate spatial memory test
 
 - **▶️ Animated Move Playback & Replay:** Step-by-step interactive move replay system (`P` key) with 1x/2x/4x speed controls, timeline scrubber, move highlights, and Web Audio step sound FX.
-- **🎖️ Achievements & Badges System:** 23 unlockable trophies with animated toast notifications, sound fanfares, progress bar tracking, and dedicated modal card (including `⚡ Combo King`).
+- **🎖️ Achievements & Badges System:** 25 unlockable trophies with animated toast notifications, sound fanfares, progress bar tracking, and dedicated modal card (including `⚡ Combo King`, `⛶ Immersive Solver`, and `🎨 Theme Connoisseur`).
 - **⚡ Rapid Combo Multiplier & Floating Score Popups:** Chain correct tile placements to trigger dynamic ascending audio pitch synthesis, floating combo popups (`🔥 COMBO x2!`, `⚡ MEGA x5!`), and HUD bonus score multipliers!
 - **🤖 Auto-Solve Demo Assistant:** Interactive animated AI bot (`A` key) that steps through move history or auto-arranges tiles to help players get unstuck.
+- **⛶ Immersive Fullscreen Mode:** Distraction-free full-display puzzle solving with hardware canvas auto-resizing, header action toggle (`⛶`), and `Shift+F` hotkey.
+- **🎨 10 Themed Color Palettes:** Choose from 10 curated atmospheric themes (Cyber Midnight, Sunset Synth, Deep Emerald, Retro Sepia, Volcanic Ruby, Sakura Blossom, Neon Cyberpunk, ❄️ Nordic Frost, ☕ Espresso Roast, 🔮 Cosmic Violet) or design your own with the Custom Theme Studio.
 - **🧘 Zen Relax & Time Attack Modes:** Switch between competitive Time Attack countdown, classic Stopwatch, or untimed Zen Relax mode with 528Hz Solfeggio audio chime synthesis for mindful puzzle solving!
 - **↩️ Move History & Undo System:** Step-by-step move stack allowing players to undo tile moves (`U` key or `Ctrl+Z`).
 - **🔢 Tile Numbers Overlay:** Toggleable position badges (`N` key) to assist on higher difficulty grid layouts (5x5, 6x6, 8x8).
 - **👁️ Speed Peek & Adjustable Ghost Guide:** Toggleable phantom background image (`G` key) with dynamic opacity slider (10%–90%) and 1.2s flash speed peek button (`B` key).
-- **⌨️ Keyboard Hotkey Controls:** Arrow keys to slide tiles, `G` for guide, `B` for speed peek, `H` for hints, `N` for numbers, `U` for undo, `A` for auto-solve, `P` for replay, `R` to reshuffle, `F` for Fog of War mode, `M` for Sonar Radar Pulse, `Space` to snap photo.
+- **⌨️ Keyboard Hotkey Controls:** Arrow keys to slide tiles, `G` for guide, `B` for speed peek, `H` for hints, `N` for numbers, `U` for undo, `A` for auto-solve, `P` for replay, `R` to reshuffle, `F` for Fog of War mode, `Shift+F` for Fullscreen, `M` for Sonar Radar Pulse, `Space` to snap photo.
 - **🌫️ Mystery Fog of War & Dynamic Flashlight Unmasking:**
   - **Frosted Shroud Engine:** Unsolved puzzle pieces are veiled in frosted glass mist with pulsating mystery glyphs (`?`).
   - **Dynamic Flashlight Torchbeam:** Real-time pointer/touch tracking unmasks piece imagery beneath the cursor with 60fps hardware-accelerated radial light.
