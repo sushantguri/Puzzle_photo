@@ -5911,6 +5911,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     toggle3dTiltBtn.click();
                 } else if (key === 'c' && toggleCrtFxBtn) {
                     toggleCrtFxBtn.click();
+                } else if (e.shiftKey && (key === 'f' || key === 'F')) {
+                    e.preventDefault();
+                    toggleFullscreen();
                 } else if (key === 'f' && toggleFogBtn) {
                     toggleFogBtn.click();
                 } else if (key === 'm' && sonarPulseBtn) {
@@ -5952,6 +5955,58 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
+
+    // --- FULLSCREEN CONTROLLER ---
+    const fullscreenToggleBtn = document.getElementById('fullscreenToggleBtn');
+
+    function toggleFullscreen() {
+        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+            const el = document.documentElement;
+            if (el.requestFullscreen) {
+                el.requestFullscreen().catch(err => {
+                    console.warn('Fullscreen request error:', err);
+                });
+            } else if (el.webkitRequestFullscreen) {
+                el.webkitRequestFullscreen();
+            }
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen().catch(err => {
+                    console.warn('Exit fullscreen error:', err);
+                });
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            }
+        }
+    }
+
+    function updateFullscreenUI() {
+        const isFull = !!(document.fullscreenElement || document.webkitFullscreenElement);
+        if (fullscreenToggleBtn) {
+            fullscreenToggleBtn.innerHTML = isFull ? '🗗' : '⛶';
+            fullscreenToggleBtn.title = isFull ? 'Exit Fullscreen Mode (Shift+F)' : 'Toggle Fullscreen Mode (Shift+F)';
+            fullscreenToggleBtn.classList.toggle('active', isFull);
+        }
+        if (isFull) {
+            showToast('⛶ Entered Fullscreen Mode (Shift+F to exit)', 'Display');
+            if (typeof unlockAchievement === 'function') {
+                unlockAchievement('fullscreen_master');
+            }
+        }
+        if (typeof renderTiles === 'function' && puzzleSection && puzzleSection.style.display !== 'none') {
+            setTimeout(renderTiles, 150);
+        }
+    }
+
+    if (fullscreenToggleBtn) {
+        fullscreenToggleBtn.addEventListener('click', () => {
+            playSound('click');
+            toggleFullscreen();
+        });
+    }
+
+    document.addEventListener('fullscreenchange', updateFullscreenUI);
+    document.addEventListener('webkitfullscreenchange', updateFullscreenUI);
 
     // --- SCORE BADGE PNG GENERATOR ---
     const downloadScoreCardBtn = document.getElementById('downloadScoreCardBtn');

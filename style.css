@@ -1133,6 +1133,12 @@ body {
 .btn-icon:hover {
     background: rgba(255, 255, 255, 0.12);
 }
+.btn-icon.active {
+    background: rgba(99, 102, 241, 0.25);
+    border-color: var(--primary);
+    color: #fff;
+    box-shadow: 0 0 12px var(--primary-glow);
+}
 
 /* ==========================================================================
    Step 3 Gameplay HUD & Board Controls
