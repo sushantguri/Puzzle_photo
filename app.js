@@ -3316,6 +3316,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     unlockAchievement('blindfold_champion');
                 }
             }
+            if (selectedMask && selectedMask !== 'none') {
+                unlockAchievement('silhouette_artist');
+            }
 
             triggerVictory();
         }
@@ -4715,7 +4718,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'blindfold_champion', icon: '👁️‍🗨️', title: 'Clairvoyant Master', desc: 'Complete a 4x4 or higher grid in Hardcore Blindfold mode without using the Ghost Guide.' },
         { id: 'combo_king', icon: '⚡', title: 'Combo King', desc: 'Chain 5 correct piece placements in rapid succession.' },
         { id: 'fullscreen_master', icon: '⛶', title: 'Immersive Solver', desc: 'Activate Fullscreen Mode for distraction-free puzzle solving.' },
-        { id: 'theme_connoisseur', icon: '🎨', title: 'Theme Connoisseur', desc: 'Explore and try out at least 5 different color theme palettes.' }
+        { id: 'theme_connoisseur', icon: '🎨', title: 'Theme Connoisseur', desc: 'Explore and try out at least 5 different color theme palettes.' },
+        { id: 'silhouette_artist', icon: '🎭', title: 'Silhouette Artist', desc: 'Complete any puzzle using a custom board silhouette mask.' }
     ];
 
     let unlockedAchievements = [];
