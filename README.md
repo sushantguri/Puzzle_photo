@@ -48,7 +48,7 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
 - ⚡ **Expert:** 8 × 8 (64 pieces) — Ultimate spatial memory test
 
 - **▶️ Animated Move Playback & Replay:** Step-by-step interactive move replay system (`P` key) with 1x/2x/4x speed controls, timeline scrubber, move highlights, and Web Audio step sound FX.
-- **🎖️ Achievements & Badges System:** 25 unlockable trophies with animated toast notifications, sound fanfares, progress bar tracking, and dedicated modal card (including `⚡ Combo King`, `⛶ Immersive Solver`, and `🎨 Theme Connoisseur`).
+- **🎖️ Achievements & Badges System:** 26 unlockable trophies with animated toast notifications, sound fanfares, progress bar tracking, and dedicated modal card (including `⚡ Combo King`, `⛶ Immersive Solver`, `🎨 Theme Connoisseur`, and `🎭 Silhouette Artist`).
 - **⚡ Rapid Combo Multiplier & Floating Score Popups:** Chain correct tile placements to trigger dynamic ascending audio pitch synthesis, floating combo popups (`🔥 COMBO x2!`, `⚡ MEGA x5!`), and HUD bonus score multipliers!
 - **🤖 Auto-Solve Demo Assistant:** Interactive animated AI bot (`A` key) that steps through move history or auto-arranges tiles to help players get unstuck.
 - **⛶ Immersive Fullscreen Mode:** Distraction-free full-display puzzle solving with hardware canvas auto-resizing, header action toggle (`⛶`), and `Shift+F` hotkey.
@@ -68,7 +68,8 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
   - **3 Mystery Trophies:** Unlock `🌫️ Mist Walker`, `📡 Radar Pathfinder`, and `👁️‍🗨️ Clairvoyant Master`.
 - **📥 Custom Victory Score Card & Polaroid Frame Generator:** Custom PNG exporter with 4 frame styles (Cyber Glass, Retro Polaroid, Neon Cyberpunk, Royal Gold) and editable photo caption!
 - **🔊 Web Audio Sound FX & Ambient Music Generator:** Switchable sound wave synthesis (8-Bit Arcade, Synthwave, Glass Chime, Zen Wooden Marimba, and Crystal Bell FM Chime) plus procedural background ambient music tracks (Cyber Synth, Lo-Fi Chill, 8-Bit Chiptune).
-- **✨ Geometric Cutout Shapes & Faceted Polygons:** Choose from 9 unique piece cutout styles: Classic Square, Pill, Hexagon, Diamond, Cyber Glow, Wave Curves, Classic Tabs, Starburst (12-point star polygon), and Gem Octagon (faceted jewel cut)!
+- **✨ Geometric Cutout Shapes & Faceted Polygons:** Choose from 11 unique piece cutout styles: Classic Square, Pill, Hexagon, Diamond, Cyber Glow, Wave Curves, Classic Tabs, Starburst (12-point star polygon), Gem Octagon (faceted jewel cut), Clover Petals (🍀 4-lobed emerald bloom), and Puzzle Gear (⚙️ mechanical interlocking cog)!
+- **🎭 7 Board Silhouette Masks:** Shape the overall puzzle canvas with dynamic silhouette clipping: Classic Grid, Circle, Diamond, Medieval Shield, Valentine Heart, 5-Point Star (⭐), and Grand Hexagon (⬡)!
 - **🔗 Magnetic Piece Cluster Grouping & Snap-Lock Chimes:** Smart BFS algorithm dynamically identifies contiguous groups of correctly placed adjacent jigsaw tiles, highlighting them with golden pulsing cluster borders (`.cluster-locked`), link badges (`🔗`), and triggering ascending crystalline arpeggio chime audio cues!
 - **📅 Daily Seeded Challenge & Monthly Calendar History:**
   - **Deterministic Seeded PRNG Generator:** Generates unique, reproducible daily procedural artwork (Cosmic Nebula, Solar Flare Horizon, Cyberpunk Metropolis, Emerald Rainforest, Crystal Geode, Oceanic Bioluminescence, Autumn Sunset Glow) with custom geometric mandalas and stylized date watermarks.
@@ -81,7 +82,7 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
 - **🔊 Audio Sonar Proximity Radar & Haptic Feedback:** Proximity radar that beeps higher frequencies as tiles near their target slots, alongside tactile device vibration feedback.
 - **🎨 Custom Photo Filter Matrix Shader Studio:** Interactive modal lab allowing players to fine-tune photo shader parameters (Hue Rotate, Brightness, Contrast, Saturation, Sepia, Invert), preview matrix effects live on canvas, and save custom filter presets to LocalStorage.
 - **🎵 Procedural Ambient Soundscape Synthesizer Studio:** Real-time Web Audio API procedural music generator with 4 atmosphere soundscape presets (Cyber Synthwave, Zen Solfeggio 528Hz, 8-Bit Chiptune, Deep Space Drone), stereo panning, LFO modulation, and volume slider controls in header and Sound Lab.
-- **📱 PWA Offline Support & App Shortcuts:** Built with Web App Manifest (`manifest.json`) and Service Worker (`sw.js` v5) for 100% offline gameplay, featuring App Shortcuts and URL deep-linking (`?mode=daily`, `?mode=collage`, `?mode=motion`, `?mode=camera`).
+- **📱 PWA Offline Support & App Shortcuts:** Built with Web App Manifest (`manifest.json`) and Service Worker (`sw.js` v6) for 100% offline gameplay, featuring App Shortcuts and URL deep-linking (`?mode=daily`, `?mode=collage`, `?mode=motion`, `?mode=camera`).
 
 ---
 
