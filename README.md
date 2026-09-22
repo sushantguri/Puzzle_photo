@@ -48,11 +48,11 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
 - ⚡ **Expert:** 8 × 8 (64 pieces) — Ultimate spatial memory test
 
 - **▶️ Animated Move Playback & Replay:** Step-by-step interactive move replay system (`P` key) with 1x/2x/4x speed controls, timeline scrubber, move highlights, and Web Audio step sound FX.
-- **🎖️ Achievements & Badges System:** 26 unlockable trophies with animated toast notifications, sound fanfares, progress bar tracking, and dedicated modal card (including `⚡ Combo King`, `⛶ Immersive Solver`, `🎨 Theme Connoisseur`, and `🎭 Silhouette Artist`).
+- **🎖️ Achievements & Badges System:** 27 unlockable trophies with animated toast notifications, sound fanfares, progress bar tracking, and dedicated modal card (including `⚡ Combo King`, `⛶ Immersive Solver`, `🎨 Theme Connoisseur`, `🎭 Silhouette Artist`, and `🔮 Prism Perfectionist`).
 - **⚡ Rapid Combo Multiplier & Floating Score Popups:** Chain correct tile placements to trigger dynamic ascending audio pitch synthesis, floating combo popups (`🔥 COMBO x2!`, `⚡ MEGA x5!`), and HUD bonus score multipliers!
 - **🤖 Auto-Solve Demo Assistant:** Interactive animated AI bot (`A` key) that steps through move history or auto-arranges tiles to help players get unstuck.
 - **⛶ Immersive Fullscreen Mode:** Distraction-free full-display puzzle solving with hardware canvas auto-resizing, header action toggle (`⛶`), and `Shift+F` hotkey.
-- **🎨 10 Themed Color Palettes:** Choose from 10 curated atmospheric themes (Cyber Midnight, Sunset Synth, Deep Emerald, Retro Sepia, Volcanic Ruby, Sakura Blossom, Neon Cyberpunk, ❄️ Nordic Frost, ☕ Espresso Roast, 🔮 Cosmic Violet) or design your own with the Custom Theme Studio.
+- **🎨 12 Themed Color Palettes:** Choose from 12 curated atmospheric themes (Cyber Midnight, Sunset Synth, Deep Emerald, Retro Sepia, Volcanic Ruby, Sakura Blossom, Neon Cyberpunk, ❄️ Nordic Frost, ☕ Espresso Roast, 🔮 Cosmic Violet, 🌊 Ocean Abyss, 🌅 Solar Flare) or design your own with the Custom Theme Studio.
 - **🧘 Zen Relax & Time Attack Modes:** Switch between competitive Time Attack countdown, classic Stopwatch, or untimed Zen Relax mode with 528Hz Solfeggio audio chime synthesis for mindful puzzle solving!
 - **↩️ Move History & Undo System:** Step-by-step move stack allowing players to undo tile moves (`U` key or `Ctrl+Z`).
 - **🔢 Tile Numbers Overlay:** Toggleable position badges (`N` key) to assist on higher difficulty grid layouts (5x5, 6x6, 8x8).
@@ -68,8 +68,8 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
   - **3 Mystery Trophies:** Unlock `🌫️ Mist Walker`, `📡 Radar Pathfinder`, and `👁️‍🗨️ Clairvoyant Master`.
 - **📥 Custom Victory Score Card & Polaroid Frame Generator:** Custom PNG exporter with 4 frame styles (Cyber Glass, Retro Polaroid, Neon Cyberpunk, Royal Gold) and editable photo caption!
 - **🔊 Web Audio Sound FX & Ambient Music Generator:** Switchable sound wave synthesis (8-Bit Arcade, Synthwave, Glass Chime, Zen Wooden Marimba, and Crystal Bell FM Chime) plus procedural background ambient music tracks (Cyber Synth, Lo-Fi Chill, 8-Bit Chiptune).
-- **✨ Geometric Cutout Shapes & Faceted Polygons:** Choose from 11 unique piece cutout styles: Classic Square, Pill, Hexagon, Diamond, Cyber Glow, Wave Curves, Classic Tabs, Starburst (12-point star polygon), Gem Octagon (faceted jewel cut), Clover Petals (🍀 4-lobed emerald bloom), and Puzzle Gear (⚙️ mechanical interlocking cog)!
-- **🎭 7 Board Silhouette Masks:** Shape the overall puzzle canvas with dynamic silhouette clipping: Classic Grid, Circle, Diamond, Medieval Shield, Valentine Heart, 5-Point Star (⭐), and Grand Hexagon (⬡)!
+- **✨ Geometric Cutout Shapes & Faceted Polygons:** Choose from 13 unique piece cutout styles: Classic Square, Pill, Hexagon, Diamond, Cyber Glow, Wave Curves, Classic Tabs, Starburst (12-point star polygon), Gem Octagon (faceted jewel cut), Clover Petals (🍀 4-lobed emerald bloom), Puzzle Gear (⚙️ mechanical interlocking cog), Prism Shard (🔮 multi-faceted crystalline jewel), and Botanical Leaf (🍃 curved organic leaf silhouette)!
+- **🎭 9 Board Silhouette Masks:** Shape the overall puzzle canvas with dynamic silhouette clipping: Classic Grid, Circle, Diamond, Medieval Shield, Valentine Heart, 5-Point Star (⭐), Grand Hexagon (⬡), Whimsical Cloud (☁️), and Octagon Shield (🛑)!
 - **🔗 Magnetic Piece Cluster Grouping & Snap-Lock Chimes:** Smart BFS algorithm dynamically identifies contiguous groups of correctly placed adjacent jigsaw tiles, highlighting them with golden pulsing cluster borders (`.cluster-locked`), link badges (`🔗`), and triggering ascending crystalline arpeggio chime audio cues!
 - **📅 Daily Seeded Challenge & Monthly Calendar History:**
   - **Deterministic Seeded PRNG Generator:** Generates unique, reproducible daily procedural artwork (Cosmic Nebula, Solar Flare Horizon, Cyberpunk Metropolis, Emerald Rainforest, Crystal Geode, Oceanic Bioluminescence, Autumn Sunset Glow) with custom geometric mandalas and stylized date watermarks.
@@ -82,7 +82,7 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
 - **🔊 Audio Sonar Proximity Radar & Haptic Feedback:** Proximity radar that beeps higher frequencies as tiles near their target slots, alongside tactile device vibration feedback.
 - **🎨 Custom Photo Filter Matrix Shader Studio:** Interactive modal lab allowing players to fine-tune photo shader parameters (Hue Rotate, Brightness, Contrast, Saturation, Sepia, Invert), preview matrix effects live on canvas, and save custom filter presets to LocalStorage.
 - **🎵 Procedural Ambient Soundscape Synthesizer Studio:** Real-time Web Audio API procedural music generator with 4 atmosphere soundscape presets (Cyber Synthwave, Zen Solfeggio 528Hz, 8-Bit Chiptune, Deep Space Drone), stereo panning, LFO modulation, and volume slider controls in header and Sound Lab.
-- **📱 PWA Offline Support & App Shortcuts:** Built with Web App Manifest (`manifest.json`) and Service Worker (`sw.js` v6) for 100% offline gameplay, featuring App Shortcuts and URL deep-linking (`?mode=daily`, `?mode=collage`, `?mode=motion`, `?mode=camera`).
+- **📱 PWA Offline Support & App Shortcuts:** Built with Web App Manifest (`manifest.json`) and Service Worker (`sw.js` v7) for 100% offline gameplay, featuring App Shortcuts and URL deep-linking (`?mode=daily`, `?mode=collage`, `?mode=motion`, `?mode=camera`).
 
 ---
 
