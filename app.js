@@ -3310,6 +3310,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (selectedShape === 'prism' || selectedShape === 'leaf') {
                 unlockAchievement('prism_perfectionist');
             }
+            if (selectedShape === 'shield' || selectedMask === 'gem') {
+                unlockAchievement('guardian_solver');
+            }
             if (isFogModeActive) {
                 unlockAchievement('fog_explorer');
                 if (sonarPulsesCountInGame >= 5) {
@@ -4723,7 +4726,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'fullscreen_master', icon: '⛶', title: 'Immersive Solver', desc: 'Activate Fullscreen Mode for distraction-free puzzle solving.' },
         { id: 'theme_connoisseur', icon: '🎨', title: 'Theme Connoisseur', desc: 'Explore and try out at least 5 different color theme palettes.' },
         { id: 'silhouette_artist', icon: '🎭', title: 'Silhouette Artist', desc: 'Complete any puzzle using a custom board silhouette mask.' },
-        { id: 'prism_perfectionist', icon: '🔮', title: 'Prism Perfectionist', desc: 'Complete any puzzle using Prism Shard or Botanical Leaf tile cutout styles.' }
+        { id: 'prism_perfectionist', icon: '🔮', title: 'Prism Perfectionist', desc: 'Complete any puzzle using Prism Shard or Botanical Leaf tile cutout styles.' },
+        { id: 'guardian_solver', icon: '🛡️', title: 'Guardian Solver', desc: 'Complete any puzzle using the Knight Shield tile cutout or Brilliant Jewel board mask.' }
     ];
 
     let unlockedAchievements = [];

@@ -2768,6 +2768,12 @@ body {
 .puzzle-board.mask-octagon {
     clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
 }
+.puzzle-board.mask-gem {
+    clip-path: polygon(25% 0%, 75% 0%, 100% 32%, 50% 100%, 0% 32%);
+}
+.puzzle-board.mask-delta {
+    clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+}
 
 /* AI Rival Speedrun HUD */
 .ai-rival-hud {
