@@ -3304,7 +3304,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isAiRivalActive && aiRivalLevel === 'hard') {
                 unlockAchievement('bot_slayer');
             }
-            if (['hexagon', 'diamond', 'wave', 'tabbed', 'starburst', 'octagon', 'clover', 'gear', 'prism', 'leaf'].includes(selectedShape)) {
+            if (['hexagon', 'diamond', 'wave', 'tabbed', 'starburst', 'octagon', 'clover', 'gear', 'prism', 'leaf', 'sparkle', 'shield'].includes(selectedShape)) {
                 unlockAchievement('shape_shifter');
             }
             if (selectedShape === 'prism' || selectedShape === 'leaf') {
