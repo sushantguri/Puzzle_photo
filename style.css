@@ -163,6 +163,28 @@
     --cyan-accent: #fef08a;
 }
 
+[data-theme="amethyst"] {
+    --bg-dark: #0f071a;
+    --card-bg: rgba(28, 14, 48, 0.78);
+    --primary: #a855f7;
+    --accent-primary: #a855f7;
+    --primary-glow: #c084fc;
+    --primary-accent: #9333ea;
+    --secondary-accent: #ec4899;
+    --cyan-accent: #f472b6;
+}
+
+[data-theme="lime"] {
+    --bg-dark: #0b1404;
+    --card-bg: rgba(23, 41, 10, 0.78);
+    --primary: #84cc16;
+    --accent-primary: #84cc16;
+    --primary-glow: #a3e635;
+    --primary-accent: #65a30d;
+    --secondary-accent: #10b981;
+    --cyan-accent: #bef264;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
