@@ -2806,6 +2806,12 @@ body {
 .puzzle-board.mask-delta {
     clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
 }
+.puzzle-board.mask-moon {
+    clip-path: polygon(35% 0%, 70% 5%, 95% 30%, 95% 70%, 70% 95%, 35% 100%, 62% 82%, 75% 60%, 75% 40%, 62% 18%);
+}
+.puzzle-board.mask-hourglass {
+    clip-path: polygon(0% 0%, 100% 0%, 55% 50%, 100% 100%, 0% 100%, 45% 50%);
+}
 
 /* AI Rival Speedrun HUD */
 .ai-rival-hud {
