@@ -2,7 +2,7 @@
    SnapPuzzle Service Worker — Offline Caching Engine
    ========================================================================== */
 
-const CACHE_NAME = 'snappuzzle-v8';
+const CACHE_NAME = 'snappuzzle-v9';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
