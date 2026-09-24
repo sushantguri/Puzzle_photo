@@ -2727,6 +2727,16 @@ body {
     box-shadow: 0 4px 14px rgba(59, 130, 246, 0.45);
     filter: drop-shadow(0 2px 8px rgba(37, 99, 235, 0.35));
 }
+.puzzle-tile.shape-crescent {
+    clip-path: polygon(40% 0%, 75% 10%, 95% 35%, 95% 65%, 75% 90%, 40% 100%, 65% 82%, 78% 60%, 78% 40%, 65% 18%);
+    box-shadow: 0 4px 14px rgba(168, 85, 247, 0.45);
+    filter: drop-shadow(0 2px 8px rgba(147, 51, 234, 0.4));
+}
+.puzzle-tile.shape-cross {
+    clip-path: polygon(35% 0%, 65% 0%, 65% 35%, 100% 35%, 100% 65%, 65% 65%, 65% 100%, 35% 100%, 35% 65%, 0% 65%, 0% 35%, 35% 35%);
+    box-shadow: 0 4px 14px rgba(244, 63, 94, 0.45);
+    filter: drop-shadow(0 2px 8px rgba(225, 29, 72, 0.35));
+}
 
 /* Magnetic Cluster Grouping Styles */
 .puzzle-tile.cluster-locked {
