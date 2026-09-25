@@ -2759,6 +2759,16 @@ body {
     box-shadow: 0 4px 14px rgba(244, 63, 94, 0.45);
     filter: drop-shadow(0 2px 8px rgba(225, 29, 72, 0.35));
 }
+.puzzle-tile.shape-heart {
+    clip-path: polygon(50% 18%, 62% 4%, 82% 4%, 96% 18%, 98% 38%, 88% 64%, 50% 98%, 12% 64%, 2% 38%, 4% 18%, 18% 4%, 38% 18%);
+    box-shadow: 0 4px 14px rgba(244, 63, 94, 0.45);
+    filter: drop-shadow(0 2px 8px rgba(225, 29, 72, 0.35));
+}
+.puzzle-tile.shape-hexastar {
+    clip-path: polygon(50% 0%, 65% 25%, 95% 25%, 78% 50%, 95% 75%, 65% 75%, 50% 100%, 35% 75%, 5% 75%, 22% 50%, 5% 25%, 35% 25%);
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.45);
+    filter: drop-shadow(0 2px 8px rgba(217, 119, 6, 0.4));
+}
 
 /* Magnetic Cluster Grouping Styles */
 .puzzle-tile.cluster-locked {
