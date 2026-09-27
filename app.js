@@ -3316,6 +3316,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (selectedShape === 'crescent' || selectedMask === 'moon' || selectedMask === 'hourglass') {
                 unlockAchievement('celestial_navigator');
             }
+            if (selectedMask === 'arch' || selectedMask === 'crest' || selectedShape === 'heart' || selectedShape === 'hexastar') {
+                unlockAchievement('monument_architect');
+            }
             if (isFogModeActive) {
                 unlockAchievement('fog_explorer');
                 if (sonarPulsesCountInGame >= 5) {
@@ -4731,7 +4734,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'silhouette_artist', icon: '🎭', title: 'Silhouette Artist', desc: 'Complete any puzzle using a custom board silhouette mask.' },
         { id: 'prism_perfectionist', icon: '🔮', title: 'Prism Perfectionist', desc: 'Complete any puzzle using Prism Shard or Botanical Leaf tile cutout styles.' },
         { id: 'guardian_solver', icon: '🛡️', title: 'Guardian Solver', desc: 'Complete any puzzle using the Knight Shield tile cutout or Brilliant Jewel board mask.' },
-        { id: 'celestial_navigator', icon: '🌌', title: 'Celestial Navigator', desc: 'Complete any puzzle using the Crescent Moon tile cutout, Moon mask, or Hourglass board mask.' }
+        { id: 'celestial_navigator', icon: '🌌', title: 'Celestial Navigator', desc: 'Complete any puzzle using the Crescent Moon tile cutout, Moon mask, or Hourglass board mask.' },
+        { id: 'monument_architect', icon: '🏛️', title: 'Monument Architect', desc: 'Complete any puzzle using the Gothic Arch, Royal Crest mask, or Radiant Heart/Hex Star cutouts.' }
     ];
 
     let unlockedAchievements = [];
