@@ -2282,6 +2282,8 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.timer-mode-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             timerMode = btn.dataset.timermode;
+            const modBadge = document.getElementById('selectedModifierBadge');
+            if (modBadge) modBadge.textContent = '⏱️ ' + btn.textContent.trim();
             playSound('click');
         });
     });
@@ -2292,6 +2294,8 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.shape-selector .shape-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             selectedShape = btn.dataset.shape;
+            const shapeBadge = document.getElementById('selectedShapeBadge');
+            if (shapeBadge) shapeBadge.textContent = '✂️ ' + btn.textContent.trim();
             playSound('click');
         });
     });
@@ -2302,6 +2306,8 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.mask-selector .mask-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             selectedMask = btn.dataset.mask;
+            const maskBadge = document.getElementById('selectedMaskBadge');
+            if (maskBadge) maskBadge.textContent = '🖼️ ' + btn.textContent.trim();
             playSound('click');
         });
     });

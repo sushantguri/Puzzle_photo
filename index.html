@@ -656,94 +656,114 @@
                             </div>
                         </div>
 
-                        <!-- Tile Cutouts & Masking -->
-                        <div class="config-group">
-                            <label class="config-group-label">✂️ Tile Cutout Style:</label>
-                            <div class="shape-selector">
-                                <button class="shape-btn active" data-shape="square" type="button"><span class="shape-icon">🟦</span> Square</button>
-                                <button class="shape-btn" data-shape="rounded" type="button"><span class="shape-icon">🟢</span> Pill</button>
-                                <button class="shape-btn" data-shape="hexagon" type="button"><span class="shape-icon">🐝</span> Hexagon</button>
-                                <button class="shape-btn" data-shape="diamond" type="button"><span class="shape-icon">💎</span> Diamond</button>
-                                <button class="shape-btn" data-shape="cyber" type="button"><span class="shape-icon">⚡</span> Cyber Glow</button>
-                                <button class="shape-btn" data-shape="wave" type="button"><span class="shape-icon">🌊</span> Wave Curves</button>
-                                <button class="shape-btn" data-shape="tabbed" type="button"><span class="shape-icon">🧩</span> Tabs</button>
-                                <button class="shape-btn" data-shape="starburst" type="button"><span class="shape-icon">🌟</span> Starburst</button>
-                                <button class="shape-btn" data-shape="octagon" type="button"><span class="shape-icon">💎</span> Octagon</button>
-                                <button class="shape-btn" data-shape="clover" type="button"><span class="shape-icon">🍀</span> Clover</button>
-                                <button class="shape-btn" data-shape="gear" type="button"><span class="shape-icon">⚙️</span> Gear</button>
-                                <button class="shape-btn" data-shape="prism" type="button"><span class="shape-icon">🔮</span> Prism</button>
-                                <button class="shape-btn" data-shape="leaf" type="button"><span class="shape-icon">🍃</span> Leaf</button>
-                                <button class="shape-btn" data-shape="sparkle" type="button"><span class="shape-icon">✨</span> Sparkle</button>
-                                <button class="shape-btn" data-shape="shield" type="button"><span class="shape-icon">🛡️</span> Shield</button>
-                                <button class="shape-btn" data-shape="crescent" type="button"><span class="shape-icon">🌙</span> Crescent</button>
-                                <button class="shape-btn" data-shape="cross" type="button"><span class="shape-icon">✚</span> Cross</button>
-                                <button class="shape-btn" data-shape="heart" type="button"><span class="shape-icon">❤️</span> Heart</button>
-                                <button class="shape-btn" data-shape="hexastar" type="button"><span class="shape-icon">✡️</span> Hex Star</button>
-                            </div>
-                        </div>
+                        <!-- Collapsible Tile Cutouts & Masking Accordion -->
+                        <details class="config-collapsible-panel config-accordion-panel" id="shapesAndMasksAccordion">
+                            <summary class="collapsible-summary">
+                                <span>🎨 Piece Cutouts &amp; Silhouette Masks</span>
+                                <div class="summary-badge-group">
+                                    <span id="selectedShapeBadge" class="summary-choice-badge">✂️ Square</span>
+                                    <span id="selectedMaskBadge" class="summary-choice-badge">🖼️ Grid</span>
+                                    <span class="collapsible-caret">▾</span>
+                                </div>
+                            </summary>
+                            <div class="collapsible-content">
+                                <div class="accordion-subgroup">
+                                    <label class="config-group-label">✂️ Tile Cutout Style (19 Shapes):</label>
+                                    <div class="shape-selector">
+                                        <button class="shape-btn active" data-shape="square" type="button"><span class="shape-icon">🟦</span> Square</button>
+                                        <button class="shape-btn" data-shape="rounded" type="button"><span class="shape-icon">🟢</span> Pill</button>
+                                        <button class="shape-btn" data-shape="hexagon" type="button"><span class="shape-icon">🐝</span> Hexagon</button>
+                                        <button class="shape-btn" data-shape="diamond" type="button"><span class="shape-icon">💎</span> Diamond</button>
+                                        <button class="shape-btn" data-shape="cyber" type="button"><span class="shape-icon">⚡</span> Cyber Glow</button>
+                                        <button class="shape-btn" data-shape="wave" type="button"><span class="shape-icon">🌊</span> Wave Curves</button>
+                                        <button class="shape-btn" data-shape="tabbed" type="button"><span class="shape-icon">🧩</span> Tabs</button>
+                                        <button class="shape-btn" data-shape="starburst" type="button"><span class="shape-icon">🌟</span> Starburst</button>
+                                        <button class="shape-btn" data-shape="octagon" type="button"><span class="shape-icon">💎</span> Octagon</button>
+                                        <button class="shape-btn" data-shape="clover" type="button"><span class="shape-icon">🍀</span> Clover</button>
+                                        <button class="shape-btn" data-shape="gear" type="button"><span class="shape-icon">⚙️</span> Gear</button>
+                                        <button class="shape-btn" data-shape="prism" type="button"><span class="shape-icon">🔮</span> Prism</button>
+                                        <button class="shape-btn" data-shape="leaf" type="button"><span class="shape-icon">🍃</span> Leaf</button>
+                                        <button class="shape-btn" data-shape="sparkle" type="button"><span class="shape-icon">✨</span> Sparkle</button>
+                                        <button class="shape-btn" data-shape="shield" type="button"><span class="shape-icon">🛡️</span> Shield</button>
+                                        <button class="shape-btn" data-shape="crescent" type="button"><span class="shape-icon">🌙</span> Crescent</button>
+                                        <button class="shape-btn" data-shape="cross" type="button"><span class="shape-icon">✚</span> Cross</button>
+                                        <button class="shape-btn" data-shape="heart" type="button"><span class="shape-icon">❤️</span> Heart</button>
+                                        <button class="shape-btn" data-shape="hexastar" type="button"><span class="shape-icon">✡️</span> Hex Star</button>
+                                    </div>
+                                </div>
 
-                        <div class="config-group">
-                            <label class="config-group-label">🖼️ Board Silhouette Mask:</label>
-                            <div class="mask-selector">
-                                <button class="mask-btn active shape-btn" data-mask="none" type="button"><span class="shape-icon">⬛</span> Classic Grid</button>
-                                <button class="mask-btn shape-btn" data-mask="circle" type="button"><span class="shape-icon">⚪</span> Circle</button>
-                                <button class="mask-btn shape-btn" data-mask="diamond" type="button"><span class="shape-icon">💎</span> Diamond</button>
-                                <button class="mask-btn shape-btn" data-mask="shield" type="button"><span class="shape-icon">🛡️</span> Shield</button>
-                                <button class="mask-btn shape-btn" data-mask="heart" type="button"><span class="shape-icon">❤️</span> Heart</button>
-                                <button class="mask-btn shape-btn" data-mask="star" type="button"><span class="shape-icon">⭐</span> Star</button>
-                                <button class="mask-btn shape-btn" data-mask="hexagon" type="button"><span class="shape-icon">⬡</span> Hexagon</button>
-                                <button class="mask-btn shape-btn" data-mask="cloud" type="button"><span class="shape-icon">☁️</span> Cloud</button>
-                                <button class="mask-btn shape-btn" data-mask="octagon" type="button"><span class="shape-icon">🛑</span> Octagon</button>
-                                <button class="mask-btn shape-btn" data-mask="gem" type="button"><span class="shape-icon">💎</span> Jewel</button>
-                                <button class="mask-btn shape-btn" data-mask="delta" type="button"><span class="shape-icon">🔺</span> Delta</button>
-                                <button class="mask-btn shape-btn" data-mask="moon" type="button"><span class="shape-icon">🌙</span> Moon</button>
-                                <button class="mask-btn shape-btn" data-mask="hourglass" type="button"><span class="shape-icon">⏳</span> Hourglass</button>
-                                <button class="mask-btn shape-btn" data-mask="arch" type="button"><span class="shape-icon">🏛️</span> Arch</button>
-                                <button class="mask-btn shape-btn" data-mask="crest" type="button"><span class="shape-icon">⚜️</span> Crest</button>
+                                <div class="accordion-subgroup" style="margin-top: 6px;">
+                                    <label class="config-group-label">🖼️ Board Silhouette Mask (15 Masks):</label>
+                                    <div class="mask-selector">
+                                        <button class="mask-btn active shape-btn" data-mask="none" type="button"><span class="shape-icon">⬛</span> Classic Grid</button>
+                                        <button class="mask-btn shape-btn" data-mask="circle" type="button"><span class="shape-icon">⚪</span> Circle</button>
+                                        <button class="mask-btn shape-btn" data-mask="diamond" type="button"><span class="shape-icon">💎</span> Diamond</button>
+                                        <button class="mask-btn shape-btn" data-mask="shield" type="button"><span class="shape-icon">🛡️</span> Shield</button>
+                                        <button class="mask-btn shape-btn" data-mask="heart" type="button"><span class="shape-icon">❤️</span> Heart</button>
+                                        <button class="mask-btn shape-btn" data-mask="star" type="button"><span class="shape-icon">⭐</span> Star</button>
+                                        <button class="mask-btn shape-btn" data-mask="hexagon" type="button"><span class="shape-icon">⬡</span> Hexagon</button>
+                                        <button class="mask-btn shape-btn" data-mask="cloud" type="button"><span class="shape-icon">☁️</span> Cloud</button>
+                                        <button class="mask-btn shape-btn" data-mask="octagon" type="button"><span class="shape-icon">🛑</span> Octagon</button>
+                                        <button class="mask-btn shape-btn" data-mask="gem" type="button"><span class="shape-icon">💎</span> Jewel</button>
+                                        <button class="mask-btn shape-btn" data-mask="delta" type="button"><span class="shape-icon">🔺</span> Delta</button>
+                                        <button class="mask-btn shape-btn" data-mask="moon" type="button"><span class="shape-icon">🌙</span> Moon</button>
+                                        <button class="mask-btn shape-btn" data-mask="hourglass" type="button"><span class="shape-icon">⏳</span> Hourglass</button>
+                                        <button class="mask-btn shape-btn" data-mask="arch" type="button"><span class="shape-icon">🏛️</span> Arch</button>
+                                        <button class="mask-btn shape-btn" data-mask="crest" type="button"><span class="shape-icon">⚜️</span> Crest</button>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        </details>
 
-                        <!-- Extra Challenge Modifiers -->
-                        <div class="config-group">
-                            <label class="config-group-label">⚡ Extra Challenges & Game Modifiers:</label>
-                            <div class="modifiers-grid">
-                                <div class="modifier-box">
-                                    <span class="modifier-title">⏱️ Timer Mode</span>
-                                    <div class="timer-mode-group">
-                                        <button class="timer-mode-btn active" data-timermode="stopwatch" type="button">Stopwatch</button>
-                                        <button class="timer-mode-btn" data-timermode="countdown" type="button">Time Attack</button>
-                                        <button class="timer-mode-btn" data-timermode="zen" type="button">Zen</button>
-                                        <button class="timer-mode-btn" data-timermode="speedrun" type="button">Speedrun</button>
-                                    </div>
+                        <!-- Collapsible Extra Challenge Modifiers Accordion -->
+                        <details class="config-collapsible-panel config-accordion-panel" id="modifiersAccordion">
+                            <summary class="collapsible-summary">
+                                <span>⚡ Game Modifiers &amp; Challenges</span>
+                                <div class="summary-badge-group">
+                                    <span id="selectedModifierBadge" class="summary-choice-badge">⏱️ Stopwatch</span>
+                                    <span class="collapsible-caret">▾</span>
                                 </div>
-                                <div class="modifier-box">
-                                    <span class="modifier-title">🌫️ Mystery Fog of War</span>
-                                    <div class="fog-challenge-controls">
-                                        <button class="fog-mode-btn shape-btn active" data-fog="off" type="button">Off</button>
-                                        <button class="fog-mode-btn shape-btn" data-fog="flashlight" type="button">Torch</button>
-                                        <button class="fog-mode-btn shape-btn" data-fog="sonar" type="button">Sonar</button>
-                                        <button class="fog-mode-btn shape-btn" data-fog="blindfold" type="button">Blindfold</button>
+                            </summary>
+                            <div class="collapsible-content">
+                                <div class="modifiers-grid">
+                                    <div class="modifier-box">
+                                        <span class="modifier-title">⏱️ Timer Mode</span>
+                                        <div class="timer-mode-group">
+                                            <button class="timer-mode-btn active" data-timermode="stopwatch" type="button">Stopwatch</button>
+                                            <button class="timer-mode-btn" data-timermode="countdown" type="button">Time Attack</button>
+                                            <button class="timer-mode-btn" data-timermode="zen" type="button">Zen</button>
+                                            <button class="timer-mode-btn" data-timermode="speedrun" type="button">Speedrun</button>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="modifier-box modifier-box-row">
-                                    <div class="rotation-controls">
-                                        <button id="toggleRotationBtn" class="btn btn-secondary btn-sm" type="button" title="Rotate tiles with right-click or double-tap">
-                                            <span class="mode-icon">🔄</span> Tile Rotation Challenge: Off
-                                        </button>
+                                    <div class="modifier-box">
+                                        <span class="modifier-title">🌫️ Mystery Fog of War</span>
+                                        <div class="fog-challenge-controls">
+                                            <button class="fog-mode-btn shape-btn active" data-fog="off" type="button">Off</button>
+                                            <button class="fog-mode-btn shape-btn" data-fog="flashlight" type="button">Torch</button>
+                                            <button class="fog-mode-btn shape-btn" data-fog="sonar" type="button">Sonar</button>
+                                            <button class="fog-mode-btn shape-btn" data-fog="blindfold" type="button">Blindfold</button>
+                                        </div>
                                     </div>
-                                    <div class="ai-rival-controls">
-                                        <button id="toggleAiRivalBtn" class="btn btn-secondary btn-sm" type="button">
-                                            <span class="mode-icon">🤖</span> AI Rival: Off
-                                        </button>
-                                        <select id="aiLevelSelect" class="form-select form-select-sm" style="display: none;" title="AI Rival Bot Speed">
-                                            <option value="easy">🐱 Novice (Slow)</option>
-                                            <option value="medium" selected>🤖 Cyber (Med)</option>
-                                            <option value="hard">⚡ Master (Fast)</option>
-                                        </select>
+                                    <div class="modifier-box modifier-box-row">
+                                        <div class="rotation-controls">
+                                            <button id="toggleRotationBtn" class="btn btn-secondary btn-sm" type="button" title="Rotate tiles with right-click or double-tap">
+                                                <span class="mode-icon">🔄</span> Tile Rotation Challenge: Off
+                                            </button>
+                                        </div>
+                                        <div class="ai-rival-controls">
+                                            <button id="toggleAiRivalBtn" class="btn btn-secondary btn-sm" type="button">
+                                                <span class="mode-icon">🤖</span> AI Rival: Off
+                                            </button>
+                                            <select id="aiLevelSelect" class="form-select form-select-sm" style="display: none;" title="AI Rival Bot Speed">
+                                                <option value="easy">🐱 Novice (Slow)</option>
+                                                <option value="medium" selected>🤖 Cyber (Med)</option>
+                                                <option value="hard">⚡ Master (Fast)</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </details>
 
                         <!-- Sticky Launch Bar -->
                         <div class="action-bar">
@@ -762,19 +782,27 @@
                 <div class="game-hud-container">
                     <!-- Primary Controls Bar (Essential actions) -->
                     <div class="game-primary-toolbar">
-                        <button id="hintBtn" class="btn btn-secondary btn-sm" title="Show hint (H)">💡 Hint</button>
-                        <button id="hintPathBtn" class="btn btn-secondary btn-sm" title="Optimal hint path">📍 Path</button>
-                        <button id="toggleGhostBtn" class="btn btn-secondary btn-sm" title="Toggle reference guide (G)">👁️ Guide</button>
-                        <button id="peekGhostBtn" class="btn btn-secondary btn-sm" title="Flash guide for 1.2s (B)">⚡ Peek</button>
-                        <button id="toggleNumbersBtn" class="btn btn-secondary btn-sm" title="Toggle tile numbers (N)">🔢 Numbers</button>
-                        <button id="undoBtn" class="btn btn-secondary btn-sm" disabled title="Undo move (U)">↩️ Undo</button>
-                        <button id="shuffleBtn" class="btn btn-secondary btn-sm" title="Reshuffle pieces (R)">🔀 Reshuffle</button>
-                        <button id="autoSolveBtn" class="btn btn-secondary btn-sm" title="Watch AI solve puzzle (A)">🤖 Auto-Solve</button>
-                        <button id="replayToolbarBtn" class="btn btn-secondary btn-sm" title="Replay moves (P)" style="display: none;">▶️ Replay</button>
-                        <button id="gameAssistsToggleBtn" type="button" class="btn btn-secondary btn-sm btn-assists-toggle" title="Toggle Sensory & Visual FX Controls">
-                            <span>✨ Assists & FX</span>
-                            <span class="assists-caret">▾</span>
-                        </button>
+                        <div class="toolbar-group">
+                            <button id="hintBtn" class="btn btn-secondary btn-sm" title="Show hint (H)">💡 Hint</button>
+                            <button id="hintPathBtn" class="btn btn-secondary btn-sm" title="Optimal hint path">📍 Path</button>
+                            <button id="toggleGhostBtn" class="btn btn-secondary btn-sm" title="Toggle reference guide (G)">👁️ Guide</button>
+                            <button id="peekGhostBtn" class="btn btn-secondary btn-sm" title="Flash guide for 1.2s (B)">⚡ Peek</button>
+                            <button id="toggleNumbersBtn" class="btn btn-secondary btn-sm" title="Toggle tile numbers (N)">🔢 Numbers</button>
+                        </div>
+                        <div class="toolbar-separator"></div>
+                        <div class="toolbar-group">
+                            <button id="undoBtn" class="btn btn-secondary btn-sm" disabled title="Undo move (U)">↩️ Undo</button>
+                            <button id="shuffleBtn" class="btn btn-secondary btn-sm" title="Reshuffle pieces (R)">🔀 Reshuffle</button>
+                            <button id="autoSolveBtn" class="btn btn-secondary btn-sm" title="Watch AI solve puzzle (A)">🤖 Auto-Solve</button>
+                            <button id="replayToolbarBtn" class="btn btn-secondary btn-sm" title="Replay moves (P)" style="display: none;">▶️ Replay</button>
+                        </div>
+                        <div class="toolbar-separator"></div>
+                        <div class="toolbar-group">
+                            <button id="gameAssistsToggleBtn" type="button" class="btn btn-secondary btn-sm btn-assists-toggle" title="Toggle Sensory &amp; Visual FX Controls">
+                                <span>✨ Assists &amp; FX</span>
+                                <span class="assists-caret">▾</span>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Collapsible Assists & Visual FX Drawer -->
