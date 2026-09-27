@@ -185,6 +185,28 @@
     --cyan-accent: #bef264;
 }
 
+[data-theme="coral"] {
+    --bg-dark: #190a0d;
+    --card-bg: rgba(45, 14, 22, 0.78);
+    --primary: #f43f5e;
+    --accent-primary: #f43f5e;
+    --primary-glow: #fb7185;
+    --primary-accent: #e11d48;
+    --secondary-accent: #fb923c;
+    --cyan-accent: #fda4af;
+}
+
+[data-theme="glacier"] {
+    --bg-dark: #05141c;
+    --card-bg: rgba(10, 36, 48, 0.78);
+    --primary: #06b6d4;
+    --accent-primary: #06b6d4;
+    --primary-glow: #22d3ee;
+    --primary-accent: #0891b2;
+    --secondary-accent: #38bdf8;
+    --cyan-accent: #a5f3fc;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
