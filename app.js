@@ -5444,35 +5444,101 @@ document.addEventListener('DOMContentLoaded', () => {
             autoSolveBtn.style.background = 'rgba(239, 68, 68, 0.4)';
         }
 
+        // Clear moveHistory to prevent infinite undo-redo oscillation
+        moveHistory = [];
+
         autoSolveTimer = setInterval(() => {
             if (!isGameActive || !isAutoSolving) {
                 stopAutoSolve();
                 return;
             }
 
-            const isSolved = tiles.every(t => t.currentPos === t.correctPos);
+            // 1. Check if all tiles are at correct positions and properly oriented
+            const isSolved = tiles.every(t => t.currentPos === t.correctPos && (!isTileRotationEnabled || (t.rotation || 0) % 360 === 0));
             if (isSolved) {
                 stopAutoSolve();
+                checkWinCondition();
                 return;
             }
 
-            if (moveHistory.length > 0) {
-                const lastMove = moveHistory.pop();
-                const tileA = tiles.find(t => t.id === lastMove.tileAId);
-                const tileB = tiles.find(t => t.id === lastMove.tileBId);
-                if (tileA && tileB) {
-                    swapTiles(tileA, tileB, true);
+            // 2. Fix rotations first if tile rotation mode is active
+            if (isTileRotationEnabled) {
+                const rotatedTile = tiles.find(t => !t.isEmpty && (t.rotation || 0) % 360 !== 0);
+                if (rotatedTile) {
+                    rotateTile(rotatedTile);
+                    return;
                 }
-            } else {
-                const misplaced = tiles.find(t => t.currentPos !== t.correctPos);
-                if (misplaced) {
-                    const targetTile = tiles.find(t => t.currentPos === misplaced.correctPos);
-                    if (targetTile) {
-                        swapTiles(misplaced, targetTile);
+            }
+
+            // 3. For sliding block mode, try sliding adjacent tile into empty slot toward solution
+            if (puzzleMode === 'sliding') {
+                const size = selectedGridSize;
+                const emptyTile = tiles.find(t => t.isEmpty);
+                if (emptyTile) {
+                    const ePos = emptyTile.currentPos;
+                    const eRow = Math.floor(ePos / size);
+                    const eCol = ePos % size;
+
+                    const neighbors = [];
+                    if (eRow > 0) neighbors.push(ePos - size);
+                    if (eRow < size - 1) neighbors.push(ePos + size);
+                    if (eCol > 0) neighbors.push(ePos - 1);
+                    if (eCol < size - 1) neighbors.push(ePos + 1);
+
+                    // Find adjacent tile whose move reduces total Manhattan distance
+                    let bestNeighborTile = null;
+                    let bestDiff = 999;
+
+                    for (const nPos of neighbors) {
+                        const nTile = tiles.find(t => t.currentPos === nPos);
+                        if (!nTile) continue;
+
+                        const curR = Math.floor(nPos / size);
+                        const curC = nPos % size;
+                        const goalR = Math.floor(nTile.correctPos / size);
+                        const goalC = nTile.correctPos % size;
+                        const distBefore = Math.abs(curR - goalR) + Math.abs(curC - goalC);
+                        const distAfter = Math.abs(eRow - goalR) + Math.abs(eCol - goalC);
+
+                        const diff = distAfter - distBefore;
+                        if (diff < bestDiff) {
+                            bestDiff = diff;
+                            bestNeighborTile = nTile;
+                        }
+                    }
+
+                    if (bestNeighborTile && bestDiff < 0) {
+                        swapTiles(bestNeighborTile, emptyTile);
+                        moveHistory = []; // Prevent undo loop
+                        return;
                     }
                 }
             }
-        }, 220);
+
+            // 4. Systematic placement: find the next slot (0, 1, 2, ...) not yet in its correct position
+            const size = selectedGridSize;
+            const total = size * size;
+            let targetSlot = -1;
+            for (let i = 0; i < total; i++) {
+                const tileAtPos = tiles.find(t => t.currentPos === i);
+                if (tileAtPos && tileAtPos.correctPos !== i) {
+                    targetSlot = i;
+                    break;
+                }
+            }
+
+            if (targetSlot !== -1) {
+                const currentOccupant = tiles.find(t => t.currentPos === targetSlot);
+                const neededTile = tiles.find(t => t.correctPos === targetSlot);
+                if (currentOccupant && neededTile) {
+                    swapTiles(neededTile, currentOccupant);
+                    moveHistory = []; // Prevent undo loop
+                }
+            } else {
+                stopAutoSolve();
+                checkWinCondition();
+            }
+        }, 180);
     }
 
     if (autoSolveBtn) {
