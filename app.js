@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentPhotoDataUrl = null;
     let rawPhotoDataUrl = null;
     let selectedGridSize = 3; // 3x3 default
-    let puzzleMode = 'sliding'; // 'sliding' or 'jigsaw'
+    let puzzleMode = 'jigsaw'; // 'jigsaw', 'sliding', 'zen', or 'versus'
     let soundEnabled = true;
     let masterVolume = parseFloat(localStorage.getItem('snappuzzle_master_volume')) ?? 0.8;
     if (isNaN(masterVolume)) masterVolume = 0.8;
@@ -2912,6 +2912,43 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function findTargetTileAtPoint(clientX, clientY, currentTileDiv, currentTile) {
+        // 1. Try DOM element under pointer (temporarily hiding current dragged tile)
+        currentTileDiv.style.pointerEvents = 'none';
+        const elUnder = document.elementFromPoint(clientX, clientY);
+        currentTileDiv.style.pointerEvents = '';
+
+        if (elUnder) {
+            const targetTileEl = elUnder.closest('.puzzle-tile');
+            if (targetTileEl && targetTileEl !== currentTileDiv && !targetTileEl.classList.contains('empty-tile')) {
+                const targetId = parseInt(targetTileEl.dataset.id, 10);
+                const found = tiles.find(t => t.id === targetId);
+                if (found) return { tile: found, el: targetTileEl };
+            }
+        }
+
+        // 2. High-precision geometric board grid calculation (handles gaps, rapid dragging, and overlays)
+        const boardRect = puzzleBoard.getBoundingClientRect();
+        if (clientX >= boardRect.left && clientX <= boardRect.right &&
+            clientY >= boardRect.top && clientY <= boardRect.bottom) {
+            const size = selectedGridSize;
+            const relX = clientX - boardRect.left;
+            const relY = clientY - boardRect.top;
+            const col = Math.min(size - 1, Math.max(0, Math.floor((relX / boardRect.width) * size)));
+            const row = Math.min(size - 1, Math.max(0, Math.floor((relY / boardRect.height) * size)));
+            const targetPos = row * size + col;
+
+            const targetTile = tiles.find(t => t.currentPos === targetPos);
+            if (targetTile && !targetTile.isEmpty && targetTile.id !== currentTile.id) {
+                const targetEl = puzzleBoard.querySelector(`.puzzle-tile[data-id="${targetTile.id}"]`);
+                if (targetEl && targetEl !== currentTileDiv) {
+                    return { tile: targetTile, el: targetEl };
+                }
+            }
+        }
+        return null;
+    }
+
     function setupTilePointerHoldAndDrop(tileDiv, tile) {
         if (tile.isEmpty) return;
 
@@ -2989,19 +3026,19 @@ document.addEventListener('DOMContentLoaded', () => {
                         const nudgeY = Math.max(-12, Math.min(12, dy * 0.15));
                         tileDiv.style.transform = `${baseRotation}translate3d(${nudgeX}px, ${nudgeY}px, 0)`;
                     }
-                } else if (puzzleMode === 'jigsaw') {
-                    tileDiv.style.transform = `${baseRotation}translate3d(${dx}px, ${dy}px, 0) scale(1.06)`;
+                } else {
+                    // Freeform drag for Jigsaw, Zen, and Versus duel modes
+                    tileDiv.style.transform = `${baseRotation}translate3d(${dx}px, ${dy}px, 0) scale(1.08)`;
 
-                    tileDiv.style.pointerEvents = 'none';
-                    const elUnder = document.elementFromPoint(moveEvt.clientX, moveEvt.clientY);
-                    tileDiv.style.pointerEvents = '';
+                    const rect = tileDiv.getBoundingClientRect();
+                    const target = findTargetTileAtPoint(moveEvt.clientX, moveEvt.clientY, tileDiv, tile) ||
+                                   findTargetTileAtPoint(rect.left + rect.width / 2, rect.top + rect.height / 2, tileDiv, tile);
 
-                    const targetTileEl = elUnder ? elUnder.closest('.puzzle-tile') : null;
-                    if (targetTileEl && targetTileEl !== tileDiv && !targetTileEl.classList.contains('empty-tile')) {
-                        if (lastDropTarget !== targetTileEl) {
+                    if (target && target.el) {
+                        if (lastDropTarget !== target.el) {
                             if (lastDropTarget) lastDropTarget.classList.remove('tile-drop-target');
-                            targetTileEl.classList.add('tile-drop-target');
-                            lastDropTarget = targetTileEl;
+                            target.el.classList.add('tile-drop-target');
+                            lastDropTarget = target.el;
                         }
                     } else {
                         if (lastDropTarget) {
@@ -3036,7 +3073,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     if (puzzleMode === 'sliding') {
                         let projection = (dirX !== 0) ? (dx * dirX) : (dy * dirY);
-                        if (canSlide && projection >= maxTravel * 0.25) {
+                        let droppedNearEmpty = false;
+                        if (canSlide && emptyTileEl) {
+                            const eRect = emptyTileEl.getBoundingClientRect();
+                            const distToEmpty = Math.hypot(upEvt.clientX - (eRect.left + eRect.width / 2), upEvt.clientY - (eRect.top + eRect.height / 2));
+                            if (distToEmpty < Math.max(eRect.width, eRect.height) * 0.75) {
+                                droppedNearEmpty = true;
+                            }
+                        }
+                        if (canSlide && (projection >= maxTravel * 0.25 || droppedNearEmpty)) {
                             triggerHaptic([20]);
                             swapTiles(tile, emptyTile);
                         } else {
@@ -3046,30 +3091,26 @@ document.addEventListener('DOMContentLoaded', () => {
                                 tileDiv.style.transition = '';
                             }, 200);
                         }
-                    } else if (puzzleMode === 'jigsaw') {
-                        tileDiv.style.pointerEvents = 'none';
-                        const elUnder = document.elementFromPoint(upEvt.clientX, upEvt.clientY);
-                        tileDiv.style.pointerEvents = '';
-
-                        const targetTileEl = elUnder ? elUnder.closest('.puzzle-tile') : null;
+                    } else {
+                        // Jigsaw, Zen, and Duel Drop & Place
+                        const rect = tileDiv.getBoundingClientRect();
+                        const target = findTargetTileAtPoint(upEvt.clientX, upEvt.clientY, tileDiv, tile) ||
+                                       findTargetTileAtPoint(rect.left + rect.width / 2, rect.top + rect.height / 2, tileDiv, tile);
                         let swapped = false;
 
-                        if (targetTileEl && targetTileEl !== tileDiv) {
-                            const targetId = parseInt(targetTileEl.dataset.id, 10);
-                            const targetTile = tiles.find(t => t.id === targetId);
-                            if (targetTile && !targetTile.isEmpty) {
-                                triggerHaptic([22]);
-                                swapTiles(tile, targetTile);
-                                swapped = true;
-                            }
+                        if (target && target.tile && !target.tile.isEmpty) {
+                            triggerHaptic([24]);
+                            tileDiv.style.transform = '';
+                            swapTiles(tile, target.tile);
+                            swapped = true;
                         }
 
                         if (!swapped) {
-                            tileDiv.style.transition = 'transform 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.2)';
+                            tileDiv.style.transition = 'transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.2)';
                             tileDiv.style.transform = tile.rotation ? `rotate(${tile.rotation}deg)` : '';
                             setTimeout(() => {
                                 tileDiv.style.transition = '';
-                            }, 220);
+                            }, 230);
                         }
                     }
                 } else {
@@ -3244,7 +3285,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isAdjacent) {
                 swapTiles(clickedTile, emptyTile);
             }
-        } else if (puzzleMode === 'jigsaw') {
+        } else {
+            // Jigsaw, Zen, Versus click-to-swap
             if (!selectedTile) {
                 selectedTile = clickedTile;
                 playSound('click');
