@@ -353,6 +353,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (soundPreset === 'chime') return 'triangle';
         if (soundPreset === 'marimba') return 'sine';
         if (soundPreset === 'crystal') return 'sine';
+        if (soundPreset === 'celestial') return 'sine';
+        if (soundPreset === 'zen') return 'triangle';
         return 'sine'; // synth
     }
 
@@ -448,6 +450,37 @@ document.addEventListener('DOMContentLoaded', () => {
                     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
                     osc.start(now);
                     osc.stop(now + 0.07);
+                } else if (soundPreset === 'celestial') {
+                    // Ethereal plucked harp dual harmonic
+                    const osc1 = audioCtx.createOscillator();
+                    const osc2 = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    osc1.type = 'sine';
+                    osc2.type = 'sine';
+                    osc1.frequency.setValueAtTime(880 * pitch, now);
+                    osc2.frequency.setValueAtTime(1320 * pitch, now);
+                    g.gain.setValueAtTime(0.2, now);
+                    g.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+                    osc1.connect(g);
+                    osc2.connect(g);
+                    g.connect(masterGain);
+                    osc1.start(now);
+                    osc2.start(now);
+                    osc1.stop(now + 0.09);
+                    osc2.stop(now + 0.09);
+                } else if (soundPreset === 'zen') {
+                    // Wooden acoustic chime knock
+                    const osc = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(420 * pitch, now);
+                    osc.frequency.exponentialRampToValueAtTime(210 * pitch, now + 0.07);
+                    g.gain.setValueAtTime(0.25, now);
+                    g.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+                    osc.connect(g);
+                    g.connect(masterGain);
+                    osc.start(now);
+                    osc.stop(now + 0.07);
                 } else {
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
@@ -526,6 +559,40 @@ document.addEventListener('DOMContentLoaded', () => {
                     carrier.start(now);
                     mod.stop(now + 0.36);
                     carrier.stop(now + 0.36);
+                } else if (soundPreset === 'celestial') {
+                    // Celestial Angelic Harp Chord (D5 - F#5 - A5 arpeggiated chord)
+                    const chord = [587.33, 739.99, 880.00];
+                    chord.forEach((freq, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq * pitch, now + idx * 0.035);
+                        osc.frequency.exponentialRampToValueAtTime(freq * 1.02 * pitch, now + idx * 0.035 + 0.32);
+                        g.gain.setValueAtTime(0.18, now + idx * 0.035);
+                        g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.035 + 0.32);
+                        osc.connect(g);
+                        g.connect(masterGain);
+                        osc.start(now + idx * 0.035);
+                        osc.stop(now + idx * 0.035 + 0.32);
+                    });
+                } else if (soundPreset === 'zen') {
+                    // Deep acoustic singing bowl / stone resonance
+                    const osc1 = audioCtx.createOscillator();
+                    const osc2 = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    osc1.type = 'sine';
+                    osc2.type = 'triangle';
+                    osc1.frequency.setValueAtTime(329.63 * pitch, now); // E4
+                    osc2.frequency.setValueAtTime(659.25 * pitch, now); // E5
+                    g.gain.setValueAtTime(0.28, now);
+                    g.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+                    osc1.connect(g);
+                    osc2.connect(g);
+                    g.connect(masterGain);
+                    osc1.start(now);
+                    osc2.start(now);
+                    osc1.stop(now + 0.38);
+                    osc2.stop(now + 0.38);
                 } else {
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
@@ -3367,6 +3434,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (selectedMask === 'arch' || selectedMask === 'crest' || selectedShape === 'heart' || selectedShape === 'hexastar') {
                 unlockAchievement('monument_architect');
             }
+            if (soundPreset === 'celestial' || soundPreset === 'zen') {
+                unlockAchievement('acoustic_virtuoso');
+            }
             if (isFogModeActive) {
                 unlockAchievement('fog_explorer');
                 if (sonarPulsesCountInGame >= 5) {
@@ -4784,7 +4854,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'guardian_solver', icon: '🛡️', title: 'Guardian Solver', desc: 'Complete any puzzle using the Knight Shield tile cutout or Brilliant Jewel board mask.' },
         { id: 'celestial_navigator', icon: '🌌', title: 'Celestial Navigator', desc: 'Complete any puzzle using the Crescent Moon tile cutout, Moon mask, or Hourglass board mask.' },
         { id: 'monument_architect', icon: '🏛️', title: 'Monument Architect', desc: 'Complete any puzzle using the Gothic Arch, Royal Crest mask, or Radiant Heart/Hex Star cutouts.' },
-        { id: 'chroma_virtuoso', icon: '✨', title: 'Chroma Virtuoso', desc: 'Experience and test 10 or more distinct visual color themes.' }
+        { id: 'chroma_virtuoso', icon: '✨', title: 'Chroma Virtuoso', desc: 'Experience and test 10 or more distinct visual color themes.' },
+        { id: 'acoustic_virtuoso', icon: '🎵', title: 'Acoustic Virtuoso', desc: 'Solve any puzzle using the Celestial Harp or Zen Stone sound profile.' }
     ];
 
     let unlockedAchievements = [];
