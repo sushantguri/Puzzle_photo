@@ -205,6 +205,26 @@
     --primary-accent: #0891b2;
     --secondary-accent: #38bdf8;
     --cyan-accent: #a5f3fc;
+[data-theme="obsidian"] {
+    --bg-dark: #08080a;
+    --card-bg: rgba(24, 24, 28, 0.82);
+    --primary: #eab308;
+    --accent-primary: #eab308;
+    --primary-glow: #facc15;
+    --primary-accent: #ca8a04;
+    --secondary-accent: #fbbf24;
+    --cyan-accent: #fef08a;
+}
+
+[data-theme="crimson"] {
+    --bg-dark: #120306;
+    --card-bg: rgba(38, 8, 14, 0.82);
+    --primary: #e11d48;
+    --accent-primary: #e11d48;
+    --primary-glow: #f43f5e;
+    --primary-accent: #be123c;
+    --secondary-accent: #fb7185;
+    --cyan-accent: #fda4af;
 }
 
 * {
