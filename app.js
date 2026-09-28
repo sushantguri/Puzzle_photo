@@ -3434,6 +3434,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (selectedMask === 'arch' || selectedMask === 'crest' || selectedShape === 'heart' || selectedShape === 'hexastar') {
                 unlockAchievement('monument_architect');
             }
+            if (selectedMask === 'fortress' || selectedMask === 'ring') {
+                unlockAchievement('bastion_architect');
+            }
             if (soundPreset === 'celestial' || soundPreset === 'zen') {
                 unlockAchievement('acoustic_virtuoso');
             }
@@ -4855,7 +4858,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'celestial_navigator', icon: '🌌', title: 'Celestial Navigator', desc: 'Complete any puzzle using the Crescent Moon tile cutout, Moon mask, or Hourglass board mask.' },
         { id: 'monument_architect', icon: '🏛️', title: 'Monument Architect', desc: 'Complete any puzzle using the Gothic Arch, Royal Crest mask, or Radiant Heart/Hex Star cutouts.' },
         { id: 'chroma_virtuoso', icon: '✨', title: 'Chroma Virtuoso', desc: 'Experience and test 10 or more distinct visual color themes.' },
-        { id: 'acoustic_virtuoso', icon: '🎵', title: 'Acoustic Virtuoso', desc: 'Solve any puzzle using the Celestial Harp or Zen Stone sound profile.' }
+        { id: 'acoustic_virtuoso', icon: '🎵', title: 'Acoustic Virtuoso', desc: 'Solve any puzzle using the Celestial Harp or Zen Stone sound profile.' },
+        { id: 'bastion_architect', icon: '🏰', title: 'Bastion Architect', desc: 'Complete any puzzle using the Fortress Shield or Saturn Ring board silhouette masks.' }
     ];
 
     let unlockedAchievements = [];
