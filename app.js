@@ -3443,6 +3443,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if ((musicTrack && musicTrack !== 'off') || (selectedAmbientMusic && selectedAmbientMusic !== 'off')) {
                 unlockAchievement('maestro_listener');
             }
+            if (selectedCelebrationFx === 'sakura' || selectedCelebrationFx === 'supernova') {
+                unlockAchievement('cosmic_celebrant');
+            }
             if (isFogModeActive) {
                 unlockAchievement('fog_explorer');
                 if (sonarPulsesCountInGame >= 5) {
@@ -4863,7 +4866,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'chroma_virtuoso', icon: '✨', title: 'Chroma Virtuoso', desc: 'Experience and test 10 or more distinct visual color themes.' },
         { id: 'acoustic_virtuoso', icon: '🎵', title: 'Acoustic Virtuoso', desc: 'Solve any puzzle using the Celestial Harp or Zen Stone sound profile.' },
         { id: 'bastion_architect', icon: '🏰', title: 'Bastion Architect', desc: 'Complete any puzzle using the Fortress Shield or Saturn Ring board silhouette masks.' },
-        { id: 'maestro_listener', icon: '🎼', title: 'Generative Maestro', desc: 'Solve any photo puzzle with generative background music playing.' }
+        { id: 'maestro_listener', icon: '🎼', title: 'Generative Maestro', desc: 'Solve any photo puzzle with generative background music playing.' },
+        { id: 'cosmic_celebrant', icon: '🎆', title: 'Cosmic Celebrant', desc: 'Celebrate victory with the Sakura Petals or Supernova Nebula particle effect.' }
     ];
 
     let unlockedAchievements = [];
@@ -5090,6 +5094,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 life: 1,
                 decay: Math.random() * 0.02 + 0.015
             }));
+        } else if (mode === 'sakura') {
+            particles = Array.from({ length: 65 }, () => ({
+                x: Math.random() * w,
+                y: Math.random() * h - h,
+                size: Math.random() * 8 + 8,
+                color: ['#fbcfe8', '#f472b6', '#fda4af', '#f43f5e', '#fed7aa'][Math.floor(Math.random() * 5)],
+                vy: Math.random() * 2 + 1.2,
+                vx: Math.random() * 1.5 - 0.75,
+                swaySpeed: Math.random() * 0.04 + 0.02,
+                swayOffset: Math.random() * Math.PI * 2,
+                rotation: Math.random() * 360,
+                rotSpeed: Math.random() * 2 - 1
+            }));
+        } else if (mode === 'supernova') {
+            particles = Array.from({ length: 110 }, () => {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 7 + 2;
+                return {
+                    x: w / 2,
+                    y: h / 2,
+                    size: Math.random() * 5 + 2,
+                    color: ['#c084fc', '#38bdf8', '#f43f5e', '#fbbf24', '#a855f7', '#67e8f9'][Math.floor(Math.random() * 6)],
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    spiral: Math.random() * 0.06 + 0.02,
+                    life: 1,
+                    decay: Math.random() * 0.015 + 0.008
+                };
+            });
         } else {
             // Default Confetti
             particles = Array.from({ length: 95 }, () => ({
@@ -5224,6 +5257,47 @@ document.addEventListener('DOMContentLoaded', () => {
                     p.y += p.vy;
                     p.vx *= 0.96;
                     p.vy *= 0.96;
+                    p.life -= p.decay;
+                });
+                particles = particles.filter(p => p.life > 0);
+            } else if (mode === 'sakura') {
+                particles.forEach(p => {
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate((p.rotation * Math.PI) / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.globalAlpha = 0.85;
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, p.size, p.size * 0.55, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+
+                    p.y += p.vy;
+                    p.x += Math.sin(p.swayOffset + p.y * p.swaySpeed) * 1.8 + p.vx;
+                    p.rotation += p.rotSpeed;
+                    if (p.y > h + 20) {
+                        p.y = -20;
+                        p.x = Math.random() * w;
+                    }
+                });
+            } else if (mode === 'supernova') {
+                particles.forEach(p => {
+                    ctx.save();
+                    ctx.globalAlpha = p.life;
+                    ctx.fillStyle = p.color;
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = p.color;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+
+                    const tempVx = p.vx * 0.98 - p.vy * p.spiral;
+                    const tempVy = p.vy * 0.98 + p.vx * p.spiral;
+                    p.vx = tempVx;
+                    p.vy = tempVy;
+                    p.x += p.vx;
+                    p.y += p.vy;
                     p.life -= p.decay;
                 });
                 particles = particles.filter(p => p.life > 0);
