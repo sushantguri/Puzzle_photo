@@ -224,9 +224,9 @@ document.addEventListener('DOMContentLoaded', () => {
         musicTrackSelect.addEventListener('change', (e) => {
             musicTrack = e.target.value;
             localStorage.setItem('snappuzzle_music_track', musicTrack);
-            stopAmbientMusic();
+            stopProceduralTrack();
             if (musicTrack !== 'off') {
-                startAmbientMusic();
+                startProceduralTrack();
             }
         });
     }
@@ -239,8 +239,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function startAmbientMusic() {
-        stopAmbientMusic();
+    function startProceduralTrack() {
+        stopProceduralTrack();
         if (musicTrack === 'off') return;
         if (!audioCtx) audioCtx = new AudioCtx();
         if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -332,7 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, stepTime);
     }
 
-    function stopAmbientMusic() {
+    function stopProceduralTrack() {
         if (musicInterval) {
             clearInterval(musicInterval);
             musicInterval = null;
@@ -344,7 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
             audioCtx.resume();
         }
         if (musicTrack !== 'off' && !musicInterval) {
-            startAmbientMusic();
+            startProceduralTrack();
         }
     }, { once: true });
 
@@ -3440,6 +3440,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (soundPreset === 'celestial' || soundPreset === 'zen') {
                 unlockAchievement('acoustic_virtuoso');
             }
+            if ((musicTrack && musicTrack !== 'off') || (selectedAmbientMusic && selectedAmbientMusic !== 'off')) {
+                unlockAchievement('maestro_listener');
+            }
             if (isFogModeActive) {
                 unlockAchievement('fog_explorer');
                 if (sonarPulsesCountInGame >= 5) {
@@ -4859,7 +4862,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'monument_architect', icon: '🏛️', title: 'Monument Architect', desc: 'Complete any puzzle using the Gothic Arch, Royal Crest mask, or Radiant Heart/Hex Star cutouts.' },
         { id: 'chroma_virtuoso', icon: '✨', title: 'Chroma Virtuoso', desc: 'Experience and test 10 or more distinct visual color themes.' },
         { id: 'acoustic_virtuoso', icon: '🎵', title: 'Acoustic Virtuoso', desc: 'Solve any puzzle using the Celestial Harp or Zen Stone sound profile.' },
-        { id: 'bastion_architect', icon: '🏰', title: 'Bastion Architect', desc: 'Complete any puzzle using the Fortress Shield or Saturn Ring board silhouette masks.' }
+        { id: 'bastion_architect', icon: '🏰', title: 'Bastion Architect', desc: 'Complete any puzzle using the Fortress Shield or Saturn Ring board silhouette masks.' },
+        { id: 'maestro_listener', icon: '🎼', title: 'Generative Maestro', desc: 'Solve any photo puzzle with generative background music playing.' }
     ];
 
     let unlockedAchievements = [];
