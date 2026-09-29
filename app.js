@@ -3419,11 +3419,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isAiRivalActive && aiRivalLevel === 'hard') {
                 unlockAchievement('bot_slayer');
             }
-            if (['hexagon', 'diamond', 'wave', 'tabbed', 'starburst', 'octagon', 'clover', 'gear', 'prism', 'leaf', 'sparkle', 'shield', 'crescent', 'cross', 'heart', 'hexastar'].includes(selectedShape)) {
+            if (['hexagon', 'diamond', 'wave', 'tabbed', 'starburst', 'octagon', 'clover', 'gear', 'prism', 'leaf', 'sparkle', 'shield', 'crescent', 'cross', 'heart', 'hexastar', 'lotus', 'teardrop'].includes(selectedShape)) {
                 unlockAchievement('shape_shifter');
             }
             if (selectedShape === 'prism' || selectedShape === 'leaf') {
                 unlockAchievement('prism_perfectionist');
+            }
+            if (selectedShape === 'lotus' || selectedShape === 'teardrop') {
+                unlockAchievement('botanical_virtuoso');
             }
             if (selectedShape === 'shield' || selectedMask === 'gem') {
                 unlockAchievement('guardian_solver');
@@ -4867,7 +4870,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'acoustic_virtuoso', icon: '🎵', title: 'Acoustic Virtuoso', desc: 'Solve any puzzle using the Celestial Harp or Zen Stone sound profile.' },
         { id: 'bastion_architect', icon: '🏰', title: 'Bastion Architect', desc: 'Complete any puzzle using the Fortress Shield or Saturn Ring board silhouette masks.' },
         { id: 'maestro_listener', icon: '🎼', title: 'Generative Maestro', desc: 'Solve any photo puzzle with generative background music playing.' },
-        { id: 'cosmic_celebrant', icon: '🎆', title: 'Cosmic Celebrant', desc: 'Celebrate victory with the Sakura Petals or Supernova Nebula particle effect.' }
+        { id: 'cosmic_celebrant', icon: '🎆', title: 'Cosmic Celebrant', desc: 'Celebrate victory with the Sakura Petals or Supernova Nebula particle effect.' },
+        { id: 'botanical_virtuoso', icon: '🪷', title: 'Botanical Virtuoso', desc: 'Complete any puzzle using the Lotus Rosette or Teardrop tile cutout styles.' }
     ];
 
     let unlockedAchievements = [];
