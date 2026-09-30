@@ -3539,6 +3539,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (selectedMask === 'fortress' || selectedMask === 'ring') {
                 unlockAchievement('bastion_architect');
             }
+            if (selectedMask === 'pyramid' || selectedMask === 'infinity') {
+                unlockAchievement('monument_legend');
+            }
             if (soundPreset === 'celestial' || soundPreset === 'zen') {
                 unlockAchievement('acoustic_virtuoso');
             }
@@ -4975,7 +4978,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'cosmic_celebrant', icon: '🎆', title: 'Cosmic Celebrant', desc: 'Celebrate victory with the Sakura Petals or Supernova Nebula particle effect.' },
         { id: 'botanical_virtuoso', icon: '🪷', title: 'Botanical Virtuoso', desc: 'Complete any puzzle using the Lotus Rosette or Teardrop tile cutout styles.' },
         { id: 'master_colorist', icon: '🎨', title: 'Master Colorist', desc: 'Create and snap a puzzle photo with the Cyberpunk X-Ray or Impressionist Oil filter.' },
-        { id: 'sonic_pioneer', icon: '🔊', title: 'Sonic Pioneer', desc: 'Solve any photo puzzle using the Prism Harmonic or Cosmic Pulsar sound profile.' }
+        { id: 'sonic_pioneer', icon: '🔊', title: 'Sonic Pioneer', desc: 'Solve any photo puzzle using the Prism Harmonic or Cosmic Pulsar sound profile.' },
+        { id: 'monument_legend', icon: '♾️', title: 'Infinity Architect', desc: 'Complete any puzzle using the Solar Pyramid or Infinity Loop board mask.' }
     ];
 
     let unlockedAchievements = [];
