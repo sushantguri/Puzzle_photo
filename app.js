@@ -1875,9 +1875,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Apply advanced canvas FX filters if selected
             const selectedFilter = filterSelect ? filterSelect.value : 'none';
-            if (['pixel', 'glitch', 'sketch', 'thermal', 'vortex', 'kaleidoscope', 'matrix', 'comic', 'tealorange', 'retro70s', 'vaporwave', 'pastel', 'amber', 'duotone_cyber', 'duotone_sunset', 'duotone_emerald'].includes(selectedFilter)) {
+            if (['pixel', 'glitch', 'sketch', 'thermal', 'vortex', 'kaleidoscope', 'matrix', 'comic', 'tealorange', 'retro70s', 'vaporwave', 'pastel', 'amber', 'duotone_cyber', 'duotone_sunset', 'duotone_emerald', 'xray', 'oilpaint'].includes(selectedFilter)) {
                 applyAdvancedCanvasFX(ctx, canvasEl.width, canvasEl.height, selectedFilter);
                 unlockAchievement('pixel_artist');
+                if (selectedFilter === 'xray' || selectedFilter === 'oilpaint') {
+                    unlockAchievement('master_colorist');
+                }
             }
 
             currentPhotoDataUrl = canvasEl.toDataURL('image/jpeg', 0.95);
@@ -2140,6 +2143,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 data[i+2] = Math.round(25 * (1 - lum) + 170 * lum);
             }
             ctx.putImageData(imgData, 0, 0);
+        } else if (filterType === 'xray') {
+            const imgData = ctx.getImageData(0, 0, width, height);
+            const data = imgData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                const lum = 255 - (data[i] * 0.299 + data[i+1] * 0.587 + data[i+2] * 0.114);
+                data[i] = Math.min(255, Math.round(lum * 0.3));
+                data[i+1] = Math.min(255, Math.round(lum * 0.9 + 20));
+                data[i+2] = Math.min(255, Math.round(lum * 1.1 + 40));
+            }
+            ctx.putImageData(imgData, 0, 0);
+        } else if (filterType === 'oilpaint') {
+            const imgData = ctx.getImageData(0, 0, width, height);
+            const data = imgData.data;
+            const quant = 16;
+            for (let i = 0; i < data.length; i += 4) {
+                data[i] = Math.min(255, Math.round(Math.round(data[i] / quant) * quant * 1.1));
+                data[i+1] = Math.min(255, Math.round(Math.round(data[i+1] / quant) * quant * 1.05));
+                data[i+2] = Math.min(255, Math.round(Math.round(data[i+2] / quant) * quant * 0.95));
+            }
+            ctx.putImageData(imgData, 0, 0);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
+            for (let y = 0; y < height; y += 3) {
+                ctx.fillRect(0, y, width, 1);
+            }
         }
     }
 
@@ -4871,7 +4898,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'bastion_architect', icon: '🏰', title: 'Bastion Architect', desc: 'Complete any puzzle using the Fortress Shield or Saturn Ring board silhouette masks.' },
         { id: 'maestro_listener', icon: '🎼', title: 'Generative Maestro', desc: 'Solve any photo puzzle with generative background music playing.' },
         { id: 'cosmic_celebrant', icon: '🎆', title: 'Cosmic Celebrant', desc: 'Celebrate victory with the Sakura Petals or Supernova Nebula particle effect.' },
-        { id: 'botanical_virtuoso', icon: '🪷', title: 'Botanical Virtuoso', desc: 'Complete any puzzle using the Lotus Rosette or Teardrop tile cutout styles.' }
+        { id: 'botanical_virtuoso', icon: '🪷', title: 'Botanical Virtuoso', desc: 'Complete any puzzle using the Lotus Rosette or Teardrop tile cutout styles.' },
+        { id: 'master_colorist', icon: '🎨', title: 'Master Colorist', desc: 'Create and snap a puzzle photo with the Cyberpunk X-Ray or Impressionist Oil filter.' }
     ];
 
     let unlockedAchievements = [];
