@@ -355,6 +355,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (soundPreset === 'crystal') return 'sine';
         if (soundPreset === 'celestial') return 'sine';
         if (soundPreset === 'zen') return 'triangle';
+        if (soundPreset === 'prism') return 'sine';
+        if (soundPreset === 'cosmic') return 'sawtooth';
         return 'sine'; // synth
     }
 
@@ -481,6 +483,42 @@ document.addEventListener('DOMContentLoaded', () => {
                     g.connect(masterGain);
                     osc.start(now);
                     osc.stop(now + 0.07);
+                } else if (soundPreset === 'prism') {
+                    // Shimmering dual crystalline harmonic bell
+                    const osc1 = audioCtx.createOscillator();
+                    const osc2 = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    osc1.type = 'sine';
+                    osc2.type = 'sine';
+                    osc1.frequency.setValueAtTime(1046.50 * pitch, now);
+                    osc2.frequency.setValueAtTime(1567.98 * pitch, now);
+                    g.gain.setValueAtTime(0.18, now);
+                    g.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                    osc1.connect(g);
+                    osc2.connect(g);
+                    g.connect(masterGain);
+                    osc1.start(now);
+                    osc2.start(now);
+                    osc1.stop(now + 0.08);
+                    osc2.stop(now + 0.08);
+                } else if (soundPreset === 'cosmic') {
+                    // Deep sci-fi sub-pulsar blip
+                    const osc = audioCtx.createOscillator();
+                    const filter = audioCtx.createBiquadFilter();
+                    const g = audioCtx.createGain();
+                    osc.type = 'sawtooth';
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(280 * pitch, now);
+                    filter.frequency.exponentialRampToValueAtTime(70 * pitch, now + 0.07);
+                    osc.frequency.setValueAtTime(160 * pitch, now);
+                    osc.frequency.exponentialRampToValueAtTime(60 * pitch, now + 0.07);
+                    g.gain.setValueAtTime(0.3, now);
+                    g.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+                    osc.connect(filter);
+                    filter.connect(g);
+                    g.connect(masterGain);
+                    osc.start(now);
+                    osc.stop(now + 0.07);
                 } else {
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
@@ -593,6 +631,40 @@ document.addEventListener('DOMContentLoaded', () => {
                     osc2.start(now);
                     osc1.stop(now + 0.38);
                     osc2.stop(now + 0.38);
+                } else if (soundPreset === 'prism') {
+                    // Crystalline Prism Arp Chord (C6 - E6 - G6)
+                    const chord = [1046.50, 1318.51, 1567.98];
+                    chord.forEach((freq, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq * pitch, now + idx * 0.03);
+                        osc.frequency.exponentialRampToValueAtTime(freq * 1.01 * pitch, now + idx * 0.03 + 0.28);
+                        g.gain.setValueAtTime(0.16, now + idx * 0.03);
+                        g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.03 + 0.28);
+                        osc.connect(g);
+                        g.connect(masterGain);
+                        osc.start(now + idx * 0.03);
+                        osc.stop(now + idx * 0.03 + 0.28);
+                    });
+                } else if (soundPreset === 'cosmic') {
+                    // Deep cosmic sub-bass swell with stereo harmonic detuning
+                    const osc1 = audioCtx.createOscillator();
+                    const osc2 = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    osc1.type = 'sawtooth';
+                    osc2.type = 'sine';
+                    osc1.frequency.setValueAtTime(82.41 * pitch, now); // E2
+                    osc2.frequency.setValueAtTime(164.81 * pitch, now); // E3
+                    g.gain.setValueAtTime(0.32, now);
+                    g.gain.exponentialRampToValueAtTime(0.001, now + 0.36);
+                    osc1.connect(g);
+                    osc2.connect(g);
+                    g.connect(masterGain);
+                    osc1.start(now);
+                    osc2.start(now);
+                    osc1.stop(now + 0.36);
+                    osc2.stop(now + 0.36);
                 } else {
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
@@ -3470,6 +3542,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (soundPreset === 'celestial' || soundPreset === 'zen') {
                 unlockAchievement('acoustic_virtuoso');
             }
+            if (soundPreset === 'prism' || soundPreset === 'cosmic') {
+                unlockAchievement('sonic_pioneer');
+            }
             if ((musicTrack && musicTrack !== 'off') || (selectedAmbientMusic && selectedAmbientMusic !== 'off')) {
                 unlockAchievement('maestro_listener');
             }
@@ -4899,7 +4974,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'maestro_listener', icon: '🎼', title: 'Generative Maestro', desc: 'Solve any photo puzzle with generative background music playing.' },
         { id: 'cosmic_celebrant', icon: '🎆', title: 'Cosmic Celebrant', desc: 'Celebrate victory with the Sakura Petals or Supernova Nebula particle effect.' },
         { id: 'botanical_virtuoso', icon: '🪷', title: 'Botanical Virtuoso', desc: 'Complete any puzzle using the Lotus Rosette or Teardrop tile cutout styles.' },
-        { id: 'master_colorist', icon: '🎨', title: 'Master Colorist', desc: 'Create and snap a puzzle photo with the Cyberpunk X-Ray or Impressionist Oil filter.' }
+        { id: 'master_colorist', icon: '🎨', title: 'Master Colorist', desc: 'Create and snap a puzzle photo with the Cyberpunk X-Ray or Impressionist Oil filter.' },
+        { id: 'sonic_pioneer', icon: '🔊', title: 'Sonic Pioneer', desc: 'Solve any photo puzzle using the Prism Harmonic or Cosmic Pulsar sound profile.' }
     ];
 
     let unlockedAchievements = [];
