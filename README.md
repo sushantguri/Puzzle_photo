@@ -89,7 +89,7 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
 - **🎵 Procedural Ambient Soundscape Synthesizer Studio:** Real-time Web Audio API procedural music generator with 4 atmosphere soundscape presets (Cyber Synthwave, Zen Solfeggio 528Hz, 8-Bit Chiptune, Deep Space Drone), stereo panning, LFO modulation, and volume slider controls in header and Sound Lab.
 - **📱 PWA Offline Support & App Shortcuts:** Built with Web App Manifest (`manifest.json`) and Service Worker (`sw.js` v10) for 100% offline gameplay, featuring App Shortcuts and URL deep-linking (`?mode=daily`, `?mode=collage`, `?mode=motion`, `?mode=camera`).
 
----
+----
 
 ## 🛠️ Architecture & Technology Stack
 
@@ -102,7 +102,7 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
 | **Audio System** | Web Audio API / HTML5 Audio | Sound synthesis for snaps, moves, and victory audio |
 | **Styling & Effects** | Vanilla CSS (Variables, Flexbox/Grid, Backdrop Blur) | High-performance, lightweight glassmorphism UI |
 
----
+----
 
 ## 🔄 User Workflow
 
