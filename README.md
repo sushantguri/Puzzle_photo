@@ -87,7 +87,7 @@ Whether you're snapping a selfie, taking a photo of a pet, or picking a memorabl
 - **🔊 Audio Sonar Proximity Radar & Haptic Feedback:** Proximity radar that beeps higher frequencies as tiles near their target slots, alongside tactile device vibration feedback.
 - **🎨 Custom Photo Filter Matrix Shader Studio:** Interactive modal lab allowing players to fine-tune photo shader parameters (Hue Rotate, Brightness, Contrast, Saturation, Sepia, Invert), preview matrix effects live on canvas, and save custom filter presets to LocalStorage.
 - **🎵 Procedural Ambient Soundscape Synthesizer Studio:** Real-time Web Audio API procedural music generator with 4 atmosphere soundscape presets (Cyber Synthwave, Zen Solfeggio 528Hz, 8-Bit Chiptune, Deep Space Drone), stereo panning, LFO modulation, and volume slider controls in header and Sound Lab.
-- **📱 PWA Offline Support & App Shortcuts:** Built with Web App Manifest (`manifest.json`) and Service Worker (`sw.js` v10) for 100% offline gameplay, featuring App Shortcuts and URL deep-linking (`?mode=daily`, `?mode=collage`, `?mode=motion`, `?mode=camera`).
+- **📱 PWA Offline Support & App Shortcuts:** Built with Web App Manifest (`manifest.json`) and Service Worker (`sw.js` v14) for 100% offline gameplay, featuring App Shortcuts and URL deep-linking (`?mode=daily`, `?mode=collage`, `?mode=motion`, `?mode=camera`).
 
 ----
 
