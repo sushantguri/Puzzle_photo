@@ -3554,6 +3554,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (selectedCelebrationFx === 'sakura' || selectedCelebrationFx === 'supernova') {
                 unlockAchievement('cosmic_celebrant');
             }
+            if (selectedCelebrationFx === 'plasma' || selectedCelebrationFx === 'blizzard') {
+                unlockAchievement('glacial_vanguard');
+            }
             if (isFogModeActive) {
                 unlockAchievement('fog_explorer');
                 if (sonarPulsesCountInGame >= 5) {
@@ -4979,7 +4982,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'botanical_virtuoso', icon: '🪷', title: 'Botanical Virtuoso', desc: 'Complete any puzzle using the Lotus Rosette or Teardrop tile cutout styles.' },
         { id: 'master_colorist', icon: '🎨', title: 'Master Colorist', desc: 'Create and snap a puzzle photo with the Cyberpunk X-Ray or Impressionist Oil filter.' },
         { id: 'sonic_pioneer', icon: '🔊', title: 'Sonic Pioneer', desc: 'Solve any photo puzzle using the Prism Harmonic or Cosmic Pulsar sound profile.' },
-        { id: 'monument_legend', icon: '♾️', title: 'Infinity Architect', desc: 'Complete any puzzle using the Solar Pyramid or Infinity Loop board mask.' }
+        { id: 'monument_legend', icon: '♾️', title: 'Infinity Architect', desc: 'Complete any puzzle using the Solar Pyramid or Infinity Loop board mask.' },
+        { id: 'glacial_vanguard', icon: '❄️', title: 'Glacial Vanguard', desc: 'Celebrate victory with the Cyber Plasma or Frozen Blizzard particle effect.' }
     ];
 
     let unlockedAchievements = [];
@@ -5138,6 +5142,27 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fill();
     }
 
+    function drawCanvasSnowflake(ctx, cx, cy, size, color) {
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.5;
+        ctx.shadowBlur = 6;
+        ctx.shadowColor = color;
+        for (let i = 0; i < 6; i++) {
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, -size);
+            ctx.moveTo(0, -size * 0.55);
+            ctx.lineTo(-size * 0.35, -size * 0.8);
+            ctx.moveTo(0, -size * 0.55);
+            ctx.lineTo(size * 0.35, -size * 0.8);
+            ctx.stroke();
+            ctx.rotate(Math.PI / 3);
+        }
+        ctx.restore();
+    }
+
     function startVictoryCelebration(styleOverride) {
         const mode = styleOverride || selectedCelebrationFx || 'confetti';
         const confettiCanvas = document.getElementById('confettiCanvas');
@@ -5235,6 +5260,34 @@ document.addEventListener('DOMContentLoaded', () => {
                     decay: Math.random() * 0.015 + 0.008
                 };
             });
+        } else if (mode === 'plasma') {
+            particles = Array.from({ length: 85 }, () => {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 8 + 3;
+                return {
+                    x: w / 2,
+                    y: h / 2,
+                    size: Math.random() * 4 + 2.5,
+                    color: ['#00f0ff', '#39ff14', '#e0e7ff', '#ff007f', '#a855f7', '#7000ff'][Math.floor(Math.random() * 6)],
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    life: 1,
+                    decay: Math.random() * 0.018 + 0.012
+                };
+            });
+        } else if (mode === 'blizzard') {
+            particles = Array.from({ length: 70 }, () => ({
+                x: Math.random() * w,
+                y: Math.random() * h - h,
+                size: Math.random() * 7 + 5,
+                color: ['#e0f2fe', '#bae6fd', '#7dd3fc', '#ffffff', '#c7d2fe', '#a5f3fc'][Math.floor(Math.random() * 6)],
+                vy: Math.random() * 2.2 + 1.2,
+                vx: Math.random() * 1.8 - 0.9,
+                rotation: Math.random() * 360,
+                rotSpeed: Math.random() * 2 - 1,
+                swaySpeed: Math.random() * 0.03 + 0.02,
+                swayOffset: Math.random() * Math.PI * 2
+            }));
         } else {
             // Default Confetti
             particles = Array.from({ length: 95 }, () => ({
@@ -5413,6 +5466,46 @@ document.addEventListener('DOMContentLoaded', () => {
                     p.life -= p.decay;
                 });
                 particles = particles.filter(p => p.life > 0);
+            } else if (mode === 'plasma') {
+                particles.forEach(p => {
+                    ctx.save();
+                    ctx.globalAlpha = p.life;
+                    ctx.strokeStyle = p.color;
+                    ctx.shadowBlur = 12;
+                    ctx.shadowColor = p.color;
+                    ctx.lineWidth = p.size;
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, p.y);
+                    const midX = (p.x - p.vx * 1.5) + (Math.random() - 0.5) * 6;
+                    const midY = (p.y - p.vy * 1.5) + (Math.random() - 0.5) * 6;
+                    ctx.lineTo(midX, midY);
+                    ctx.lineTo(p.x - p.vx * 2.8, p.y - p.vy * 2.8);
+                    ctx.stroke();
+                    ctx.restore();
+
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vx *= 0.97;
+                    p.vy *= 0.97;
+                    p.life -= p.decay;
+                });
+                particles = particles.filter(p => p.life > 0);
+            } else if (mode === 'blizzard') {
+                particles.forEach(p => {
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate((p.rotation * Math.PI) / 180);
+                    drawCanvasSnowflake(ctx, 0, 0, p.size, p.color);
+                    ctx.restore();
+
+                    p.y += p.vy;
+                    p.x += Math.sin(p.swayOffset + p.y * p.swaySpeed) * 1.6 + p.vx;
+                    p.rotation += p.rotSpeed;
+                    if (p.y > h + 20) {
+                        p.y = -20;
+                        p.x = Math.random() * w;
+                    }
+                });
             } else {
                 // Confetti
                 particles.forEach(p => {
