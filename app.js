@@ -3518,7 +3518,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isAiRivalActive && aiRivalLevel === 'hard') {
                 unlockAchievement('bot_slayer');
             }
-            if (['hexagon', 'diamond', 'wave', 'tabbed', 'starburst', 'octagon', 'clover', 'gear', 'prism', 'leaf', 'sparkle', 'shield', 'crescent', 'cross', 'heart', 'hexastar', 'lotus', 'teardrop'].includes(selectedShape)) {
+            if (['hexagon', 'diamond', 'wave', 'tabbed', 'starburst', 'octagon', 'clover', 'gear', 'prism', 'leaf', 'sparkle', 'shield', 'crescent', 'cross', 'heart', 'hexastar', 'lotus', 'teardrop', 'crown', 'bolt'].includes(selectedShape)) {
                 unlockAchievement('shape_shifter');
             }
             if (selectedShape === 'prism' || selectedShape === 'leaf') {
@@ -3526,6 +3526,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (selectedShape === 'lotus' || selectedShape === 'teardrop') {
                 unlockAchievement('botanical_virtuoso');
+            }
+            if (selectedShape === 'crown' || selectedShape === 'bolt') {
+                unlockAchievement('sovereign_puzzle');
             }
             if (selectedShape === 'shield' || selectedMask === 'gem') {
                 unlockAchievement('guardian_solver');
@@ -4983,7 +4986,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'master_colorist', icon: '🎨', title: 'Master Colorist', desc: 'Create and snap a puzzle photo with the Cyberpunk X-Ray or Impressionist Oil filter.' },
         { id: 'sonic_pioneer', icon: '🔊', title: 'Sonic Pioneer', desc: 'Solve any photo puzzle using the Prism Harmonic or Cosmic Pulsar sound profile.' },
         { id: 'monument_legend', icon: '♾️', title: 'Infinity Architect', desc: 'Complete any puzzle using the Solar Pyramid or Infinity Loop board mask.' },
-        { id: 'glacial_vanguard', icon: '❄️', title: 'Glacial Vanguard', desc: 'Celebrate victory with the Cyber Plasma or Frozen Blizzard particle effect.' }
+        { id: 'glacial_vanguard', icon: '❄️', title: 'Glacial Vanguard', desc: 'Celebrate victory with the Cyber Plasma or Frozen Blizzard particle effect.' },
+        { id: 'sovereign_puzzle', icon: '👑', title: 'Sovereign Puzzle', desc: 'Complete any puzzle using the Regal Crown or Lightning Bolt tile cutout styles.' }
     ];
 
     let unlockedAchievements = [];
