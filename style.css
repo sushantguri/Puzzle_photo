@@ -2995,6 +2995,12 @@ body {
 .puzzle-board.mask-infinity {
     clip-path: polygon(25% 15%, 45% 45%, 55% 45%, 75% 15%, 95% 30%, 100% 50%, 95% 70%, 75% 85%, 55% 55%, 45% 55%, 25% 85%, 5% 70%, 0% 50%, 5% 30%);
 }
+.puzzle-board.mask-crown {
+    clip-path: polygon(0% 100%, 0% 30%, 18% 50%, 35% 20%, 50% 0%, 65% 20%, 82% 50%, 100% 30%, 100% 100%);
+}
+.puzzle-board.mask-butterfly {
+    clip-path: polygon(50% 20%, 65% 5%, 90% 10%, 100% 35%, 85% 55%, 95% 75%, 80% 95%, 60% 85%, 50% 60%, 40% 85%, 20% 95%, 5% 75%, 15% 55%, 0% 35%, 10% 10%, 35% 5%);
+}
 
 /* AI Rival Speedrun HUD */
 .ai-rival-hud {

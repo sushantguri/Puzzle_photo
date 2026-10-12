@@ -3545,6 +3545,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (selectedMask === 'pyramid' || selectedMask === 'infinity') {
                 unlockAchievement('monument_legend');
             }
+            if (selectedMask === 'crown' || selectedMask === 'butterfly') {
+                unlockAchievement('royal_monarch');
+            }
             if (soundPreset === 'celestial' || soundPreset === 'zen') {
                 unlockAchievement('acoustic_virtuoso');
             }
@@ -4987,7 +4990,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'sonic_pioneer', icon: '🔊', title: 'Sonic Pioneer', desc: 'Solve any photo puzzle using the Prism Harmonic or Cosmic Pulsar sound profile.' },
         { id: 'monument_legend', icon: '♾️', title: 'Infinity Architect', desc: 'Complete any puzzle using the Solar Pyramid or Infinity Loop board mask.' },
         { id: 'glacial_vanguard', icon: '❄️', title: 'Glacial Vanguard', desc: 'Celebrate victory with the Cyber Plasma or Frozen Blizzard particle effect.' },
-        { id: 'sovereign_puzzle', icon: '👑', title: 'Sovereign Puzzle', desc: 'Complete any puzzle using the Regal Crown or Lightning Bolt tile cutout styles.' }
+        { id: 'sovereign_puzzle', icon: '👑', title: 'Sovereign Puzzle', desc: 'Complete any puzzle using the Regal Crown or Lightning Bolt tile cutout styles.' },
+        { id: 'royal_monarch', icon: '🦋', title: 'Royal Monarch', desc: 'Complete any puzzle using the Imperial Crown or Butterfly Wings board mask.' }
     ];
 
     let unlockedAchievements = [];
