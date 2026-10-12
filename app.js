@@ -1947,11 +1947,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Apply advanced canvas FX filters if selected
             const selectedFilter = filterSelect ? filterSelect.value : 'none';
-            if (['pixel', 'glitch', 'sketch', 'thermal', 'vortex', 'kaleidoscope', 'matrix', 'comic', 'tealorange', 'retro70s', 'vaporwave', 'pastel', 'amber', 'duotone_cyber', 'duotone_sunset', 'duotone_emerald', 'xray', 'oilpaint'].includes(selectedFilter)) {
+            if (['pixel', 'glitch', 'sketch', 'thermal', 'vortex', 'kaleidoscope', 'matrix', 'comic', 'tealorange', 'retro70s', 'vaporwave', 'pastel', 'amber', 'duotone_cyber', 'duotone_sunset', 'duotone_emerald', 'xray', 'oilpaint', 'prismatic', 'astral'].includes(selectedFilter)) {
                 applyAdvancedCanvasFX(ctx, canvasEl.width, canvasEl.height, selectedFilter);
                 unlockAchievement('pixel_artist');
                 if (selectedFilter === 'xray' || selectedFilter === 'oilpaint') {
                     unlockAchievement('master_colorist');
+                }
+                if (selectedFilter === 'prismatic' || selectedFilter === 'astral') {
+                    unlockAchievement('spectral_illusionist');
                 }
             }
 
@@ -2239,6 +2242,46 @@ document.addEventListener('DOMContentLoaded', () => {
             for (let y = 0; y < height; y += 3) {
                 ctx.fillRect(0, y, width, 1);
             }
+        } else if (filterType === 'prismatic') {
+            const imgData = ctx.getImageData(0, 0, width, height);
+            const data = imgData.data;
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const i = (y * width + x) * 4;
+                    const lum = (data[i] * 0.299 + data[i+1] * 0.587 + data[i+2] * 0.114) / 255;
+                    const phase = ((x / width) * 3 + (y / height) * 2 + lum * 2) * Math.PI;
+                    const rShift = Math.sin(phase) * 0.5 + 0.5;
+                    const gShift = Math.sin(phase + (2 * Math.PI / 3)) * 0.5 + 0.5;
+                    const bShift = Math.sin(phase + (4 * Math.PI / 3)) * 0.5 + 0.5;
+                    data[i] = Math.min(255, Math.round(data[i] * 0.5 + rShift * 255 * lum * 0.9));
+                    data[i+1] = Math.min(255, Math.round(data[i+1] * 0.5 + gShift * 255 * lum * 0.9));
+                    data[i+2] = Math.min(255, Math.round(data[i+2] * 0.5 + bShift * 255 * lum * 0.9));
+                }
+            }
+            ctx.putImageData(imgData, 0, 0);
+        } else if (filterType === 'astral') {
+            const imgData = ctx.getImageData(0, 0, width, height);
+            const data = imgData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                const lum = (data[i] * 0.299 + data[i+1] * 0.587 + data[i+2] * 0.114) / 255;
+                if (lum < 0.5) {
+                    const t = lum / 0.5;
+                    data[i] = Math.round(35 * (1 - t) + 215 * t);
+                    data[i+1] = Math.round(10 * (1 - t) + 40 * t);
+                    data[i+2] = Math.round(70 * (1 - t) + 230 * t);
+                } else {
+                    const t = (lum - 0.5) / 0.5;
+                    data[i] = Math.round(215 * (1 - t) + 160 * t);
+                    data[i+1] = Math.round(40 * (1 - t) + 245 * t);
+                    data[i+2] = Math.min(255, Math.round(230 * (1 - t) + 255 * t + 20));
+                }
+            }
+            ctx.putImageData(imgData, 0, 0);
+            const grad = ctx.createRadialGradient(width / 2, height / 2, width * 0.2, width / 2, height / 2, width * 0.7);
+            grad.addColorStop(0, 'rgba(255, 255, 255, 0.08)');
+            grad.addColorStop(1, 'rgba(15, 5, 30, 0.25)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, width, height);
         }
     }
 
@@ -4991,7 +5034,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'monument_legend', icon: '♾️', title: 'Infinity Architect', desc: 'Complete any puzzle using the Solar Pyramid or Infinity Loop board mask.' },
         { id: 'glacial_vanguard', icon: '❄️', title: 'Glacial Vanguard', desc: 'Celebrate victory with the Cyber Plasma or Frozen Blizzard particle effect.' },
         { id: 'sovereign_puzzle', icon: '👑', title: 'Sovereign Puzzle', desc: 'Complete any puzzle using the Regal Crown or Lightning Bolt tile cutout styles.' },
-        { id: 'royal_monarch', icon: '🦋', title: 'Royal Monarch', desc: 'Complete any puzzle using the Imperial Crown or Butterfly Wings board mask.' }
+        { id: 'royal_monarch', icon: '🦋', title: 'Royal Monarch', desc: 'Complete any puzzle using the Imperial Crown or Butterfly Wings board mask.' },
+        { id: 'spectral_illusionist', icon: '🌈', title: 'Spectral Illusionist', desc: 'Create and snap a puzzle photo with the Prismatic Rainbow or Deep Astral Glow filter.' }
     ];
 
     let unlockedAchievements = [];
