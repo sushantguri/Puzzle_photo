@@ -3635,7 +3635,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isAiRivalActive && aiRivalLevel === 'hard') {
                 unlockAchievement('bot_slayer');
             }
-            if (['hexagon', 'diamond', 'wave', 'tabbed', 'starburst', 'octagon', 'clover', 'gear', 'prism', 'leaf', 'sparkle', 'shield', 'crescent', 'cross', 'heart', 'hexastar', 'lotus', 'teardrop', 'crown', 'bolt'].includes(selectedShape)) {
+            if (['hexagon', 'diamond', 'wave', 'tabbed', 'starburst', 'octagon', 'clover', 'gear', 'prism', 'leaf', 'sparkle', 'shield', 'crescent', 'cross', 'heart', 'hexastar', 'lotus', 'teardrop', 'crown', 'bolt', 'sacred', 'prismshield'].includes(selectedShape)) {
                 unlockAchievement('shape_shifter');
             }
             if (selectedShape === 'prism' || selectedShape === 'leaf') {
@@ -3646,6 +3646,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (selectedShape === 'crown' || selectedShape === 'bolt') {
                 unlockAchievement('sovereign_puzzle');
+            }
+            if (selectedShape === 'sacred' || selectedShape === 'prismshield') {
+                unlockAchievement('sacred_artisan');
             }
             if (selectedShape === 'shield' || selectedMask === 'gem') {
                 unlockAchievement('guardian_solver');
@@ -5118,7 +5121,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'spectral_illusionist', icon: '🌈', title: 'Spectral Illusionist', desc: 'Create and snap a puzzle photo with the Prismatic Rainbow or Deep Astral Glow filter.' },
         { id: 'sonic_alchemist', icon: '⚡', title: 'Sonic Alchemist', desc: 'Solve any photo puzzle using the Cyber Laser or Deep Ocean Sub sound profile.' },
         { id: 'astral_celebrant', icon: '✨', title: 'Astral Celebrant', desc: 'Celebrate victory with the Mystic Fireflies or Golden Stardust particle effect.' },
-        { id: 'chroma_alchemist', icon: '🎨', title: 'Chroma Alchemist', desc: 'Experience and test 12 or more distinct visual color themes.' }
+        { id: 'chroma_alchemist', icon: '🎨', title: 'Chroma Alchemist', desc: 'Experience and test 12 or more distinct visual color themes.' },
+        { id: 'sacred_artisan', icon: '🪷', title: 'Sacred Artisan', desc: 'Complete any puzzle using the Sacred Star or Diamond Shield tile cutout styles.' }
     ];
 
     let unlockedAchievements = [];

@@ -2926,6 +2926,16 @@ body {
     box-shadow: 0 4px 14px rgba(56, 189, 248, 0.45);
     filter: drop-shadow(0 2px 8px rgba(250, 204, 21, 0.4));
 }
+.puzzle-tile.shape-sacred {
+    clip-path: polygon(50% 0%, 65% 28%, 95% 20%, 78% 48%, 100% 70%, 70% 75%, 60% 100%, 40% 100%, 30% 75%, 0% 70%, 22% 48%, 5% 20%, 35% 28%);
+    box-shadow: 0 4px 14px rgba(244, 63, 94, 0.45);
+    filter: drop-shadow(0 2px 8px rgba(236, 72, 153, 0.4));
+}
+.puzzle-tile.shape-prismshield {
+    clip-path: polygon(50% 0%, 100% 25%, 85% 75%, 50% 100%, 15% 75%, 0% 25%);
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.45);
+    filter: drop-shadow(0 2px 8px rgba(52, 211, 153, 0.4));
+}
 
 /* Magnetic Cluster Grouping Styles */
 .puzzle-tile.cluster-locked {
