@@ -357,6 +357,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (soundPreset === 'zen') return 'triangle';
         if (soundPreset === 'prism') return 'sine';
         if (soundPreset === 'cosmic') return 'sawtooth';
+        if (soundPreset === 'laser') return 'sawtooth';
+        if (soundPreset === 'ocean') return 'sine';
         return 'sine'; // synth
     }
 
@@ -519,6 +521,43 @@ document.addEventListener('DOMContentLoaded', () => {
                     g.connect(masterGain);
                     osc.start(now);
                     osc.stop(now + 0.07);
+                } else if (soundPreset === 'laser') {
+                    // Cyber laser beam frequency sweep
+                    const osc = audioCtx.createOscillator();
+                    const filter = audioCtx.createBiquadFilter();
+                    const g = audioCtx.createGain();
+                    osc.type = 'sawtooth';
+                    filter.type = 'bandpass';
+                    filter.Q.value = 3;
+                    filter.frequency.setValueAtTime(1800 * pitch, now);
+                    filter.frequency.exponentialRampToValueAtTime(320 * pitch, now + 0.07);
+                    osc.frequency.setValueAtTime(1400 * pitch, now);
+                    osc.frequency.exponentialRampToValueAtTime(350 * pitch, now + 0.07);
+                    g.gain.setValueAtTime(0.24, now);
+                    g.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+                    osc.connect(filter);
+                    filter.connect(g);
+                    g.connect(masterGain);
+                    osc.start(now);
+                    osc.stop(now + 0.07);
+                } else if (soundPreset === 'ocean') {
+                    // Deep oceanic sub hydro-acoustic pulse
+                    const osc = audioCtx.createOscillator();
+                    const filter = audioCtx.createBiquadFilter();
+                    const g = audioCtx.createGain();
+                    osc.type = 'sine';
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(320 * pitch, now);
+                    filter.frequency.exponentialRampToValueAtTime(80 * pitch, now + 0.09);
+                    osc.frequency.setValueAtTime(130 * pitch, now);
+                    osc.frequency.exponentialRampToValueAtTime(55 * pitch, now + 0.09);
+                    g.gain.setValueAtTime(0.35, now);
+                    g.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+                    osc.connect(filter);
+                    filter.connect(g);
+                    g.connect(masterGain);
+                    osc.start(now);
+                    osc.stop(now + 0.09);
                 } else {
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
@@ -665,6 +704,41 @@ document.addEventListener('DOMContentLoaded', () => {
                     osc2.start(now);
                     osc1.stop(now + 0.36);
                     osc2.stop(now + 0.36);
+                } else if (soundPreset === 'laser') {
+                    // High-tech laser resonance arpeggio burst
+                    const chord = [880, 1320, 1760];
+                    chord.forEach((freq, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        osc.type = 'sawtooth';
+                        osc.frequency.setValueAtTime(freq * pitch, now + idx * 0.03);
+                        osc.frequency.exponentialRampToValueAtTime(freq * 1.5 * pitch, now + idx * 0.03 + 0.15);
+                        g.gain.setValueAtTime(0.18, now + idx * 0.03);
+                        g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.03 + 0.22);
+                        osc.connect(g);
+                        g.connect(masterGain);
+                        osc.start(now + idx * 0.03);
+                        osc.stop(now + idx * 0.03 + 0.22);
+                    });
+                } else if (soundPreset === 'ocean') {
+                    // Deep oceanic triad swell with sub-harmonic resonance
+                    const freqs = [110, 164.81, 220, 329.63];
+                    freqs.forEach((freq, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const filter = audioCtx.createBiquadFilter();
+                        const g = audioCtx.createGain();
+                        osc.type = 'sine';
+                        filter.type = 'lowpass';
+                        filter.frequency.setValueAtTime(450 * pitch, now + idx * 0.04);
+                        osc.frequency.setValueAtTime(freq * pitch, now + idx * 0.04);
+                        g.gain.setValueAtTime(0.22, now + idx * 0.04);
+                        g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.04 + 0.35);
+                        osc.connect(filter);
+                        filter.connect(g);
+                        g.connect(masterGain);
+                        osc.start(now + idx * 0.04);
+                        osc.stop(now + idx * 0.04 + 0.35);
+                    });
                 } else {
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
@@ -3597,6 +3671,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (soundPreset === 'prism' || soundPreset === 'cosmic') {
                 unlockAchievement('sonic_pioneer');
             }
+            if (soundPreset === 'laser' || soundPreset === 'ocean') {
+                unlockAchievement('sonic_alchemist');
+            }
             if ((musicTrack && musicTrack !== 'off') || (selectedAmbientMusic && selectedAmbientMusic !== 'off')) {
                 unlockAchievement('maestro_listener');
             }
@@ -5035,7 +5112,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'glacial_vanguard', icon: '❄️', title: 'Glacial Vanguard', desc: 'Celebrate victory with the Cyber Plasma or Frozen Blizzard particle effect.' },
         { id: 'sovereign_puzzle', icon: '👑', title: 'Sovereign Puzzle', desc: 'Complete any puzzle using the Regal Crown or Lightning Bolt tile cutout styles.' },
         { id: 'royal_monarch', icon: '🦋', title: 'Royal Monarch', desc: 'Complete any puzzle using the Imperial Crown or Butterfly Wings board mask.' },
-        { id: 'spectral_illusionist', icon: '🌈', title: 'Spectral Illusionist', desc: 'Create and snap a puzzle photo with the Prismatic Rainbow or Deep Astral Glow filter.' }
+        { id: 'spectral_illusionist', icon: '🌈', title: 'Spectral Illusionist', desc: 'Create and snap a puzzle photo with the Prismatic Rainbow or Deep Astral Glow filter.' },
+        { id: 'sonic_alchemist', icon: '⚡', title: 'Sonic Alchemist', desc: 'Solve any photo puzzle using the Cyber Laser or Deep Ocean Sub sound profile.' }
     ];
 
     let unlockedAchievements = [];
