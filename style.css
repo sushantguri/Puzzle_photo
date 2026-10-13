@@ -205,6 +205,8 @@
     --primary-accent: #0891b2;
     --secondary-accent: #38bdf8;
     --cyan-accent: #a5f3fc;
+}
+
 [data-theme="obsidian"] {
     --bg-dark: #08080a;
     --card-bg: rgba(24, 24, 28, 0.82);
@@ -225,6 +227,28 @@
     --primary-accent: #be123c;
     --secondary-accent: #fb7185;
     --cyan-accent: #fda4af;
+}
+
+[data-theme="synthwave"] {
+    --bg-dark: #0c0414;
+    --card-bg: rgba(32, 12, 52, 0.82);
+    --primary: #ec4899;
+    --accent-primary: #ec4899;
+    --primary-glow: #f472b6;
+    --primary-accent: #d946ef;
+    --secondary-accent: #8b5cf6;
+    --cyan-accent: #a5f3fc;
+}
+
+[data-theme="emerald_night"] {
+    --bg-dark: #02140c;
+    --card-bg: rgba(6, 36, 22, 0.82);
+    --primary: #10b981;
+    --accent-primary: #10b981;
+    --primary-glow: #34d399;
+    --primary-accent: #059669;
+    --secondary-accent: #6ee7b7;
+    --cyan-accent: #a7f3d0;
 }
 
 * {

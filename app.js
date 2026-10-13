@@ -5117,7 +5117,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'royal_monarch', icon: '🦋', title: 'Royal Monarch', desc: 'Complete any puzzle using the Imperial Crown or Butterfly Wings board mask.' },
         { id: 'spectral_illusionist', icon: '🌈', title: 'Spectral Illusionist', desc: 'Create and snap a puzzle photo with the Prismatic Rainbow or Deep Astral Glow filter.' },
         { id: 'sonic_alchemist', icon: '⚡', title: 'Sonic Alchemist', desc: 'Solve any photo puzzle using the Cyber Laser or Deep Ocean Sub sound profile.' },
-        { id: 'astral_celebrant', icon: '✨', title: 'Astral Celebrant', desc: 'Celebrate victory with the Mystic Fireflies or Golden Stardust particle effect.' }
+        { id: 'astral_celebrant', icon: '✨', title: 'Astral Celebrant', desc: 'Celebrate victory with the Mystic Fireflies or Golden Stardust particle effect.' },
+        { id: 'chroma_alchemist', icon: '🎨', title: 'Chroma Alchemist', desc: 'Experience and test 12 or more distinct visual color themes.' }
     ];
 
     let unlockedAchievements = [];
@@ -6555,6 +6556,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (exploredThemes.length >= 10) {
                 unlockAchievement('chroma_virtuoso');
+            }
+            if (exploredThemes.length >= 12) {
+                unlockAchievement('chroma_alchemist');
             }
         } catch (e) {}
     }
