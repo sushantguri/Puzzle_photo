@@ -3683,7 +3683,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isAiRivalActive && aiRivalLevel === 'hard') {
                 unlockAchievement('bot_slayer');
             }
-            if (['hexagon', 'diamond', 'wave', 'tabbed', 'starburst', 'octagon', 'clover', 'gear', 'prism', 'leaf', 'sparkle', 'shield', 'crescent', 'cross', 'heart', 'hexastar', 'lotus', 'teardrop', 'crown', 'bolt', 'sacred', 'prismshield'].includes(selectedShape)) {
+            if (['hexagon', 'diamond', 'wave', 'tabbed', 'starburst', 'octagon', 'clover', 'gear', 'prism', 'leaf', 'sparkle', 'shield', 'crescent', 'cross', 'heart', 'hexastar', 'lotus', 'teardrop', 'crown', 'bolt', 'sacred', 'prismshield', 'compass', 'feather'].includes(selectedShape)) {
                 unlockAchievement('shape_shifter');
             }
             if (selectedShape === 'prism' || selectedShape === 'leaf') {
@@ -3697,6 +3697,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (selectedShape === 'sacred' || selectedShape === 'prismshield') {
                 unlockAchievement('sacred_artisan');
+            }
+            if (selectedShape === 'compass' || selectedShape === 'feather') {
+                unlockAchievement('celestial_sculptor');
             }
             if (selectedShape === 'shield' || selectedMask === 'gem') {
                 unlockAchievement('guardian_solver');
@@ -5175,7 +5178,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'chroma_alchemist', icon: '🎨', title: 'Chroma Alchemist', desc: 'Experience and test 12 or more distinct visual color themes.' },
         { id: 'sacred_artisan', icon: '🪷', title: 'Sacred Artisan', desc: 'Complete any puzzle using the Sacred Star or Diamond Shield tile cutout styles.' },
         { id: 'mythic_guardian', icon: '🦅', title: 'Mythic Guardian', desc: 'Complete any puzzle using the Mythic Phoenix or Celtic Cross board silhouette masks.' },
-        { id: 'radiant_visionary', icon: '☀️', title: 'Radiant Visionary', desc: 'Create and snap a puzzle photo with the Cyber Neon Matrix or Solar Flare Corona filter.' }
+        { id: 'radiant_visionary', icon: '☀️', title: 'Radiant Visionary', desc: 'Create and snap a puzzle photo with the Cyber Neon Matrix or Solar Flare Corona filter.' },
+        { id: 'celestial_sculptor', icon: '🧭', title: 'Celestial Sculptor', desc: 'Complete any puzzle using the Astral Compass or Feather Quill tile cutout styles.' }
     ];
 
     let unlockedAchievements = [];
