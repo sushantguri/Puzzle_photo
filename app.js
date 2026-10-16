@@ -359,6 +359,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (soundPreset === 'cosmic') return 'sawtooth';
         if (soundPreset === 'laser') return 'sawtooth';
         if (soundPreset === 'ocean') return 'sine';
+        if (soundPreset === 'quantum') return 'sawtooth';
+        if (soundPreset === 'aurora') return 'sine';
         return 'sine'; // synth
     }
 
@@ -558,6 +560,42 @@ document.addEventListener('DOMContentLoaded', () => {
                     g.connect(masterGain);
                     osc.start(now);
                     osc.stop(now + 0.09);
+                } else if (soundPreset === 'quantum') {
+                    // Quantum harmonic pulse with dual pitch warp
+                    const osc = audioCtx.createOscillator();
+                    const filter = audioCtx.createBiquadFilter();
+                    const g = audioCtx.createGain();
+                    osc.type = 'sawtooth';
+                    filter.type = 'bandpass';
+                    filter.Q.value = 5;
+                    filter.frequency.setValueAtTime(880 * pitch, now);
+                    filter.frequency.exponentialRampToValueAtTime(2200 * pitch, now + 0.05);
+                    osc.frequency.setValueAtTime(440 * pitch, now);
+                    osc.frequency.exponentialRampToValueAtTime(1100 * pitch, now + 0.05);
+                    g.gain.setValueAtTime(0.2, now);
+                    g.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+                    osc.connect(filter);
+                    filter.connect(g);
+                    g.connect(masterGain);
+                    osc.start(now);
+                    osc.stop(now + 0.06);
+                } else if (soundPreset === 'aurora') {
+                    // Ethereal aurora shimmering chime
+                    const osc = audioCtx.createOscillator();
+                    const filter = audioCtx.createBiquadFilter();
+                    const g = audioCtx.createGain();
+                    osc.type = 'sine';
+                    filter.type = 'highpass';
+                    filter.frequency.setValueAtTime(600 * pitch, now);
+                    osc.frequency.setValueAtTime(1046.5 * pitch, now);
+                    osc.frequency.exponentialRampToValueAtTime(1318.5 * pitch, now + 0.08);
+                    g.gain.setValueAtTime(0.18, now);
+                    g.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                    osc.connect(filter);
+                    filter.connect(g);
+                    g.connect(masterGain);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
                 } else {
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
@@ -738,6 +776,40 @@ document.addEventListener('DOMContentLoaded', () => {
                         g.connect(masterGain);
                         osc.start(now + idx * 0.04);
                         osc.stop(now + idx * 0.04 + 0.35);
+                    });
+                } else if (soundPreset === 'quantum') {
+                    // Quantum entanglement triad resonance arpeggio
+                    const freqs = [329.63, 440, 659.25, 880];
+                    freqs.forEach((freq, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const filter = audioCtx.createBiquadFilter();
+                        const g = audioCtx.createGain();
+                        osc.type = 'sawtooth';
+                        filter.type = 'lowpass';
+                        filter.frequency.setValueAtTime(1800 * pitch, now + idx * 0.035);
+                        osc.frequency.setValueAtTime(freq * pitch, now + idx * 0.035);
+                        g.gain.setValueAtTime(0.15, now + idx * 0.035);
+                        g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.035 + 0.28);
+                        osc.connect(filter);
+                        filter.connect(g);
+                        g.connect(masterGain);
+                        osc.start(now + idx * 0.035);
+                        osc.stop(now + idx * 0.035 + 0.28);
+                    });
+                } else if (soundPreset === 'aurora') {
+                    // Shimmering celestial aurora harmonic overtone cascade
+                    const freqs = [523.25, 659.25, 783.99, 1046.5, 1318.51];
+                    freqs.forEach((freq, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq * pitch, now + idx * 0.03);
+                        g.gain.setValueAtTime(0.16, now + idx * 0.03);
+                        g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.03 + 0.38);
+                        osc.connect(g);
+                        g.connect(masterGain);
+                        osc.start(now + idx * 0.03);
+                        osc.stop(now + idx * 0.03 + 0.38);
                     });
                 } else {
                     const osc = audioCtx.createOscillator();
@@ -3731,6 +3803,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (soundPreset === 'laser' || soundPreset === 'ocean') {
                 unlockAchievement('sonic_alchemist');
             }
+            if (soundPreset === 'quantum' || soundPreset === 'aurora') {
+                unlockAchievement('quantum_maestro');
+            }
             if ((musicTrack && musicTrack !== 'off') || (selectedAmbientMusic && selectedAmbientMusic !== 'off')) {
                 unlockAchievement('maestro_listener');
             }
@@ -5179,7 +5254,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'sacred_artisan', icon: '🪷', title: 'Sacred Artisan', desc: 'Complete any puzzle using the Sacred Star or Diamond Shield tile cutout styles.' },
         { id: 'mythic_guardian', icon: '🦅', title: 'Mythic Guardian', desc: 'Complete any puzzle using the Mythic Phoenix or Celtic Cross board silhouette masks.' },
         { id: 'radiant_visionary', icon: '☀️', title: 'Radiant Visionary', desc: 'Create and snap a puzzle photo with the Cyber Neon Matrix or Solar Flare Corona filter.' },
-        { id: 'celestial_sculptor', icon: '🧭', title: 'Celestial Sculptor', desc: 'Complete any puzzle using the Astral Compass or Feather Quill tile cutout styles.' }
+        { id: 'celestial_sculptor', icon: '🧭', title: 'Celestial Sculptor', desc: 'Complete any puzzle using the Astral Compass or Feather Quill tile cutout styles.' },
+        { id: 'quantum_maestro', icon: '⚛️', title: 'Quantum Maestro', desc: 'Solve any photo puzzle using the Quantum Pulse or Aurora Chime sound profile.' }
     ];
 
     let unlockedAchievements = [];
