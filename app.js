@@ -2021,7 +2021,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Apply advanced canvas FX filters if selected
             const selectedFilter = filterSelect ? filterSelect.value : 'none';
-            if (['pixel', 'glitch', 'sketch', 'thermal', 'vortex', 'kaleidoscope', 'matrix', 'comic', 'tealorange', 'retro70s', 'vaporwave', 'pastel', 'amber', 'duotone_cyber', 'duotone_sunset', 'duotone_emerald', 'xray', 'oilpaint', 'prismatic', 'astral'].includes(selectedFilter)) {
+            if (['pixel', 'glitch', 'sketch', 'thermal', 'vortex', 'kaleidoscope', 'matrix', 'comic', 'tealorange', 'retro70s', 'vaporwave', 'pastel', 'amber', 'duotone_cyber', 'duotone_sunset', 'duotone_emerald', 'xray', 'oilpaint', 'prismatic', 'astral', 'neon_matrix', 'solar_flare'].includes(selectedFilter)) {
                 applyAdvancedCanvasFX(ctx, canvasEl.width, canvasEl.height, selectedFilter);
                 unlockAchievement('pixel_artist');
                 if (selectedFilter === 'xray' || selectedFilter === 'oilpaint') {
@@ -2029,6 +2029,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 if (selectedFilter === 'prismatic' || selectedFilter === 'astral') {
                     unlockAchievement('spectral_illusionist');
+                }
+                if (selectedFilter === 'neon_matrix' || selectedFilter === 'solar_flare') {
+                    unlockAchievement('radiant_visionary');
                 }
             }
 
@@ -2354,6 +2357,51 @@ document.addEventListener('DOMContentLoaded', () => {
             const grad = ctx.createRadialGradient(width / 2, height / 2, width * 0.2, width / 2, height / 2, width * 0.7);
             grad.addColorStop(0, 'rgba(255, 255, 255, 0.08)');
             grad.addColorStop(1, 'rgba(15, 5, 30, 0.25)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, width, height);
+        } else if (filterType === 'neon_matrix') {
+            const imgData = ctx.getImageData(0, 0, width, height);
+            const data = imgData.data;
+            for (let y = 0; y < height; y++) {
+                const scanLine = (y % 4 === 0) ? 0.6 : 1.0;
+                for (let x = 0; x < width; x++) {
+                    const i = (y * width + x) * 4;
+                    const lum = (data[i] * 0.299 + data[i+1] * 0.587 + data[i+2] * 0.114) / 255;
+                    const r = Math.round(data[i] * 0.15);
+                    const g = Math.min(255, Math.round((lum * 220 + 35) * scanLine));
+                    const b = Math.min(255, Math.round((lum * 140 + 20) * scanLine));
+                    data[i] = r;
+                    data[i+1] = g;
+                    data[i+2] = b;
+                }
+            }
+            ctx.putImageData(imgData, 0, 0);
+            ctx.fillStyle = 'rgba(0, 255, 136, 0.05)';
+            for (let y = 0; y < height; y += 8) {
+                ctx.fillRect(0, y, width, 2);
+            }
+        } else if (filterType === 'solar_flare') {
+            const imgData = ctx.getImageData(0, 0, width, height);
+            const data = imgData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                const lum = (data[i] * 0.299 + data[i+1] * 0.587 + data[i+2] * 0.114) / 255;
+                if (lum < 0.45) {
+                    const t = lum / 0.45;
+                    data[i] = Math.round(40 * (1 - t) + 255 * t);
+                    data[i+1] = Math.round(5 * (1 - t) + 110 * t);
+                    data[i+2] = Math.round(10 * (1 - t) + 15 * t);
+                } else {
+                    const t = (lum - 0.45) / 0.55;
+                    data[i] = 255;
+                    data[i+1] = Math.min(255, Math.round(110 * (1 - t) + 245 * t));
+                    data[i+2] = Math.min(255, Math.round(15 * (1 - t) + 220 * t));
+                }
+            }
+            ctx.putImageData(imgData, 0, 0);
+            const grad = ctx.createRadialGradient(width * 0.5, height * 0.5, width * 0.15, width * 0.5, height * 0.5, width * 0.75);
+            grad.addColorStop(0, 'rgba(255, 230, 100, 0.18)');
+            grad.addColorStop(0.5, 'rgba(255, 120, 20, 0.10)');
+            grad.addColorStop(1, 'rgba(120, 10, 0, 0.22)');
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, width, height);
         }
@@ -5126,7 +5174,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'astral_celebrant', icon: '✨', title: 'Astral Celebrant', desc: 'Celebrate victory with the Mystic Fireflies or Golden Stardust particle effect.' },
         { id: 'chroma_alchemist', icon: '🎨', title: 'Chroma Alchemist', desc: 'Experience and test 12 or more distinct visual color themes.' },
         { id: 'sacred_artisan', icon: '🪷', title: 'Sacred Artisan', desc: 'Complete any puzzle using the Sacred Star or Diamond Shield tile cutout styles.' },
-        { id: 'mythic_guardian', icon: '🦅', title: 'Mythic Guardian', desc: 'Complete any puzzle using the Mythic Phoenix or Celtic Cross board silhouette masks.' }
+        { id: 'mythic_guardian', icon: '🦅', title: 'Mythic Guardian', desc: 'Complete any puzzle using the Mythic Phoenix or Celtic Cross board silhouette masks.' },
+        { id: 'radiant_visionary', icon: '☀️', title: 'Radiant Visionary', desc: 'Create and snap a puzzle photo with the Cyber Neon Matrix or Solar Flare Corona filter.' }
     ];
 
     let unlockedAchievements = [];
