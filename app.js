@@ -3668,6 +3668,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (selectedMask === 'crown' || selectedMask === 'butterfly') {
                 unlockAchievement('royal_monarch');
             }
+            if (selectedMask === 'phoenix' || selectedMask === 'celtic') {
+                unlockAchievement('mythic_guardian');
+            }
             if (soundPreset === 'celestial' || soundPreset === 'zen') {
                 unlockAchievement('acoustic_virtuoso');
             }
@@ -5122,7 +5125,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'sonic_alchemist', icon: '⚡', title: 'Sonic Alchemist', desc: 'Solve any photo puzzle using the Cyber Laser or Deep Ocean Sub sound profile.' },
         { id: 'astral_celebrant', icon: '✨', title: 'Astral Celebrant', desc: 'Celebrate victory with the Mystic Fireflies or Golden Stardust particle effect.' },
         { id: 'chroma_alchemist', icon: '🎨', title: 'Chroma Alchemist', desc: 'Experience and test 12 or more distinct visual color themes.' },
-        { id: 'sacred_artisan', icon: '🪷', title: 'Sacred Artisan', desc: 'Complete any puzzle using the Sacred Star or Diamond Shield tile cutout styles.' }
+        { id: 'sacred_artisan', icon: '🪷', title: 'Sacred Artisan', desc: 'Complete any puzzle using the Sacred Star or Diamond Shield tile cutout styles.' },
+        { id: 'mythic_guardian', icon: '🦅', title: 'Mythic Guardian', desc: 'Complete any puzzle using the Mythic Phoenix or Celtic Cross board silhouette masks.' }
     ];
 
     let unlockedAchievements = [];
