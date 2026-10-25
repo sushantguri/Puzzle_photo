@@ -3818,6 +3818,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (selectedCelebrationFx === 'fireflies' || selectedCelebrationFx === 'stardust') {
                 unlockAchievement('astral_celebrant');
             }
+            if (selectedCelebrationFx === 'prism' || selectedCelebrationFx === 'embers') {
+                unlockAchievement('prism_pyromancer');
+            }
             if (isFogModeActive) {
                 unlockAchievement('fog_explorer');
                 if (sonarPulsesCountInGame >= 5) {
@@ -5255,7 +5258,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'mythic_guardian', icon: '🦅', title: 'Mythic Guardian', desc: 'Complete any puzzle using the Mythic Phoenix or Celtic Cross board silhouette masks.' },
         { id: 'radiant_visionary', icon: '☀️', title: 'Radiant Visionary', desc: 'Create and snap a puzzle photo with the Cyber Neon Matrix or Solar Flare Corona filter.' },
         { id: 'celestial_sculptor', icon: '🧭', title: 'Celestial Sculptor', desc: 'Complete any puzzle using the Astral Compass or Feather Quill tile cutout styles.' },
-        { id: 'quantum_maestro', icon: '⚛️', title: 'Quantum Maestro', desc: 'Solve any photo puzzle using the Quantum Pulse or Aurora Chime sound profile.' }
+        { id: 'quantum_maestro', icon: '⚛️', title: 'Quantum Maestro', desc: 'Solve any photo puzzle using the Quantum Pulse or Aurora Chime sound profile.' },
+        { id: 'prism_pyromancer', icon: '💎', title: 'Prism Pyromancer', desc: 'Celebrate victory with the Prism Crystals or Dragon Embers particle effect.' }
     ];
 
     let unlockedAchievements = [];
@@ -5588,6 +5592,36 @@ document.addEventListener('DOMContentLoaded', () => {
                     decay: Math.random() * 0.015 + 0.009
                 };
             });
+        } else if (mode === 'prism') {
+            particles = Array.from({ length: 65 }, () => {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 6 + 2;
+                return {
+                    x: w / 2,
+                    y: h / 2,
+                    size: Math.random() * 8 + 6,
+                    color: ['#38bdf8', '#818cf8', '#c084fc', '#f472b6', '#34d399', '#fde047'][Math.floor(Math.random() * 6)],
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    rotation: Math.random() * 360,
+                    rotSpeed: Math.random() * 4 - 2,
+                    life: 1,
+                    decay: Math.random() * 0.012 + 0.008
+                };
+            });
+        } else if (mode === 'embers') {
+            particles = Array.from({ length: 80 }, () => ({
+                x: Math.random() * w,
+                y: h + Math.random() * 80,
+                size: Math.random() * 4 + 2,
+                color: ['#ff4500', '#ff8c00', '#ffa500', '#ffd700', '#ff2200', '#ff6b35'][Math.floor(Math.random() * 6)],
+                vy: -(Math.random() * 3 + 1.8),
+                vx: (Math.random() - 0.5) * 1.5,
+                swaySpeed: Math.random() * 0.04 + 0.02,
+                swayOffset: Math.random() * Math.PI * 2,
+                flicker: Math.random() * Math.PI * 2,
+                flickerSpeed: Math.random() * 0.1 + 0.05
+            }));
         } else {
             // Default Confetti
             particles = Array.from({ length: 95 }, () => ({
@@ -5854,6 +5888,59 @@ document.addEventListener('DOMContentLoaded', () => {
                     p.life -= p.decay;
                 });
                 particles = particles.filter(p => p.life > 0);
+            } else if (mode === 'prism') {
+                particles.forEach(p => {
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate((p.rotation * Math.PI) / 180);
+                    ctx.globalAlpha = p.life;
+                    ctx.shadowBlur = 12;
+                    ctx.shadowColor = p.color;
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.fillStyle = p.color;
+                    ctx.lineWidth = 1;
+                    const s = p.size * p.life;
+                    ctx.beginPath();
+                    ctx.moveTo(0, -s);
+                    ctx.lineTo(s * 0.7, -s * 0.2);
+                    ctx.lineTo(s * 0.5, s);
+                    ctx.lineTo(0, s * 0.6);
+                    ctx.lineTo(-s * 0.5, s);
+                    ctx.lineTo(-s * 0.7, -s * 0.2);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.restore();
+
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vx *= 0.98;
+                    p.vy *= 0.98;
+                    p.rotation += p.rotSpeed;
+                    p.life -= p.decay;
+                });
+                particles = particles.filter(p => p.life > 0);
+            } else if (mode === 'embers') {
+                particles.forEach(p => {
+                    p.flicker += p.flickerSpeed;
+                    const flickerAlpha = Math.sin(p.flicker) * 0.3 + 0.7;
+                    ctx.save();
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = p.color;
+                    ctx.fillStyle = p.color;
+                    ctx.globalAlpha = flickerAlpha;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+
+                    p.y += p.vy;
+                    p.x += Math.sin(p.swayOffset + p.y * p.swaySpeed) * 1.2 + p.vx;
+                    if (p.y < -20) {
+                        p.y = h + 20;
+                        p.x = Math.random() * w;
+                    }
+                });
             } else {
                 // Confetti
                 particles.forEach(p => {
