@@ -361,6 +361,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (soundPreset === 'ocean') return 'sine';
         if (soundPreset === 'quantum') return 'sawtooth';
         if (soundPreset === 'aurora') return 'sine';
+        if (soundPreset === 'starlight') return 'sine';
+        if (soundPreset === 'galactic') return 'triangle';
         return 'sine'; // synth
     }
 
@@ -596,6 +598,36 @@ document.addEventListener('DOMContentLoaded', () => {
                     g.connect(masterGain);
                     osc.start(now);
                     osc.stop(now + 0.08);
+                } else if (soundPreset === 'starlight') {
+                    // Crystalline starlight harp pluck
+                    const osc = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(1174.66 * pitch, now);
+                    osc.frequency.exponentialRampToValueAtTime(880 * pitch, now + 0.09);
+                    g.gain.setValueAtTime(0.2, now);
+                    g.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+                    osc.connect(g);
+                    g.connect(masterGain);
+                    osc.start(now);
+                    osc.stop(now + 0.09);
+                } else if (soundPreset === 'galactic') {
+                    // Deep cosmic sub-bass punch
+                    const osc = audioCtx.createOscillator();
+                    const filter = audioCtx.createBiquadFilter();
+                    const g = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(320 * pitch, now);
+                    osc.frequency.setValueAtTime(160 * pitch, now);
+                    osc.frequency.exponentialRampToValueAtTime(65 * pitch, now + 0.1);
+                    g.gain.setValueAtTime(0.24, now);
+                    g.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+                    osc.connect(filter);
+                    filter.connect(g);
+                    g.connect(masterGain);
+                    osc.start(now);
+                    osc.stop(now + 0.1);
                 } else {
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
@@ -810,6 +842,40 @@ document.addEventListener('DOMContentLoaded', () => {
                         g.connect(masterGain);
                         osc.start(now + idx * 0.03);
                         osc.stop(now + idx * 0.03 + 0.38);
+                    });
+                } else if (soundPreset === 'starlight') {
+                    // Shimmering celestial harp pentatonic sweep
+                    const freqs = [587.33, 659.25, 880, 1174.66, 1318.51];
+                    freqs.forEach((freq, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq * pitch, now + idx * 0.035);
+                        g.gain.setValueAtTime(0.16, now + idx * 0.035);
+                        g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.035 + 0.4);
+                        osc.connect(g);
+                        g.connect(masterGain);
+                        osc.start(now + idx * 0.035);
+                        osc.stop(now + idx * 0.035 + 0.4);
+                    });
+                } else if (soundPreset === 'galactic') {
+                    // Galactic analog bass overtone chord
+                    const freqs = [110, 164.81, 220, 329.63];
+                    freqs.forEach((freq, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const filter = audioCtx.createBiquadFilter();
+                        const g = audioCtx.createGain();
+                        osc.type = 'triangle';
+                        filter.type = 'lowpass';
+                        filter.frequency.setValueAtTime(600 * pitch, now + idx * 0.04);
+                        osc.frequency.setValueAtTime(freq * pitch, now + idx * 0.04);
+                        g.gain.setValueAtTime(0.2, now + idx * 0.04);
+                        g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.04 + 0.35);
+                        osc.connect(filter);
+                        filter.connect(g);
+                        g.connect(masterGain);
+                        osc.start(now + idx * 0.04);
+                        osc.stop(now + idx * 0.04 + 0.35);
                     });
                 } else {
                     const osc = audioCtx.createOscillator();
@@ -3809,6 +3875,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (soundPreset === 'quantum' || soundPreset === 'aurora') {
                 unlockAchievement('quantum_maestro');
             }
+            if (soundPreset === 'starlight' || soundPreset === 'galactic') {
+                unlockAchievement('cosmic_virtuoso');
+            }
             if ((musicTrack && musicTrack !== 'off') || (selectedAmbientMusic && selectedAmbientMusic !== 'off')) {
                 unlockAchievement('maestro_listener');
             }
@@ -5264,7 +5333,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'quantum_maestro', icon: '⚛️', title: 'Quantum Maestro', desc: 'Solve any photo puzzle using the Quantum Pulse or Aurora Chime sound profile.' },
         { id: 'prism_pyromancer', icon: '💎', title: 'Prism Pyromancer', desc: 'Celebrate victory with the Prism Crystals or Dragon Embers particle effect.' },
         { id: 'astral_harmonist', icon: '🌌', title: 'Astral Harmonist', desc: 'Experience and test 15 or more distinct visual color themes.' },
-        { id: 'mythic_sovereign', icon: '🪽', title: 'Mythic Sovereign', desc: 'Complete any puzzle using the Pegasus Wings or Pharaoh Eye board silhouette masks.' }
+        { id: 'mythic_sovereign', icon: '🪽', title: 'Mythic Sovereign', desc: 'Complete any puzzle using the Pegasus Wings or Pharaoh Eye board silhouette masks.' },
+        { id: 'cosmic_virtuoso', icon: '🌌', title: 'Cosmic Virtuoso', desc: 'Solve any photo puzzle using the Starlight Harp or Galactic Bass sound profile.' }
     ];
 
     let unlockedAchievements = [];
