@@ -5259,7 +5259,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'radiant_visionary', icon: '☀️', title: 'Radiant Visionary', desc: 'Create and snap a puzzle photo with the Cyber Neon Matrix or Solar Flare Corona filter.' },
         { id: 'celestial_sculptor', icon: '🧭', title: 'Celestial Sculptor', desc: 'Complete any puzzle using the Astral Compass or Feather Quill tile cutout styles.' },
         { id: 'quantum_maestro', icon: '⚛️', title: 'Quantum Maestro', desc: 'Solve any photo puzzle using the Quantum Pulse or Aurora Chime sound profile.' },
-        { id: 'prism_pyromancer', icon: '💎', title: 'Prism Pyromancer', desc: 'Celebrate victory with the Prism Crystals or Dragon Embers particle effect.' }
+        { id: 'prism_pyromancer', icon: '💎', title: 'Prism Pyromancer', desc: 'Celebrate victory with the Prism Crystals or Dragon Embers particle effect.' },
+        { id: 'astral_harmonist', icon: '🌌', title: 'Astral Harmonist', desc: 'Experience and test 15 or more distinct visual color themes.' }
     ];
 
     let unlockedAchievements = [];
@@ -6783,6 +6784,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (exploredThemes.length >= 12) {
                 unlockAchievement('chroma_alchemist');
+            }
+            if (exploredThemes.length >= 15) {
+                unlockAchievement('astral_harmonist');
             }
         } catch (e) {}
     }

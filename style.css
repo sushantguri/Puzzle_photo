@@ -251,6 +251,28 @@
     --cyan-accent: #a7f3d0;
 }
 
+[data-theme="vaporwave"] {
+    --bg-dark: #0a0618;
+    --card-bg: rgba(26, 16, 56, 0.82);
+    --primary: #06b6d4;
+    --accent-primary: #06b6d4;
+    --primary-glow: #22d3ee;
+    --primary-accent: #f43f5e;
+    --secondary-accent: #c084fc;
+    --cyan-accent: #67e8f9;
+}
+
+[data-theme="crimson_nebula"] {
+    --bg-dark: #0f020a;
+    --card-bg: rgba(42, 6, 26, 0.82);
+    --primary: #f43f5e;
+    --accent-primary: #f43f5e;
+    --primary-glow: #fb7185;
+    --primary-accent: #9333ea;
+    --secondary-accent: #fda4af;
+    --cyan-accent: #fbcfe8;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
