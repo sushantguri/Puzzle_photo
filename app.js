@@ -3794,6 +3794,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (selectedMask === 'phoenix' || selectedMask === 'celtic') {
                 unlockAchievement('mythic_guardian');
             }
+            if (selectedMask === 'pegasus' || selectedMask === 'pharaoh') {
+                unlockAchievement('mythic_sovereign');
+            }
             if (soundPreset === 'celestial' || soundPreset === 'zen') {
                 unlockAchievement('acoustic_virtuoso');
             }
@@ -5260,7 +5263,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'celestial_sculptor', icon: '🧭', title: 'Celestial Sculptor', desc: 'Complete any puzzle using the Astral Compass or Feather Quill tile cutout styles.' },
         { id: 'quantum_maestro', icon: '⚛️', title: 'Quantum Maestro', desc: 'Solve any photo puzzle using the Quantum Pulse or Aurora Chime sound profile.' },
         { id: 'prism_pyromancer', icon: '💎', title: 'Prism Pyromancer', desc: 'Celebrate victory with the Prism Crystals or Dragon Embers particle effect.' },
-        { id: 'astral_harmonist', icon: '🌌', title: 'Astral Harmonist', desc: 'Experience and test 15 or more distinct visual color themes.' }
+        { id: 'astral_harmonist', icon: '🌌', title: 'Astral Harmonist', desc: 'Experience and test 15 or more distinct visual color themes.' },
+        { id: 'mythic_sovereign', icon: '🪽', title: 'Mythic Sovereign', desc: 'Complete any puzzle using the Pegasus Wings or Pharaoh Eye board silhouette masks.' }
     ];
 
     let unlockedAchievements = [];
