@@ -3896,6 +3896,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (selectedCelebrationFx === 'prism' || selectedCelebrationFx === 'embers') {
                 unlockAchievement('prism_pyromancer');
             }
+            if (selectedCelebrationFx === 'meteors' || selectedCelebrationFx === 'aurora') {
+                unlockAchievement('astral_voyager');
+            }
             if (isFogModeActive) {
                 unlockAchievement('fog_explorer');
                 if (sonarPulsesCountInGame >= 5) {
@@ -5338,7 +5341,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'astral_harmonist', icon: '🌌', title: 'Astral Harmonist', desc: 'Experience and test 15 or more distinct visual color themes.' },
         { id: 'mythic_sovereign', icon: '🪽', title: 'Mythic Sovereign', desc: 'Complete any puzzle using the Pegasus Wings or Pharaoh Eye board silhouette masks.' },
         { id: 'cosmic_virtuoso', icon: '🌌', title: 'Cosmic Virtuoso', desc: 'Solve any photo puzzle using the Starlight Harp or Galactic Bass sound profile.' },
-        { id: 'mythic_vanguard', icon: '⚔️', title: 'Mythic Vanguard', desc: 'Complete any puzzle using the Valkyrie Blade or Mystic Vortex tile cutout styles.' }
+        { id: 'mythic_vanguard', icon: '⚔️', title: 'Mythic Vanguard', desc: 'Complete any puzzle using the Valkyrie Blade or Mystic Vortex tile cutout styles.' },
+        { id: 'astral_voyager', icon: '☄️', title: 'Astral Voyager', desc: 'Celebrate victory with the Meteor Shower or Aurora Waves particle effect.' }
     ];
 
     let unlockedAchievements = [];
@@ -5701,6 +5705,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 flicker: Math.random() * Math.PI * 2,
                 flickerSpeed: Math.random() * 0.1 + 0.05
             }));
+        } else if (mode === 'meteors') {
+            particles = Array.from({ length: 55 }, () => {
+                const speed = Math.random() * 7 + 6;
+                const angle = (Math.PI / 4) + (Math.random() * 0.18 - 0.09);
+                return {
+                    x: Math.random() * (w * 1.3) - (w * 0.15),
+                    y: Math.random() * (h * 0.5) - (h * 0.4),
+                    length: Math.random() * 45 + 30,
+                    size: Math.random() * 3.5 + 2,
+                    color: ['#38bdf8', '#818cf8', '#c084fc', '#f472b6', '#fbbf24', '#ffffff'][Math.floor(Math.random() * 6)],
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    speed: speed,
+                    sparkle: Math.random() * Math.PI * 2
+                };
+            });
+        } else if (mode === 'aurora') {
+            particles = Array.from({ length: 70 }, () => ({
+                x: Math.random() * w,
+                y: Math.random() * (h * 0.8) + (h * 0.1),
+                baseY: Math.random() * (h * 0.8) + (h * 0.1),
+                size: Math.random() * 8 + 4,
+                color: ['#06b6d4', '#10b981', '#34d399', '#a7f3d0', '#c084fc', '#818cf8'][Math.floor(Math.random() * 6)],
+                vx: Math.random() * 1.2 + 0.4,
+                waveSpeed: Math.random() * 0.03 + 0.015,
+                waveAmplitude: Math.random() * 35 + 20,
+                phase: Math.random() * Math.PI * 2,
+                glowPulse: Math.random() * Math.PI * 2
+            }));
         } else {
             // Default Confetti
             particles = Array.from({ length: 95 }, () => ({
@@ -6018,6 +6051,62 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (p.y < -20) {
                         p.y = h + 20;
                         p.x = Math.random() * w;
+                    }
+                });
+            } else if (mode === 'meteors') {
+                particles.forEach(p => {
+                    p.sparkle += 0.15;
+                    ctx.save();
+                    const tailX = p.x - (p.vx / p.speed) * p.length;
+                    const tailY = p.y - (p.vy / p.speed) * p.length;
+                    const grad = ctx.createLinearGradient(p.x, p.y, tailX, tailY);
+                    grad.addColorStop(0, p.color);
+                    grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                    ctx.strokeStyle = grad;
+                    ctx.lineWidth = p.size;
+                    ctx.lineCap = 'round';
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(tailX, tailY);
+                    ctx.stroke();
+
+                    // Glowing meteor head
+                    ctx.shadowBlur = 14;
+                    ctx.shadowColor = p.color;
+                    ctx.fillStyle = '#ffffff';
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size * 0.9, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.y > h + 50 || p.x > w + 50) {
+                        p.x = Math.random() * (w * 1.2) - (w * 0.2);
+                        p.y = -40;
+                    }
+                });
+            } else if (mode === 'aurora') {
+                particles.forEach(p => {
+                    p.phase += p.waveSpeed;
+                    p.glowPulse += 0.05;
+                    p.y = p.baseY + Math.sin(p.phase) * p.waveAmplitude;
+                    const alpha = Math.sin(p.glowPulse) * 0.25 + 0.75;
+
+                    ctx.save();
+                    ctx.globalAlpha = alpha;
+                    ctx.shadowBlur = 18;
+                    ctx.shadowColor = p.color;
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+
+                    p.x += p.vx;
+                    if (p.x > w + 20) {
+                        p.x = -20;
+                        p.baseY = Math.random() * (h * 0.8) + (h * 0.1);
                     }
                 });
             } else {
