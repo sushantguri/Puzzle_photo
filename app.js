@@ -5342,7 +5342,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'mythic_sovereign', icon: '🪽', title: 'Mythic Sovereign', desc: 'Complete any puzzle using the Pegasus Wings or Pharaoh Eye board silhouette masks.' },
         { id: 'cosmic_virtuoso', icon: '🌌', title: 'Cosmic Virtuoso', desc: 'Solve any photo puzzle using the Starlight Harp or Galactic Bass sound profile.' },
         { id: 'mythic_vanguard', icon: '⚔️', title: 'Mythic Vanguard', desc: 'Complete any puzzle using the Valkyrie Blade or Mystic Vortex tile cutout styles.' },
-        { id: 'astral_voyager', icon: '☄️', title: 'Astral Voyager', desc: 'Celebrate victory with the Meteor Shower or Aurora Waves particle effect.' }
+        { id: 'astral_voyager', icon: '☄️', title: 'Astral Voyager', desc: 'Celebrate victory with the Meteor Shower or Aurora Waves particle effect.' },
+        { id: 'celestial_alchemist', icon: '☀️', title: 'Celestial Alchemist', desc: 'Experience and test 17 or more distinct visual color themes.' }
     ];
 
     let unlockedAchievements = [];
@@ -6954,6 +6955,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (exploredThemes.length >= 15) {
                 unlockAchievement('astral_harmonist');
+            }
+            if (exploredThemes.length >= 17) {
+                unlockAchievement('celestial_alchemist');
             }
         } catch (e) {}
     }
