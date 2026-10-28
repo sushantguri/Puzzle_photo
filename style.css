@@ -2968,6 +2968,16 @@ body {
     box-shadow: 0 4px 14px rgba(168, 85, 247, 0.45);
     filter: drop-shadow(0 2px 8px rgba(192, 132, 252, 0.4));
 }
+.puzzle-tile.shape-valkyrie {
+    clip-path: polygon(50% 0%, 65% 20%, 90% 15%, 75% 45%, 100% 50%, 75% 55%, 90% 85%, 65% 80%, 50% 100%, 35% 80%, 10% 85%, 25% 55%, 0% 50%, 25% 45%, 10% 15%, 35% 20%);
+    box-shadow: 0 4px 14px rgba(244, 63, 94, 0.45);
+    filter: drop-shadow(0 2px 8px rgba(225, 29, 72, 0.4));
+}
+.puzzle-tile.shape-vortex {
+    clip-path: polygon(50% 0%, 80% 10%, 65% 35%, 100% 50%, 65% 65%, 80% 90%, 50% 100%, 20% 90%, 35% 65%, 0% 50%, 35% 35%, 20% 10%);
+    box-shadow: 0 4px 14px rgba(139, 92, 246, 0.45);
+    filter: drop-shadow(0 2px 8px rgba(124, 58, 237, 0.4));
+}
 
 /* Magnetic Cluster Grouping Styles */
 .puzzle-tile.cluster-locked {

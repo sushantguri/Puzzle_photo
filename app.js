@@ -3821,7 +3821,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isAiRivalActive && aiRivalLevel === 'hard') {
                 unlockAchievement('bot_slayer');
             }
-            if (['hexagon', 'diamond', 'wave', 'tabbed', 'starburst', 'octagon', 'clover', 'gear', 'prism', 'leaf', 'sparkle', 'shield', 'crescent', 'cross', 'heart', 'hexastar', 'lotus', 'teardrop', 'crown', 'bolt', 'sacred', 'prismshield', 'compass', 'feather'].includes(selectedShape)) {
+            if (['hexagon', 'diamond', 'wave', 'tabbed', 'starburst', 'octagon', 'clover', 'gear', 'prism', 'leaf', 'sparkle', 'shield', 'crescent', 'cross', 'heart', 'hexastar', 'lotus', 'teardrop', 'crown', 'bolt', 'sacred', 'prismshield', 'compass', 'feather', 'valkyrie', 'vortex'].includes(selectedShape)) {
                 unlockAchievement('shape_shifter');
             }
             if (selectedShape === 'prism' || selectedShape === 'leaf') {
@@ -3838,6 +3838,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (selectedShape === 'compass' || selectedShape === 'feather') {
                 unlockAchievement('celestial_sculptor');
+            }
+            if (selectedShape === 'valkyrie' || selectedShape === 'vortex') {
+                unlockAchievement('mythic_vanguard');
             }
             if (selectedShape === 'shield' || selectedMask === 'gem') {
                 unlockAchievement('guardian_solver');
@@ -5334,7 +5337,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'prism_pyromancer', icon: '💎', title: 'Prism Pyromancer', desc: 'Celebrate victory with the Prism Crystals or Dragon Embers particle effect.' },
         { id: 'astral_harmonist', icon: '🌌', title: 'Astral Harmonist', desc: 'Experience and test 15 or more distinct visual color themes.' },
         { id: 'mythic_sovereign', icon: '🪽', title: 'Mythic Sovereign', desc: 'Complete any puzzle using the Pegasus Wings or Pharaoh Eye board silhouette masks.' },
-        { id: 'cosmic_virtuoso', icon: '🌌', title: 'Cosmic Virtuoso', desc: 'Solve any photo puzzle using the Starlight Harp or Galactic Bass sound profile.' }
+        { id: 'cosmic_virtuoso', icon: '🌌', title: 'Cosmic Virtuoso', desc: 'Solve any photo puzzle using the Starlight Harp or Galactic Bass sound profile.' },
+        { id: 'mythic_vanguard', icon: '⚔️', title: 'Mythic Vanguard', desc: 'Complete any puzzle using the Valkyrie Blade or Mystic Vortex tile cutout styles.' }
     ];
 
     let unlockedAchievements = [];
