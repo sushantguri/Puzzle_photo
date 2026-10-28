@@ -3866,6 +3866,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (selectedMask === 'pegasus' || selectedMask === 'pharaoh') {
                 unlockAchievement('mythic_sovereign');
             }
+            if (selectedMask === 'dragon' || selectedMask === 'torii') {
+                unlockAchievement('dragon_sovereign');
+            }
             if (soundPreset === 'celestial' || soundPreset === 'zen') {
                 unlockAchievement('acoustic_virtuoso');
             }
@@ -5343,7 +5346,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'cosmic_virtuoso', icon: '🌌', title: 'Cosmic Virtuoso', desc: 'Solve any photo puzzle using the Starlight Harp or Galactic Bass sound profile.' },
         { id: 'mythic_vanguard', icon: '⚔️', title: 'Mythic Vanguard', desc: 'Complete any puzzle using the Valkyrie Blade or Mystic Vortex tile cutout styles.' },
         { id: 'astral_voyager', icon: '☄️', title: 'Astral Voyager', desc: 'Celebrate victory with the Meteor Shower or Aurora Waves particle effect.' },
-        { id: 'celestial_alchemist', icon: '☀️', title: 'Celestial Alchemist', desc: 'Experience and test 17 or more distinct visual color themes.' }
+        { id: 'celestial_alchemist', icon: '☀️', title: 'Celestial Alchemist', desc: 'Experience and test 17 or more distinct visual color themes.' },
+        { id: 'dragon_sovereign', icon: '🐉', title: 'Dragon Sovereign', desc: 'Complete any puzzle using the Dragon Wyvern or Torii Gate board silhouette masks.' }
     ];
 
     let unlockedAchievements = [];
